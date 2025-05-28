@@ -35,3 +35,9 @@ build/
 ### Mac OS ###
 .DS_Store
 **/.DS_Store
+application-secrets.properties
+# Sensitive files
+**/application-secrets.properties
+**/*-secrets.properties
+**/*.env
+**/application-local.properties
