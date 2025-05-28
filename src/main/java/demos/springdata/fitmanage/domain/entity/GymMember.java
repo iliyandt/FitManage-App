@@ -1,24 +1,36 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.enums.Role;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "gym_members")
 public class GymMember extends BaseEntity {
     @Column(nullable = false)
     private String firstName;
+
     @Column(nullable = false)
     private String lastName;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false)
     private String password;
     private String phone;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "member_roles",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
     private boolean isActive;
     private LocalDateTime createdAt;
 
@@ -75,12 +87,12 @@ public class GymMember extends BaseEntity {
         this.phone = phone;
     }
 
-    public Role getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public boolean isActive() {

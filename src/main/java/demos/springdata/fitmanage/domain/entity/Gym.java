@@ -1,15 +1,15 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import demos.springdata.fitmanage.domain.enums.RoleType;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "gyms")
@@ -19,16 +19,30 @@ public class Gym extends BaseEntity {
     private String email;
     private String phone;
     private String address;
+
     @Size(min = 8, message = "Password must be at least 8 characters")
     @NotBlank(message = "Password is required")
     private String password;
     private String city;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "gym_roles",
+            joinColumns = @JoinColumn(name = "gym_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+
     @Column(name = "subscription_valid_until")
     private LocalDate subscriptionValidUntil;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
     @Column(name = "members_count")
     private int membersCount;
+
     @OneToMany(mappedBy = "gym")
     private List<GymMember> gymMembers;
 
@@ -91,6 +105,10 @@ public class Gym extends BaseEntity {
         this.city = city;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
     public LocalDate getSubscriptionValidUntil() {
         return subscriptionValidUntil;
     }
@@ -122,4 +140,7 @@ public class Gym extends BaseEntity {
     public void setGymMembers(List<GymMember> gymMembers) {
         this.gymMembers = gymMembers;
     }
+
+
+
 }
