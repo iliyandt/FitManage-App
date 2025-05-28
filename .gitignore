@@ -32,7 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-# Sensitive properties files
-application-dev.properties
-application-secrets.properties
-
+### Mac OS ###
+.DS_Store
+**/.DS_Store
