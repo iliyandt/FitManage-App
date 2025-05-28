@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
+import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -39,6 +40,21 @@ public class AuthController {
 
             return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(201));
 
+        }
+    }
+
+
+    @PostMapping(path = "/login")
+    public ResponseEntity<?> login(@RequestBody GymLoginRequestDto loginRequestDto) {
+        try {
+            authenticationService.loginGym(loginRequestDto);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Successfully logged.");
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (FitManageAppException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", e.getMessage());
+            return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(201));
         }
     }
 }

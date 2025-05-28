@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -35,16 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void registerGym(GymRegistrationRequestDto gymRegistrationDto) {
 
-        if (!validationUtil.isValid(gymRegistrationDto)) {
-            Set<ConstraintViolation<GymRegistrationRequestDto>> violations =
-                    validationUtil.violations(gymRegistrationDto);
-
-            String errorMessage = violations.stream()
-                    .map(ConstraintViolation::getMessage)
-                    .collect(Collectors.joining(", "));
-
-            throw new FitManageAppException(errorMessage, ApiErrorCode.BAD_REQUEST);
-        }
+        validateDto(gymRegistrationDto);
 
         if (gymRepository.findByName(gymRegistrationDto.getName()).isPresent()) {
             throw new FitManageAppException("Gym with this name already exists", ApiErrorCode.CONFLICT);
@@ -61,16 +53,38 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void loginUser(GymRegistrationRequestDto gymRegistrationRequestDto) {
-        //todo
+    public void loginGym(GymLoginRequestDto gymLoginRequestDto) {
+        validateDto(gymLoginRequestDto);
+
+        Gym gym = this.gymRepository.findByEmail(gymLoginRequestDto.getEmail()).orElseThrow(() ->
+                new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
+
+        if (!matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
+            throw new FitManageAppException("Gym passwords do not match.", ApiErrorCode.BAD_REQUEST);
+        }
     }
+
+    private boolean matchGymPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    private <T> void validateDto(T dto) {
+        if (!validationUtil.isValid(dto)) {
+            Set<ConstraintViolation<T>> violations = validationUtil.violations(dto);
+            String errorMessage = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining(", "));
+            throw new FitManageAppException(errorMessage, ApiErrorCode.BAD_REQUEST);
+        }
+    }
+
 
     private void encryptGymPassword(Gym gym) {
         String encryptedPassword = passwordEncoder.encode(gym.getPassword());
         gym.setPassword(encryptedPassword);
     }
 
-    private Gym mapGym(GymRegistrationRequestDto gymRegistrationDto) {
-        return modelMapper.map(gymRegistrationDto, Gym.class);
+    private <T> Gym mapGym(T dto) {
+        return modelMapper.map(dto, Gym.class);
     }
 }
