@@ -3,10 +3,13 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.Role;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.AuthenticationService;
+import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.util.ValidationUtil;
 import jakarta.validation.ConstraintViolation;
 import org.modelmapper.ModelMapper;
@@ -24,13 +27,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ValidationUtil validationUtil;
+    private final RoleService roleService;
 
     @Autowired
-    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, ValidationUtil validationUtil) {
+    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, ValidationUtil validationUtil, RoleService roleService) {
         this.gymRepository = gymRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.validationUtil = validationUtil;
+        this.roleService = roleService;
     }
 
     @Override
@@ -49,6 +54,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Gym gym = mapGym(gymRegistrationDto);
         encryptGymPassword(gym);
         gym.setCreatedAt(LocalDateTime.now());
+
+        // Assign GYM_ADMIN role by default
+        Role gymAdminRole = roleService.findByName(RoleType.GYM_ADMIN);
+        gym.getRoles().add(gymAdminRole);
+
         gymRepository.save(gym);
     }
 

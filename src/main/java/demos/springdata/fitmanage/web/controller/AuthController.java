@@ -57,6 +57,7 @@ public class AuthController {
     }
 
 
+    //TODO: implementing a `@ControllerAdvice` global exception handler.
     private static HttpStatus getHttpStatus(FitManageAppException e) {
         return switch(e.getStatusCode()) {
             case 400 -> HttpStatus.BAD_REQUEST;
