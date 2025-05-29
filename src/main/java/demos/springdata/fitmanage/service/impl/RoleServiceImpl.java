@@ -2,6 +2,8 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.RoleRepository;
 import demos.springdata.fitmanage.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role findByName(RoleType name) {
         return roleRepository.findByName(name)
-                .orElseThrow(() -> new IllegalArgumentException("Role with name " + name + " not found"));
+                .orElseThrow(() -> new FitManageAppException("Role with name " + name + " not found", ApiErrorCode.NOT_FOUND));
     }
 
     @Override
