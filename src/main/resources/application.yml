@@ -22,11 +22,13 @@ spring:
     show-sql: 'true'
   profiles:
     include: secrets
+    group:
+      railway: railway,secrets
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: ${DB_PASSWORD:password}
-    username: ${DB_USERNAME:root}
     url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:mydb}?${DB_PARAMS:createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:password}
   application:
     name: FitManage
   servlet:
