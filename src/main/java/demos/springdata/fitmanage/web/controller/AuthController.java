@@ -2,11 +2,10 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.service.AuthenticationService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> register(@RequestBody GymRegistrationRequestDto gymDto) {
+    public ResponseEntity<?> register(@Valid @RequestBody GymRegistrationRequestDto gymDto) {
         try {
             authenticationService.registerGym(gymDto);
 
@@ -37,24 +36,33 @@ public class AuthController {
         } catch(FitManageAppException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
-
-            return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(201));
-
+            HttpStatus status = getHttpStatus(e);
+            return new ResponseEntity<>(errorResponse, status);
         }
     }
 
-
     @PostMapping(path = "/login")
-    public ResponseEntity<?> login(@RequestBody GymLoginRequestDto loginRequestDto) {
+    public ResponseEntity<?> login(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
         try {
             authenticationService.loginGym(loginRequestDto);
             Map<String, String> response = new HashMap<>();
             response.put("message", "Successfully logged.");
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (FitManageAppException e) {
             Map<String, String> errorResponse = new HashMap<>();
             errorResponse.put("error", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatusCode.valueOf(201));
+            HttpStatus status = getHttpStatus(e);
+            return new ResponseEntity<>(errorResponse, status);
         }
+    }
+
+
+    private static HttpStatus getHttpStatus(FitManageAppException e) {
+        return switch(e.getStatusCode()) {
+            case 400 -> HttpStatus.BAD_REQUEST;
+            case 404 -> HttpStatus.NOT_FOUND;
+            case 409 -> HttpStatus.CONFLICT;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
     }
 }
