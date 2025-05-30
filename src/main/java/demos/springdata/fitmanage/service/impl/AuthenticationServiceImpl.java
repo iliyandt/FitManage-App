@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,11 +52,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new FitManageAppException("Email is already registered", ApiErrorCode.CONFLICT);
         }
 
+        if (!gymRegistrationDto.getPassword().equals(gymRegistrationDto.getConfirmPassword())) {
+            throw new FitManageAppException("Passwords do not match", ApiErrorCode.BAD_REQUEST);
+        }
+
         Gym gym = mapGym(gymRegistrationDto);
         encryptGymPassword(gym);
         gym.setCreatedAt(LocalDateTime.now());
 
-        // Assign GYM_ADMIN role by default
         Role gymAdminRole = roleService.findByName(RoleType.GYM_ADMIN);
         gym.getRoles().add(gymAdminRole);
 
@@ -70,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
 
         if (!matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
-            throw new FitManageAppException("Gym passwords do not match.", ApiErrorCode.BAD_REQUEST);
+            throw new FitManageAppException("Incorrect password!", ApiErrorCode.UNAUTHORIZED);
         }
     }
 

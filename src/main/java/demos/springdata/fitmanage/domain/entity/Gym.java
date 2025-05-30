@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,12 +15,15 @@ import java.util.Set;
 @Entity
 @Table(name = "gyms")
 public class Gym extends BaseEntity {
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
+    @Column(nullable = false, unique = true)
     private String email;
+    @Column(unique = true)
     private String phone;
     private String address;
 
+    @Column(nullable = false)
     @Size(min = 8, message = "Password must be at least 8 characters")
     @NotBlank(message = "Password is required")
     private String password;
@@ -47,8 +51,25 @@ public class Gym extends BaseEntity {
     private List<GymMember> gymMembers;
 
     public Gym() {
+        this.roles = new HashSet<>();
+        this.gymMembers = new ArrayList<>();
     }
 
+    public Gym(String name, String email, String phone, String address, String password, String city, Set<Role> roles, LocalDate subscriptionValidUntil, LocalDateTime createdAt, int membersCount, List<GymMember> gymMembers) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.password = password;
+        this.city = city;
+        this.roles = (roles != null) ? roles : new HashSet<>();
+        this.subscriptionValidUntil = subscriptionValidUntil;
+        this.createdAt = createdAt;
+        this.membersCount = membersCount;
+        this.gymMembers = (gymMembers != null) ? gymMembers : new ArrayList<>();
+    }
+
+    @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.membersCount <= 0) {
@@ -106,7 +127,14 @@ public class Gym extends BaseEntity {
     }
 
     public Set<Role> getRoles() {
-        return roles;
+        if (this.roles == null) {
+            this.roles = new HashSet<>();
+        }
+        return this.roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = (roles != null) ? roles : new HashSet<>();
     }
 
     public LocalDate getSubscriptionValidUntil() {

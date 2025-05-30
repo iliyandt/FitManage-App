@@ -17,13 +17,17 @@ public class GymRegistrationRequestDto {
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
+    @NotBlank(message = "Confirm password should match password.")
+    private String confirmPassword;
+
     public GymRegistrationRequestDto() {
     }
 
-    public GymRegistrationRequestDto(String name, String email, String password) {
+    public GymRegistrationRequestDto(String name, String email, String password, String confirmPassword) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.confirmPassword = confirmPassword;
     }
 
     public String getName() {
@@ -48,5 +52,13 @@ public class GymRegistrationRequestDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
     }
 }

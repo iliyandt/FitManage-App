@@ -4,7 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class GymLoginRequestDto {
+    @NotNull
+    @NotBlank(message = "Please enter valid email")
     private String email;
+
+    @NotNull
+    @NotBlank(message = "Please enter valid email")
     private String password;
 
     public GymLoginRequestDto(String email, String password) {
@@ -12,8 +17,6 @@ public class GymLoginRequestDto {
         this.password = password;
     }
 
-    @NotNull
-    @NotBlank(message = "Please enter valid email")
     public String getEmail() {
         return email;
     }
@@ -22,8 +25,6 @@ public class GymLoginRequestDto {
         this.email = email;
     }
 
-    @NotNull
-    @NotBlank(message = "Please enter valid email")
     public String getPassword() {
         return password;
     }
