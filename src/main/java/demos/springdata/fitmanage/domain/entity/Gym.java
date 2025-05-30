@@ -51,22 +51,6 @@ public class Gym extends BaseEntity {
     private List<GymMember> gymMembers;
 
     public Gym() {
-        this.roles = new HashSet<>();
-        this.gymMembers = new ArrayList<>();
-    }
-
-    public Gym(String name, String email, String phone, String address, String password, String city, Set<Role> roles, LocalDate subscriptionValidUntil, LocalDateTime createdAt, int membersCount, List<GymMember> gymMembers) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-        this.password = password;
-        this.city = city;
-        this.roles = (roles != null) ? roles : new HashSet<>();
-        this.subscriptionValidUntil = subscriptionValidUntil;
-        this.createdAt = createdAt;
-        this.membersCount = membersCount;
-        this.gymMembers = (gymMembers != null) ? gymMembers : new ArrayList<>();
     }
 
     @PrePersist
@@ -127,14 +111,11 @@ public class Gym extends BaseEntity {
     }
 
     public Set<Role> getRoles() {
-        if (this.roles == null) {
-            this.roles = new HashSet<>();
-        }
-        return this.roles;
+        return roles;
     }
 
     public void setRoles(Set<Role> roles) {
-        this.roles = (roles != null) ? roles : new HashSet<>();
+        this.roles = roles;
     }
 
     public LocalDate getSubscriptionValidUntil() {

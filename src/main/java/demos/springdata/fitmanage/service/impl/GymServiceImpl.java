@@ -29,5 +29,6 @@ public class GymServiceImpl implements GymService {
                 .stream()
                 .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
                 .toList();
+
     }
 }

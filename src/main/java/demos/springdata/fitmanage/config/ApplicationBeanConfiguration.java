@@ -8,8 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -25,16 +23,7 @@ public class ApplicationBeanConfiguration {
 
     private void configureGymMapper(ModelMapper modelMapper) {
         modelMapper.typeMap(Gym.class, GymAdminResponseDto.class)
-                .addMappings(mapping -> {
-                    mapping.map(src -> src.getRoles() != null ? src.getRoles().stream()
-                            .map(role -> role.getName().name())
-                            .collect(Collectors.toSet()) : Collections.emptySet(),
-                            GymAdminResponseDto::setRoles);
-
-                    mapping.map(src -> src.getSubscriptionValidUntil() != null &&
-                                    src.getSubscriptionValidUntil().isAfter(LocalDate.now()),
-                            GymAdminResponseDto::setSubscriptionActive);
-                });
+                .addMapping(Gym::getRoles, GymAdminResponseDto::setRoles);
     }
 
     @Bean

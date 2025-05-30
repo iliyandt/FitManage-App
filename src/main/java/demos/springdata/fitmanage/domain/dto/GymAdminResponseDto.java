@@ -1,7 +1,10 @@
 package demos.springdata.fitmanage.domain.dto;
 
+import demos.springdata.fitmanage.domain.entity.Role;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 public class GymAdminResponseDto {
@@ -11,7 +14,7 @@ public class GymAdminResponseDto {
     private String phone;
     private String address;
     private String city;
-    private Set<String> roles; // Role names as strings
+    private Set<RoleDto> roles = new HashSet<>();
     private LocalDate subscriptionValidUntil;
     private LocalDateTime createdAt;
     private int membersCount;
@@ -21,7 +24,7 @@ public class GymAdminResponseDto {
     public GymAdminResponseDto() {
     }
 
-    public GymAdminResponseDto(Long id, String name, String email, String phone, String address, String city, Set<String> roles, LocalDate subscriptionValidUntil, LocalDateTime createdAt, int membersCount, boolean isSubscriptionActive) {
+    public GymAdminResponseDto(Long id, String name, String email, String phone, String address, String city, Set<RoleDto> roles, LocalDate subscriptionValidUntil, LocalDateTime createdAt, int membersCount, boolean isSubscriptionActive) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -83,11 +86,11 @@ public class GymAdminResponseDto {
         this.city = city;
     }
 
-    public Set<String> getRoles() {
+    public Set<RoleDto> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<String> roles) {
+    public void setRoles(Set<RoleDto> roles) {
         this.roles = roles;
     }
 
