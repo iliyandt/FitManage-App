@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.GymEmailRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
@@ -67,13 +68,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void loginGym(GymLoginRequestDto gymLoginRequestDto) {
-        validateDto(gymLoginRequestDto);
+    public void validateEmail(GymEmailRequestDto gymEmailRequestDto) {
+        validateDto(gymEmailRequestDto);
+        this.gymRepository.findByEmail(gymEmailRequestDto.getEmail()).orElseThrow(() ->
+                new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
+    }
 
+    @Override
+    public void validatePassword(GymLoginRequestDto gymLoginRequestDto) {
+        validateDto(gymLoginRequestDto);
         Gym gym = this.gymRepository.findByEmail(gymLoginRequestDto.getEmail()).orElseThrow(() ->
                 new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
 
-        if (!matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
+        if (!gymLoginRequestDto.getPassword().isEmpty() || !matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
             throw new FitManageAppException("Incorrect password!", ApiErrorCode.UNAUTHORIZED);
         }
     }

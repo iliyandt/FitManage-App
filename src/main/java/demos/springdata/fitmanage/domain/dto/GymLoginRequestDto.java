@@ -8,9 +8,12 @@ public class GymLoginRequestDto {
     @NotBlank(message = "Please enter valid email")
     private String email;
 
-    @NotNull
-    @NotBlank(message = "Please enter valid email")
+    @NotBlank(message = "Please enter valid password.")
     private String password;
+
+    public GymLoginRequestDto(String email) {
+        this.email = email;
+    }
 
     public GymLoginRequestDto(String email, String password) {
         this.email = email;

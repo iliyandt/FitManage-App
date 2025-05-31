@@ -1,7 +1,5 @@
 package demos.springdata.fitmanage.domain.dto;
 
-import demos.springdata.fitmanage.domain.entity.Role;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;

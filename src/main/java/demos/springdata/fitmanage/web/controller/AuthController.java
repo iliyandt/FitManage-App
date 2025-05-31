@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
+import demos.springdata.fitmanage.domain.dto.GymEmailRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.service.AuthenticationService;
@@ -28,11 +29,22 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PostMapping(path = "/login")
-    public ResponseEntity<?> login(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
-        authenticationService.loginGym(loginRequestDto);
+    @PostMapping(path = "/validate-email")
+    public ResponseEntity<?> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
+        authenticationService.validateEmail(gymEmailRequestDto);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email is valid.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(path = "//validate-password")
+    public ResponseEntity<?> validatePassword(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
+        authenticationService.validatePassword(loginRequestDto);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully logged.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+
 }
