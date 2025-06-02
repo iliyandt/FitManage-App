@@ -181,7 +181,7 @@ public class Gym extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.enabled;
+        return enabled;
     }
 
     @Override
