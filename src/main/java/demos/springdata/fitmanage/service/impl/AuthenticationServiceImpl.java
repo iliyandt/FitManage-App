@@ -75,12 +75,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void validatePassword(GymLoginRequestDto gymLoginRequestDto) {
+    public void validateEmailAndPassword(GymLoginRequestDto gymLoginRequestDto) {
         validateDto(gymLoginRequestDto);
         Gym gym = this.gymRepository.findByEmail(gymLoginRequestDto.getEmail()).orElseThrow(() ->
                 new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
 
-        if (!gymLoginRequestDto.getPassword().isEmpty() || !matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
+        if (!matchGymPassword(gymLoginRequestDto.getPassword(), gym.getPassword())) {
             throw new FitManageAppException("Incorrect password!", ApiErrorCode.UNAUTHORIZED);
         }
     }

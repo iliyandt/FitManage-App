@@ -7,7 +7,7 @@ import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
 
 public interface AuthenticationService {
     void registerGym(GymRegistrationRequestDto gymRegistrationRequestDto);
-    void validateEmail(GymEmailRequestDto gymEmailRequestDto);
-    void validatePassword(GymLoginRequestDto gymLoginRequestDto);
+    void validateEmail(GymEmailRequestDto gymEmailRequestDt);
+    void validateEmailAndPassword(GymLoginRequestDto gymLoginRequestDto);
 
 }

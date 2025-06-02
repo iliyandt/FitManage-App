@@ -37,9 +37,9 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(path = "//validate-password")
+    @PostMapping(path = "/validate-password")
     public ResponseEntity<?> validatePassword(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
-        authenticationService.validatePassword(loginRequestDto);
+        authenticationService.validateEmailAndPassword(loginRequestDto);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Successfully logged.");
         return new ResponseEntity<>(response, HttpStatus.OK);
