@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto;
+package demos.springdata.fitmanage.domain.dto.authenticationDto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 public class GymRegistrationRequestDto {
     @NotBlank(message = "Name is required")
     @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
-    private String name;
+    private String username;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
@@ -23,19 +23,19 @@ public class GymRegistrationRequestDto {
     public GymRegistrationRequestDto() {
     }
 
-    public GymRegistrationRequestDto(String name, String email, String password, String confirmPassword) {
-        this.name = name;
+    public GymRegistrationRequestDto(String username, String email, String password, String confirmPassword) {
+        this.username = username;
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface GymRepository extends JpaRepository<Gym, Long> {
-    Optional<Gym> findByName(String name);
+    Optional<Gym> findByUsername(String username);
 
     Optional<Gym> findByEmail(String email);
 

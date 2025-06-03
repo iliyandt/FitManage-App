@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,7 +14,7 @@ import java.util.*;
 @Table(name = "gyms")
 public class Gym extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
-    private String name;
+    private String username;
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -27,7 +26,7 @@ public class Gym extends BaseEntity implements UserDetails {
     @Column(name = "verification_code")
     private String verificationCode;
     @Column(name = "verification_expiration")
-    private LocalDate verificationCodeExpiresAt;
+    private LocalDateTime verificationCodeExpiresAt;
     private boolean enabled;
     @Column(unique = true)
     private String phone;
@@ -52,8 +51,8 @@ public class Gym extends BaseEntity implements UserDetails {
     private List<GymMember> gymMembers;
 
 
-    public Gym(String name, String email, String password) {
-        this.name = name;
+    public Gym(String username, String email, String password) {
+        this.username = username;
         this.email = email;
         this.password = password;
     }
@@ -70,12 +69,13 @@ public class Gym extends BaseEntity implements UserDetails {
     }
 
 
-    public String getName() {
-        return name;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String name) {
+        this.username = name;
     }
 
     public String getEmail() {
@@ -158,6 +158,25 @@ public class Gym extends BaseEntity implements UserDetails {
         this.gymMembers = gymMembers;
     }
 
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+    }
+
+    public LocalDateTime getVerificationCodeExpiresAt() {
+        return verificationCodeExpiresAt;
+    }
+
+    public void setVerificationCodeExpiresAt(LocalDateTime verificationCodeExpiresAt) {
+        this.verificationCodeExpiresAt = verificationCodeExpiresAt;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -182,10 +201,5 @@ public class Gym extends BaseEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
-    }
-
-    @Override
-    public String getUsername() {
-        return "";
     }
 }

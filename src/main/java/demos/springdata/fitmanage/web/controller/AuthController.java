@@ -1,10 +1,15 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.GymLoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.GymLoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
+import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.responses.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
+import demos.springdata.fitmanage.service.JwtService;
 import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,18 +20,18 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "/api/v1/auth")
 public class AuthController {
+    private final JwtService jwtService;
     private final AuthenticationService authenticationService;
 
-    public AuthController(AuthenticationService authenticationService) {
+    public AuthController(JwtService jwtService, AuthenticationService authenticationService) {
+        this.jwtService = jwtService;
         this.authenticationService = authenticationService;
     }
 
     @PostMapping(path = "/register")
     public ResponseEntity<?> register(@Valid @RequestBody GymRegistrationRequestDto gymDto) {
-        authenticationService.registerGym(gymDto);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Gym registered successfully");
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        Gym registeredGym= authenticationService.registerGym(gymDto);
+        return ResponseEntity.ok(registeredGym);
     }
 
     @PostMapping(path = "/validate-email")
@@ -37,12 +42,32 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping(path = "/validate-password")
-    public ResponseEntity<?> validatePassword(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
-        authenticationService.validateEmailAndPassword(loginRequestDto);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Successfully logged.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PostMapping(path = "/login")
+    public ResponseEntity<LoginResponse> authenticate(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
+        Gym authenticatedGym = authenticationService.authenticate(loginRequestDto);
+        String jwtToken = jwtService.generateToken(authenticatedGym);
+        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<?> verifyUser(@RequestBody VerifyGymDto verifyGymDto) {
+        try {
+            authenticationService.verifyUser(verifyGymDto);
+            return ResponseEntity.ok("Account verified successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/resend")
+    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+        try {
+            authenticationService.resendVerificationCode(email);
+            return ResponseEntity.ok("Verification code sent");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
