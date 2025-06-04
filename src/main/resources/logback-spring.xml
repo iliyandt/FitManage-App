@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <property name="LOG_FILE" value="/Users/iliyan98/logs/fitmanage.log"/>
+    <property name="LOG_FILE" value=""/>
 
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
