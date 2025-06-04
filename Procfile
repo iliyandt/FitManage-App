@@ -1,1 +1,1 @@
-web: java -Dserver.port=$PORT -jar target/FitManage-0.0.1-SNAPSHOT.jar
+web: java -jar target/FitManage-0.0.1-SNAPSHOT.jar
