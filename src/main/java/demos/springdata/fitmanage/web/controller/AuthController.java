@@ -9,7 +9,8 @@ import demos.springdata.fitmanage.responses.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.JwtService;
 import jakarta.validation.Valid;
-import org.apache.catalina.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class AuthController {
     private final JwtService jwtService;
     private final AuthenticationService authenticationService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     public AuthController(JwtService jwtService, AuthenticationService authenticationService) {
         this.jwtService = jwtService;
@@ -30,7 +32,9 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<?> register(@Valid @RequestBody GymRegistrationRequestDto gymDto) {
+        LOGGER.info("Registration request received for username: {}", gymDto.getUsername());
         Gym registeredGym= authenticationService.registerGym(gymDto);
+        LOGGER.info("Registration successful for username: {}", gymDto.getUsername());
         return ResponseEntity.ok(registeredGym);
     }
 

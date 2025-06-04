@@ -1,11 +1,14 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ public class JwtServiceImpl implements JwtService {
     private String secretKey;
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
+    private final static Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
     @Override
     public String extractUsername(String token) {
@@ -34,12 +38,17 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSignInKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (FitManageAppException e) {
+            LOGGER.error("Error parsing JWT token", e);
+            throw e;
+        }
 
     }
 
@@ -50,6 +59,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDetails userDetails) {
+        LOGGER.info("JWT token generated for user: {}", userDetails.getUsername());
         return generateToken(new HashMap<>(), userDetails);
     }
 
@@ -75,6 +85,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
+        LOGGER.debug("Validating token for user: {}", userDetails.getUsername());
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }

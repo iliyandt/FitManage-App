@@ -5,6 +5,8 @@ import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ public class GymServiceImpl implements GymService {
 
     private final GymRepository gymRepository;
     private final ModelMapper modelMapper;
+    private final static Logger LOGGER = LoggerFactory.getLogger(GymServiceImpl.class);
 
     @Autowired
     public GymServiceImpl(GymRepository gymRepository, ModelMapper modelMapper) {
@@ -25,10 +28,10 @@ public class GymServiceImpl implements GymService {
     @Transactional
     @Override
     public List<GymAdminResponseDto> getAllGyms() {
+        LOGGER.info("Retrieving all gyms");
         return this.gymRepository.findAll()
                 .stream()
                 .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
                 .toList();
-
     }
 }

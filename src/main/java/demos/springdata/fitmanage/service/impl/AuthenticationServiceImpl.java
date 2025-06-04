@@ -17,6 +17,8 @@ import demos.springdata.fitmanage.util.ValidationUtil;
 import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolation;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
 
     @Autowired
@@ -57,14 +60,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         validateDto(gymRegistrationDto);
 
         if (gymRepository.findByUsername(gymRegistrationDto.getUsername()).isPresent()) {
+            LOGGER.error("Username {} already exists", gymRegistrationDto.getUsername());
             throw new FitManageAppException("Gym with this name already exists", ApiErrorCode.CONFLICT);
         }
 
         if (gymRepository.findByEmail(gymRegistrationDto.getEmail()).isPresent()) {
+            LOGGER.error("Account with email {} already exists", gymRegistrationDto.getEmail());
             throw new FitManageAppException("Email is already registered", ApiErrorCode.CONFLICT);
         }
 
         if (!gymRegistrationDto.getPassword().equals(gymRegistrationDto.getConfirmPassword())) {
+            LOGGER.error("Account with email {} already exists", gymRegistrationDto.getEmail());
             throw new FitManageAppException("Passwords do not match", ApiErrorCode.BAD_REQUEST);
         }
 
@@ -81,7 +87,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         sendVerificationEmail(gym);
 
         gymRepository.save(gym);
-
         return gym;
     }
 
@@ -95,38 +100,56 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Gym authenticate(GymLoginRequestDto gymLoginRequestDto) {
         validateDto(gymLoginRequestDto);
+
         Gym gym = this.gymRepository.findByEmail(gymLoginRequestDto.getEmail()).orElseThrow(() ->
                 new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
 
         if (!gym.isEnabled()) {
             throw new RuntimeException("Account not verified. Please verify your account");
         }
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        gymLoginRequestDto.getEmail(),
-                        gymLoginRequestDto.getPassword()
-                )
-        );
+
+        try {
+            LOGGER.info("Authentication attempt for user: {}", gymLoginRequestDto.getEmail());
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            gymLoginRequestDto.getEmail(),
+                            gymLoginRequestDto.getPassword()
+                    )
+            );
+        } catch (FitManageAppException exception) {
+            LOGGER.error("Authentication failed for user: {}", gymLoginRequestDto.getEmail(), exception);
+        }
+
+
+        LOGGER.info("User successfully authenticated: {}", gym.getEmail());
 
         return gym;
     }
 
     public void verifyUser(VerifyGymDto verifyGymDto) {
+        LOGGER.info("Verification attempt for user: {}", verifyGymDto.getEmail());
+
         Optional<Gym> optionalGym = gymRepository.findByEmail(verifyGymDto.getEmail());
         if (optionalGym.isPresent()) {
             Gym gym = optionalGym.get();
+
             if (gym.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
                 throw new RuntimeException("Verification code has expired");
             }
+
+
             if (gym.getVerificationCode().equals(verifyGymDto.getVerificationCode())) {
                 gym.setEnabled(true);
                 gym.setVerificationCode(null);
                 gym.setVerificationCodeExpiresAt(null);
                 gymRepository.save(gym);
+                LOGGER.info("User successfully verified: {}", gym.getEmail());
             } else {
+                LOGGER.error("Verification failed: Invalid verification code");
                 throw new RuntimeException("Invalid verification code");
             }
         } else {
+            LOGGER.error("Verification failed: User not found");
             throw new RuntimeException("User not found");
         }
     }
@@ -136,9 +159,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Optional<Gym> optionalUser = gymRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
             Gym gym = optionalUser.get();
+
             if (gym.isEnabled()) {
                 throw new RuntimeException("Account is already verified");
             }
+
+            LOGGER.info("Resending verification code to: {}", email);
+
             gym.setVerificationCode(generateVerificationCode());
             gym.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
             sendVerificationEmail(gym);
@@ -165,8 +192,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 + "</html>";
 
         try {
+            LOGGER.info("Sending verification email to: {}", gym.getEmail());
             emailService.sendVerificationEmail(gym.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
+            LOGGER.error("Failed to send verification email to: {}", gym.getEmail(), e);
             // Handle email sending exception
             e.printStackTrace();
         }
