@@ -1,0 +1,1 @@
+web: java -jar target/FitManage-0.0.1-SNAPSHOT.jar
