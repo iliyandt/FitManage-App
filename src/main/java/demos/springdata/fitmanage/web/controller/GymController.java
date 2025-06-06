@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
+import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.service.GymService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,14 +23,14 @@ public class GymController {
 
 
     @GetMapping("/me")
-    public ResponseEntity<GymAdminResponseDto> authenticatedGym() {
+    public ResponseEntity<Gym> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
 
         System.out.println("Principal class: " + principal.getClass().getName());
         System.out.println("Principal: " + principal.toString());
 
-        GymAdminResponseDto currentGym = (GymAdminResponseDto) authentication.getPrincipal();
+        Gym currentGym = (Gym) authentication.getPrincipal();
         return ResponseEntity.ok(currentGym);
     }
 
