@@ -22,14 +22,10 @@ public class GymController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Gym> authenticatedGym() {
+    public ResponseEntity<GymAdminResponseDto> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         Object principal = authentication.getPrincipal();
-
-        System.out.println("Principal class: " + principal.getClass().getName());
-        System.out.println("Principal: " + principal.toString());
-
-        Gym currentGym = (Gym) authentication.getPrincipal();
+        GymAdminResponseDto currentGym = (GymAdminResponseDto) authentication.getPrincipal();
         return ResponseEntity.ok(currentGym);
     }
 

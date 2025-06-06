@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface GymService {
     List<GymAdminResponseDto> getAllGyms();
+    GymAdminResponseDto getGymByEmail(String email);
 }

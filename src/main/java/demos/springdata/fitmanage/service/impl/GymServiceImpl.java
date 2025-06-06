@@ -1,6 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymService;
 import jakarta.transaction.Transactional;
@@ -34,4 +36,13 @@ public class GymServiceImpl implements GymService {
                 .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
                 .toList();
     }
+
+    @Override
+    public GymAdminResponseDto getGymByEmail(String email) {
+        return this.gymRepository.findByEmail(email)
+                .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
+                .orElseThrow(() -> new FitManageAppException("Gym not found.", ApiErrorCode.NOT_FOUND));
+    }
+
+
 }

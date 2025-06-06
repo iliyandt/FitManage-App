@@ -12,6 +12,5 @@ public interface GymRepository extends JpaRepository<Gym, Long> {
     Optional<Gym> findByUsername(String username);
 
     Optional<Gym> findByEmail(String email);
-
     Optional<Gym> findByVerificationCode(String verificationCode);
 }
