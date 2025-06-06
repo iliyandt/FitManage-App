@@ -74,6 +74,10 @@ public class Gym extends BaseEntity implements UserDetails {
         return email;
     }
 
+    public String getName() {
+        return this.username;
+    }
+
     public void setUsername(String name) {
         this.username = name;
     }
