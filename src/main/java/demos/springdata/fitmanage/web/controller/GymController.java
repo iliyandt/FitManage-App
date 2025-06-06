@@ -24,8 +24,9 @@ public class GymController {
     @GetMapping("/me")
     public ResponseEntity<GymAdminResponseDto> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        GymAdminResponseDto currentGym = (GymAdminResponseDto) authentication.getPrincipal();
+        String currentGymEmail = authentication.getName();
+        System.out.println("Current authenticated email: " + currentGymEmail);
+        GymAdminResponseDto currentGym = gymService.getGymByEmail(currentGymEmail);
         return ResponseEntity.ok(currentGym);
     }
 
