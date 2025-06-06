@@ -21,7 +21,6 @@ public class GymController {
         this.gymService = gymService;
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<Gym> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
