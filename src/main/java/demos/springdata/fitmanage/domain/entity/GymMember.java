@@ -1,8 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;

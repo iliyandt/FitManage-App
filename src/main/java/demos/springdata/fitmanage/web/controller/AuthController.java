@@ -5,8 +5,6 @@ import demos.springdata.fitmanage.domain.dto.authenticationDto.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.responses.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.JwtService;

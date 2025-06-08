@@ -1,5 +1,4 @@
 package demos.springdata.fitmanage.repository;
-
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
