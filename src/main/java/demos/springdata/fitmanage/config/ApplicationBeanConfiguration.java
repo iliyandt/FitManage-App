@@ -3,9 +3,9 @@ package demos.springdata.fitmanage.config;
 import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.repository.GymRepository;
+import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.util.ValidationUtil;
 import demos.springdata.fitmanage.util.ValidationUtilImpl;
-import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class ApplicationBeanConfiguration {
     private final GymRepository gymRepository;
+
 
     public ApplicationBeanConfiguration(GymRepository gymRepository) {
         this.gymRepository = gymRepository;
@@ -48,21 +49,15 @@ public class ApplicationBeanConfiguration {
     }
 
     @Bean
-    UserDetailsService userDetailsService() {
-        return username -> gymRepository.findByEmail(username)
-                .orElseThrow(() -> new EntityNotFoundException("Gym not found."));
-    }
-
-    @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
         return config.getAuthenticationManager();
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider() {
+    AuthenticationProvider authenticationProvider(CustomUserDetailsService customUserDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(bCryptPasswordEncoder());
 
         return authProvider;

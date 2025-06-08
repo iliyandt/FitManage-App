@@ -30,11 +30,4 @@ public class GymController {
         GymAdminResponseDto currentGym = gymService.getGymByEmail(currentGymEmail);
         return ResponseEntity.ok(currentGym);
     }
-
-
-    @GetMapping("/all")
-    public ResponseEntity<List<GymAdminResponseDto>> getAllGyms() {
-        List<GymAdminResponseDto> allGyms = gymService.getAllGyms();
-        return ResponseEntity.ok(allGyms);
-    }
 }
