@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.SuperAdminDto;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
+import demos.springdata.fitmanage.service.EmailService;
 import demos.springdata.fitmanage.service.SuperAdminService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
 
     private final SuperAdminRepository superAdminRepository;
     private final ModelMapper modelMapper;
+
 
     @Autowired
     public SuperAdminServiceImpl(SuperAdminRepository superAdminRepository, ModelMapper modelMapper) {

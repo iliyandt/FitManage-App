@@ -3,7 +3,7 @@ package demos.springdata.fitmanage.domain.dto.authenticationDto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class GymLoginRequestDto {
+public class LoginRequestDto {
     @NotNull
     @NotBlank(message = "Please enter valid email")
     private String email;
@@ -11,11 +11,11 @@ public class GymLoginRequestDto {
     @NotBlank(message = "Please enter valid password.")
     private String password;
 
-    public GymLoginRequestDto() {
+    public LoginRequestDto() {
     }
 
 
-    public GymLoginRequestDto(String email, String password) {
+    public LoginRequestDto(String email, String password) {
         this.email = email;
         this.password = password;
     }

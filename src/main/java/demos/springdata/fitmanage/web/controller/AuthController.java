@@ -1,10 +1,12 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.authenticationDto.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymLoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.responses.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.JwtService;
@@ -13,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -47,9 +50,10 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public ResponseEntity<LoginResponse> authenticate(@Valid @RequestBody GymLoginRequestDto loginRequestDto) {
-        Gym authenticatedGym = authenticationService.authenticate(loginRequestDto);
-        String jwtToken = jwtService.generateToken(authenticatedGym);
+    public ResponseEntity<LoginResponse> authenticate(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+        UserDetails authenticatedUser = authenticationService.authenticate(loginRequestDto);
+
+        String jwtToken = jwtService.generateToken(authenticatedUser);
         LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
         return ResponseEntity.ok(loginResponse);
     }

@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.authenticationDto.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymLoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.authenticationDto.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
@@ -11,6 +11,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.AuthenticationService;
+import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.EmailService;
 import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.util.ValidationUtil;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,11 +42,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final CustomUserDetailsService customUserDetailsService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
 
     @Autowired
-    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, ValidationUtil validationUtil, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService) {
+    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, ValidationUtil validationUtil, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService) {
         this.gymRepository = gymRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -52,6 +55,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     @Override
@@ -98,32 +102,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Gym authenticate(GymLoginRequestDto gymLoginRequestDto) {
-        validateDto(gymLoginRequestDto);
+    public UserDetails authenticate(LoginRequestDto loginRequestDto) {
+        validateDto(loginRequestDto);
 
-        Gym gym = this.gymRepository.findByEmail(gymLoginRequestDto.getEmail()).orElseThrow(() ->
-                new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
+        UserDetails user = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
 
-        if (!gym.isEnabled()) {
-            throw new RuntimeException("Account not verified. Please verify your account");
+        if (user instanceof Gym) {
+            Gym gym = (Gym) user;
+            if (!gym.isEnabled()) {
+                throw new RuntimeException("Account not verified. Please verify your account");
+            }
         }
 
         try {
-            LOGGER.info("Authentication attempt for user: {}", gymLoginRequestDto.getEmail());
+            LOGGER.info("Authentication attempt for user: {}", loginRequestDto.getEmail());
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            gymLoginRequestDto.getEmail(),
-                            gymLoginRequestDto.getPassword()
+                            loginRequestDto.getEmail(),
+                            loginRequestDto.getPassword()
                     )
             );
         } catch (FitManageAppException exception) {
-            LOGGER.error("Authentication failed for user: {}", gymLoginRequestDto.getEmail(), exception);
+            LOGGER.error("Authentication failed for user: {}", loginRequestDto.getEmail(), exception);
         }
 
 
-        LOGGER.info("User successfully authenticated: {}", gym.getEmail());
+        LOGGER.info("User successfully authenticated: {}", user.getUsername());
 
-        return gym;
+        return user;
     }
 
     public void verifyUser(VerifyGymDto verifyGymDto) {
