@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.service.GymService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,6 @@ public class GymController {
     public ResponseEntity<GymAdminResponseDto> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentGymEmail = authentication.getName();
-
-        LOGGER.debug("Current authenticated email: {}", currentGymEmail);
 
         GymAdminResponseDto currentGym = gymService.getGymByEmail(currentGymEmail);
         return ResponseEntity.ok(currentGym);
