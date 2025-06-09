@@ -16,10 +16,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/gym")
-@PreAuthorize("hasRole('GYM_ADMIN')")
+@PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class GymController {
     private final GymService gymService;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymController.class);
+
     public GymController(GymService gymService) {
         this.gymService = gymService;
     }
@@ -27,8 +28,9 @@ public class GymController {
     @GetMapping("/me")
     public ResponseEntity<GymAdminResponseDto> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LOGGER.info("Account information requested for gym: {}", authentication.getName());
         String currentGymEmail = authentication.getName();
-
+        LOGGER.info("Account information for {} loaded successfully.", authentication.getName());
         GymAdminResponseDto currentGym = gymService.getGymByEmail(currentGymEmail);
         return ResponseEntity.ok(currentGym);
     }

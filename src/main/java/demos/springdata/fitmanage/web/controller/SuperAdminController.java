@@ -2,6 +2,8 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
 import demos.springdata.fitmanage.service.GymService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +14,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/super-admin")
-@PreAuthorize("hasRole('SUPER_ADMIN')")
+@PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
 public class SuperAdminController {
     private final GymService gymService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SuperAdminController.class);
 
     public SuperAdminController(GymService gymService) {
         this.gymService = gymService;
@@ -22,7 +25,9 @@ public class SuperAdminController {
 
     @GetMapping("/all")
     public ResponseEntity<List<GymAdminResponseDto>> getAllGyms() {
+        LOGGER.info("Information about all registered gyms requested");
         List<GymAdminResponseDto> allGyms = gymService.getAllGyms();
+        LOGGER.info("Information loaded successfully");
         return ResponseEntity.ok(allGyms);
     }
 }
