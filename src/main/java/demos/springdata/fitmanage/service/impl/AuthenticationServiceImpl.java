@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (!gymRegistrationDto.getPassword().equals(gymRegistrationDto.getConfirmPassword())) {
-            LOGGER.error("Account with email {} already exists", gymRegistrationDto.getEmail());
+            LOGGER.error("Passwords do not match.");
             throw new FitManageAppException("Passwords do not match", ApiErrorCode.BAD_REQUEST);
         }
 
@@ -107,8 +107,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         UserDetails user = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
 
-        if (user instanceof Gym) {
-            Gym gym = (Gym) user;
+        if (user instanceof Gym gym) {
             if (!gym.isEnabled()) {
                 throw new RuntimeException("Account not verified. Please verify your account");
             }
