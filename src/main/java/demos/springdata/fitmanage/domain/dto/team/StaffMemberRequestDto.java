@@ -8,7 +8,7 @@ public class StaffMemberRequestDto {
     private String position;
     private String email;
     private String phone;
-    private Gym gym;
+    private String gymUsername;
 
     public StaffMemberRequestDto() {
     }
@@ -53,11 +53,11 @@ public class StaffMemberRequestDto {
         this.phone = phone;
     }
 
-    public Gym getGym() {
-        return gym;
+    public String getGymUsername() {
+        return gymUsername;
     }
 
-    public void setGym(Gym gym) {
-        this.gym = gym;
+    public void setGym(String gymUsername) {
+        this.gymUsername = gymUsername;
     }
 }
