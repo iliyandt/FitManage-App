@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto;
+package demos.springdata.fitmanage.domain.dto.superadmin;
 
 public class SuperAdminDto {
     private String email;

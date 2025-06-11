@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
+import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
@@ -40,7 +40,7 @@ public class GymServiceImplTest {
 
         when(gymRepository.findAll()).thenReturn(List.of(gym1, gym2));
 
-        List<GymAdminResponseDto> responseDtoList = gymService.getAllGyms();
+        List<GymSummaryDto> responseDtoList = gymService.getAllGyms();
 
         assertEquals(2, responseDtoList.size());
         assertEquals("gym1@example.com", responseDtoList.get(0).getEmail());
@@ -53,7 +53,7 @@ public class GymServiceImplTest {
         gym.setEmail("gym@example.com");
         when(gymRepository.findByEmail("gym@example.com")).thenReturn(Optional.of(gym));
 
-        GymAdminResponseDto responseDto = gymService.getGymByEmail("gym@example.com");
+        GymSummaryDto responseDto = gymService.getGymByEmail("gym@example.com");
 
         assertNotNull(responseDto);
         assertEquals("gym@example.com", responseDto.getEmail());

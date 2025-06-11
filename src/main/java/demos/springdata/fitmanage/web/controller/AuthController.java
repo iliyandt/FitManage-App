@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
+import demos.springdata.fitmanage.domain.dto.auth.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.LoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.responses.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
@@ -57,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyUser(@RequestBody VerifyGymDto verifyGymDto) {
+    public ResponseEntity<?> verifyUser(@Valid @RequestBody VerifyGymDto verifyGymDto) {
         try {
             authenticationService.verifyUser(verifyGymDto);
             return ResponseEntity.ok("Account verified successfully");

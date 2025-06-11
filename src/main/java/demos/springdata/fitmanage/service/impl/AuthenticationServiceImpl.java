@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.GymRegistrationRequestDto;
-import demos.springdata.fitmanage.domain.dto.authenticationDto.VerifyGymDto;
+import demos.springdata.fitmanage.domain.dto.auth.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.LoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;

@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.SuperAdminDto;
+import demos.springdata.fitmanage.domain.dto.superadmin.SuperAdminDto;
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.impl.SuperAdminServiceImpl;

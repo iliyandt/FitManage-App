@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.authenticationDto;
+package demos.springdata.fitmanage.domain.dto.auth;
 
 public class VerifyGymDto {
     private String email;

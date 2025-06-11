@@ -1,6 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
+import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
+import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
+import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GymServiceImpl implements GymService {
@@ -29,20 +32,19 @@ public class GymServiceImpl implements GymService {
 
     @Transactional
     @Override
-    public List<GymAdminResponseDto> getAllGyms() {
+    public List<GymSummaryDto> getAllGyms() {
         LOGGER.info("Retrieving all gyms");
         return this.gymRepository.findAll()
                 .stream()
-                .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
+                .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class))
                 .toList();
     }
 
     @Override
-    public GymAdminResponseDto getGymByEmail(String email) {
+    public GymSummaryDto getGymByEmail(String email) {
         return this.gymRepository.findByEmail(email)
-                .map(gym -> this.modelMapper.map(gym, GymAdminResponseDto.class))
+                .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class))
                 .orElseThrow(() -> new FitManageAppException("Gym not found.", ApiErrorCode.NOT_FOUND));
     }
-
 
 }

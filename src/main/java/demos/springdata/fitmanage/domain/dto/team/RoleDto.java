@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto;
+package demos.springdata.fitmanage.domain.dto.team;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import demos.springdata.fitmanage.domain.enums.RoleType;

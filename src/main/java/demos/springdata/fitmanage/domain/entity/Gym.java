@@ -29,7 +29,7 @@ public class Gym extends BaseEntity implements UserDetails {
     private String verificationCode;
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
-    private boolean enabled;
+    private boolean enabled = true;
     @Column(unique = true)
     private String phone;
 
@@ -193,17 +193,17 @@ public class Gym extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override

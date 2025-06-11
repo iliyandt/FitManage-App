@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.config;
 
-import demos.springdata.fitmanage.domain.dto.GymAdminResponseDto;
+import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
@@ -33,8 +33,7 @@ public class ApplicationBeanConfiguration {
     }
 
     private void configureGymMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(Gym.class, GymAdminResponseDto.class)
-                .addMapping(Gym::getRoles, GymAdminResponseDto::setRoles);
+        modelMapper.typeMap(Gym.class, GymSummaryDto.class);
     }
 
     @Bean
