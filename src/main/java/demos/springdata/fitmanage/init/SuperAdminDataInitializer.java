@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.init;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.RoleService;
 import jakarta.annotation.PostConstruct;
@@ -36,13 +37,20 @@ public class SuperAdminDataInitializer {
     @PostConstruct
     public void init() {
         if (superAdminRepository.count() == 0) {
+            Role superAdminRole;
+            try {
+                superAdminRole = roleService.findByName(RoleType.SUPER_ADMIN);
+            } catch (FitManageAppException e) {
+                superAdminRole = new Role();
+                superAdminRole.setName(RoleType.SUPER_ADMIN);
+                superAdminRole = roleService.save(superAdminRole);
+            }
+
             SuperAdminUser superAdmin = new SuperAdminUser();
             superAdmin.setEmail(superAdminEmail);
             superAdmin.setUsername(superAdminUsername);
             superAdmin.setPassword(passwordEncoder.encode(superAdminPassword));
             superAdmin.setEnabled(true);
-
-            Role superAdminRole = roleService.findByName(RoleType.SUPER_ADMIN);
             superAdmin.getRoles().add(superAdminRole);
 
             superAdminRepository.save(superAdmin);

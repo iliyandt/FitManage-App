@@ -23,7 +23,6 @@ public class JwtServiceImpl implements JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
     @Value("${security.jwt.expiration-time}")
-    private long jwtExpiration;
     private final static Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
     @Override
@@ -65,23 +64,20 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        String token = buildToken(extraClaims, userDetails);
+        return token;
     }
 
-    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails, long jwtExpiration) {
+    private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000*60*2))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    @Override
-    public long getExpirationTime() {
-        return jwtExpiration;
-    }
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {

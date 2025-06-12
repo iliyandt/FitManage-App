@@ -1,8 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
@@ -13,9 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GymServiceImpl implements GymService {
@@ -46,5 +42,4 @@ public class GymServiceImpl implements GymService {
                 .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class))
                 .orElseThrow(() -> new FitManageAppException("Gym not found.", ApiErrorCode.NOT_FOUND));
     }
-
 }

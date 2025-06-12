@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.config;
 
+import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +11,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,14 +22,13 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final HandlerExceptionResolver handlerExceptionResolver;
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
     public JwtAuthenticationFilter
             (HandlerExceptionResolver handlerExceptionResolver,
              JwtService jwtService,
-             UserDetailsService userDetailsService
-            )
-    {
+             CustomUserDetailsService userDetailsService
+            ) {
         this.handlerExceptionResolver = handlerExceptionResolver;
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
@@ -40,8 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             (@NonNull HttpServletRequest request,
              @NonNull HttpServletResponse response,
              @NonNull FilterChain filterChain
-            ) throws ServletException, IOException
-    {
+            ) throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {

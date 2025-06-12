@@ -33,10 +33,14 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void initRoles() {
-        if (gymRoleRepository.count() == 0) {
-            for (RoleType roleType : RoleType.values()) {
-                createRole(roleType);
-            }
+        for (RoleType roleType : RoleType.values()) {
+            gymRoleRepository.findByName(roleType)
+                    .orElseGet(() -> gymRoleRepository.save(new Role(roleType)));
         }
+    }
+
+    @Override
+    public Role save(Role superAdminRole) {
+        return gymRoleRepository.save(superAdminRole);
     }
 }

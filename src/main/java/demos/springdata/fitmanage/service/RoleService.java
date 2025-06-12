@@ -7,4 +7,5 @@ public interface RoleService {
     Role findByName(RoleType name);
     void createRole(RoleType roleType);
     void initRoles();
+    Role save(Role superAdminRole);
 }
