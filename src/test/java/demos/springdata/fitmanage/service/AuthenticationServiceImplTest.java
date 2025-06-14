@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.auth.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.RegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
@@ -62,11 +62,11 @@ public class AuthenticationServiceImplTest {
     @InjectMocks
     private AuthenticationServiceImpl authenticationService;
 
-    private GymRegistrationRequestDto validGymRegistrationDto;
+    private RegistrationRequestDto validGymRegistrationDto;
 
     @BeforeEach
     void setup() {
-        validGymRegistrationDto = new GymRegistrationRequestDto();
+        validGymRegistrationDto = new RegistrationRequestDto();
         validGymRegistrationDto.setUsername("gym1");
         validGymRegistrationDto.setEmail("email@gym.com");
         validGymRegistrationDto.setPassword("pass123");

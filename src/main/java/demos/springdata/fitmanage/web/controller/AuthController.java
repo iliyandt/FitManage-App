@@ -39,11 +39,26 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> register(@Valid @RequestBody GymRegistrationRequestDto gymDto) {
-        LOGGER.info("Registration request received for username: {}", gymDto.getUsername());
-        Gym registeredGym = authenticationService.registerGym(gymDto);
-        LOGGER.info("Registration successful for username: {}", gymDto.getUsername());
-        return ResponseEntity.ok(registeredGym);
+    public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
+        if (!gymDto.isPasswordConfirmed()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", "Passwords do not match"));
+        }
+
+        try {
+            Gym registeredGym = authenticationService.registerGym(gymDto);
+            LOGGER.info("Registration successful for username: {}", gymDto.getUsername());
+            return ResponseEntity.ok(registeredGym);
+        } catch (FitManageAppException e) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Email is already taken"));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "An unexpected error occurred"));
+        }
     }
 
     @PostMapping("/verify")
@@ -51,8 +66,9 @@ public class AuthController {
         try {
             authenticationService.verifyUser(verifyGymDto);
             return ResponseEntity.ok("Account verified successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (FitManageAppException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("message", "Invalid code"));
         }
     }
 
@@ -69,10 +85,17 @@ public class AuthController {
 
     @PostMapping(path = "/validate-email")
     public ResponseEntity<?> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
-        authenticationService.validateEmail(gymEmailRequestDto);
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Email is valid.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            authenticationService.validateEmail(gymEmailRequestDto);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Email is valid.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (AuthenticationException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Account with this email does not exists."));
+        }
+
     }
 
     @PostMapping(path = "/login")
@@ -92,7 +115,7 @@ public class AuthController {
         } catch (AuthenticationException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("message", "Invalid email or password."));
+                    .body(Map.of("message", "Wrong password. Please double-check and try again."));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)

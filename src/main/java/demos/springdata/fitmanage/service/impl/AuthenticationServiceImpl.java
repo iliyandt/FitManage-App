@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.auth.GymEmailRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.GymRegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.RegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.VerifyGymDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.Role;
@@ -59,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Gym registerGym(GymRegistrationRequestDto gymRegistrationDto) {
+    public Gym registerGym(RegistrationRequestDto gymRegistrationDto) {
 
         validateDto(gymRegistrationDto);
 
