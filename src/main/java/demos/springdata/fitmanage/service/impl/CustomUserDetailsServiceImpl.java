@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-@Primary
 public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     private final SuperAdminRepository superAdminRepository;
     private final GymRepository gymRepository;

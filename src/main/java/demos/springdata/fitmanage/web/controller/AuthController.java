@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,15 +76,29 @@ public class AuthController {
     }
 
     @PostMapping(path = "/login")
-    public LoginResponse authenticate(@Valid @RequestBody LoginRequestDto loginRequestDto) {
-        UserDetails authenticatedUser = authenticationService.authenticate(loginRequestDto);
+    public ResponseEntity<?> authenticate(@Valid @RequestBody LoginRequestDto loginRequestDto) {
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getUsername());
+        try {
+            UserDetails authenticatedUser = authenticationService.authenticate(loginRequestDto);
 
-        return LoginResponse.builder()
-                .accessToken(jwtService.generateToken(authenticatedUser))
-                .refreshToken(refreshToken.getToken())
-                .build();
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getUsername());
+
+            LoginResponse response = LoginResponse.builder()
+                    .accessToken(jwtService.generateToken(authenticatedUser))
+                    .refreshToken(refreshToken.getToken())
+                    .build();
+
+            return ResponseEntity.ok(response);
+        } catch (AuthenticationException e) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Invalid email or password."));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "An unexpected error occurred."));
+        }
+
     }
 
 
