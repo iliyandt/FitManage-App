@@ -110,7 +110,6 @@ public class AuthController {
                     .accessToken(jwtService.generateToken(authenticatedUser))
                     .refreshToken(refreshToken.getToken())
                     .build();
-
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             return ResponseEntity

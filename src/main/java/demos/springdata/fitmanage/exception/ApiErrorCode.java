@@ -8,6 +8,7 @@ public enum ApiErrorCode {
     NOT_FOUND(HttpStatus.SC_NOT_FOUND),
     CONFLICT(HttpStatus.SC_CONFLICT),
     UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED),
+    OK(HttpStatus.SC_OK)
     ;
 
     private final int statusCode;

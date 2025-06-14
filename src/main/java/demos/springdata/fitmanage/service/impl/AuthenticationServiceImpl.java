@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -109,7 +110,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (user instanceof Gym gym) {
             if (!gym.isEnabled()) {
-                throw new RuntimeException("Account not verified. Please verify your account");
+                throw new FitManageAppException("Account not verified. Please verify your account", ApiErrorCode.OK);
             }
         }
 
@@ -121,8 +122,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                             loginRequestDto.getPassword()
                     )
             );
-        } catch (FitManageAppException exception) {
+        } catch (AuthenticationException exception) {
             LOGGER.error("Authentication failed for user: {}", loginRequestDto.getEmail(), exception);
+            throw exception;
         }
 
 
