@@ -90,7 +90,7 @@ public class AuthController {
             Map<String, String> response = new HashMap<>();
             response.put("message", "Email is valid.");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (AuthenticationException e) {
+        } catch (FitManageAppException e) {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(Map.of("message", "Account with this email does not exists."));
