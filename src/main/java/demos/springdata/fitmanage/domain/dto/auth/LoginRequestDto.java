@@ -10,6 +10,7 @@ public class LoginRequestDto {
 
     @NotBlank(message = "Please enter valid password.")
     private String password;
+    private boolean enabled;
 
     public LoginRequestDto() {
     }
@@ -34,5 +35,13 @@ public class LoginRequestDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

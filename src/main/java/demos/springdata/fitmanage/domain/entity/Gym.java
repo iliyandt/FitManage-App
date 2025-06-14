@@ -32,7 +32,6 @@ public class Gym extends BaseEntity implements UserDetails {
     private boolean enabled = true;
     @Column(unique = true)
     private String phone;
-
     private String address;
     private String city;
 

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface GymService {
     List<GymSummaryDto> getAllGyms();
-    GymSummaryDto getGymByEmail(String email);
+    Optional<GymSummaryDto> getGymByEmail(String email);
 }

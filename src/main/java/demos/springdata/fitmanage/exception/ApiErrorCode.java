@@ -7,7 +7,8 @@ public enum ApiErrorCode {
     INTERNAL_ERROR(HttpStatus.SC_INTERNAL_SERVER_ERROR),
     NOT_FOUND(HttpStatus.SC_NOT_FOUND),
     CONFLICT(HttpStatus.SC_CONFLICT),
-    UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED);
+    UNAUTHORIZED(HttpStatus.SC_UNAUTHORIZED),
+    ;
 
     private final int statusCode;
 

@@ -1,11 +1,18 @@
 package demos.springdata.fitmanage.service.impl;
+import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
+import demos.springdata.fitmanage.domain.dto.superadmin.SuperAdminDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
+import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
+import demos.springdata.fitmanage.repository.SuperAdminRepository;
+import demos.springdata.fitmanage.service.GymService;
 import demos.springdata.fitmanage.service.RefreshTokenService;
+import demos.springdata.fitmanage.service.SuperAdminService;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,32 +28,55 @@ import java.util.UUID;
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
-    private final GymRepository gymRepository;
+    private final GymService gymService;
+    private final SuperAdminService superAdminService;
+    private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymRepository gymRepository) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymService gymService, SuperAdminService superAdminService, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.gymRepository = gymRepository;
-
+        this.gymService = gymService;
+        this.superAdminService = superAdminService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public RefreshToken createRefreshToken(String email) {
 
-        Gym gym = gymRepository.findByEmail(email)
-                .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+        Optional<GymSummaryDto> gymDtoOpt = gymService.getGymByEmail(email);
+        Optional<SuperAdminDto> adminDtoOpt = superAdminService.findByEmail(email);
 
-        refreshTokenRepository.findByGym(gym).ifPresent(refreshTokenRepository::delete);
+        if (gymDtoOpt.isPresent()) {
+            Gym gym = modelMapper.map(gymDtoOpt.get(), Gym.class);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .gym(gym)
-                .token(UUID.randomUUID().toString())
-                .expiryDate(Instant.now().plusMillis(604_800_000))
-                .build();
+            refreshTokenRepository.findByGym(gym).ifPresent(refreshTokenRepository::delete);
 
-        return refreshTokenRepository.save(refreshToken);
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .gym(gym)
+                    .token(UUID.randomUUID().toString())
+                    .expiryDate(Instant.now().plusMillis(604_800_000))
+                    .build();
+
+            return refreshTokenRepository.save(refreshToken);
+
+        } else if (adminDtoOpt.isPresent()) {
+            SuperAdminUser superAdmin = modelMapper.map(adminDtoOpt.get(), SuperAdminUser.class);
+
+            refreshTokenRepository.findBySuperAdminUser(superAdmin).ifPresent(refreshTokenRepository::delete);
+
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .superAdminUser(superAdmin)
+                    .token(UUID.randomUUID().toString())
+                    .expiryDate(Instant.now().plusMillis(604_800_000))
+                    .build();
+
+            return refreshTokenRepository.save(refreshToken);
+
+        } else {
+            throw new FitManageAppException("User not found with email: " + email, ApiErrorCode.NOT_FOUND);
+        }
     }
 
     @Override

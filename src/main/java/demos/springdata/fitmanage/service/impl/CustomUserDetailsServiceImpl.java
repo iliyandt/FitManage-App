@@ -6,7 +6,6 @@ import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

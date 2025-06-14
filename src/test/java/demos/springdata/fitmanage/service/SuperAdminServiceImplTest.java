@@ -39,7 +39,7 @@ public class SuperAdminServiceImplTest {
         when(superAdminRepository.findByEmail(email)).thenReturn(Optional.of(superAdminUser));
         when(modelMapper.map(superAdminUser, SuperAdminDto.class)).thenReturn(superAdminDto);
 
-        SuperAdminDto result = superAdminService.findByEmail(email);
+        SuperAdminDto result = superAdminService.findByEmail(email).get();
 
 
         assertNotNull(result);

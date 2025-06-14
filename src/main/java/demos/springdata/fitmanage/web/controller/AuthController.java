@@ -42,7 +42,7 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
         if (!gymDto.isPasswordConfirmed()) {
             return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
+                    .status(HttpStatus.OK)
                     .body(Map.of("message", "Passwords do not match"));
         }
 
@@ -52,12 +52,12 @@ public class AuthController {
             return ResponseEntity.ok(registeredGym);
         } catch (FitManageAppException e) {
             return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
+                    .status(HttpStatus.OK)
                     .body(Map.of("message", "Email is already taken"));
         } catch (Exception e) {
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "An unexpected error occurred"));
+                    .body(Map.of("message", "An unexpected error occurred."));
         }
     }
 
@@ -65,10 +65,10 @@ public class AuthController {
     public ResponseEntity<?> verifyUser(@Valid @RequestBody VerifyGymDto verifyGymDto) {
         try {
             authenticationService.verifyUser(verifyGymDto);
-            return ResponseEntity.ok("Account verified successfully");
+            return ResponseEntity.ok("Account verified successfully.");
         } catch (FitManageAppException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", "Invalid code"));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(Map.of("message", "Invalid code."));
         }
     }
 
@@ -92,7 +92,7 @@ public class AuthController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (AuthenticationException e) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
+                    .status(HttpStatus.OK)
                     .body(Map.of("message", "Account with this email does not exists."));
         }
 
@@ -114,31 +114,37 @@ public class AuthController {
             return ResponseEntity.ok(response);
         } catch (AuthenticationException e) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
+                    .status(HttpStatus.OK)
                     .body(Map.of("message", "Wrong password. Please double-check and try again."));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "An unexpected error occurred."));
+        } catch (FitManageAppException e) {
+            if (!loginRequestDto.isEnabled()) {
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(Map.of("message", "Verify email before login."));
+            } else {
+                return ResponseEntity
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(Map.of("message", "An unexpected error occurred."));
+            }
+
+        }
+    }
+
+
+        @PostMapping("/refreshToken")
+        public LoginResponse refreshToken (@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+
+            return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
+                    .map(refreshTokenService::verifyExpiration)
+                    .map(RefreshToken::getGym)
+                    .map(gym -> {
+                        String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(gym.getEmail()));
+                        return LoginResponse.builder()
+                                .accessToken(accessToken)
+                                .refreshToken(refreshTokenRequestDto.getToken())
+                                .build();
+                    }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
         }
 
+
     }
-
-
-    @PostMapping("/refreshToken")
-    public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
-
-        return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getGym)
-                .map(gym -> {
-                    String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(gym.getEmail()));
-                    return LoginResponse.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDto.getToken())
-                            .build();
-                }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
-    }
-
-
-}

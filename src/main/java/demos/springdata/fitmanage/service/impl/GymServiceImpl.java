@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GymServiceImpl implements GymService {
@@ -37,9 +38,8 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
-    public GymSummaryDto getGymByEmail(String email) {
+    public Optional<GymSummaryDto> getGymByEmail(String email) {
         return this.gymRepository.findByEmail(email)
-                .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class))
-                .orElseThrow(() -> new FitManageAppException("Gym not found.", ApiErrorCode.NOT_FOUND));
+                .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class));
     }
 }

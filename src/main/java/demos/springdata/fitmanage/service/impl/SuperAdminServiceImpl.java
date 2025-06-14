@@ -9,6 +9,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 
 @Service
 public class SuperAdminServiceImpl implements SuperAdminService {
@@ -25,9 +27,8 @@ public class SuperAdminServiceImpl implements SuperAdminService {
 
 
     @Override
-    public SuperAdminDto findByEmail(String email) {
+    public Optional<SuperAdminDto> findByEmail(String email) {
         return superAdminRepository.findByEmail(email)
-                .map(superAdminUser -> this.modelMapper.map(superAdminUser, SuperAdminDto.class))
-                .orElseThrow(() -> new FitManageAppException("Admin user not found.", ApiErrorCode.NOT_FOUND));
+                .map(superAdminUser -> this.modelMapper.map(superAdminUser, SuperAdminDto.class));
     }
 }

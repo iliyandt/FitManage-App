@@ -31,7 +31,7 @@ public class GymController {
         LOGGER.info("Account information requested for gym: {}", authentication.getName());
         String currentGymEmail = authentication.getName();
         LOGGER.info("Account information for {} loaded successfully.", authentication.getName());
-        GymSummaryDto currentGym = gymService.getGymByEmail(currentGymEmail);
+        GymSummaryDto currentGym = gymService.getGymByEmail(currentGymEmail).get();
         return ResponseEntity.ok(currentGym);
     }
 }
