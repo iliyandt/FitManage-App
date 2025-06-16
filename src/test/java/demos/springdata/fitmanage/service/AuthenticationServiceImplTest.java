@@ -1,9 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.auth.GymEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.RegistrationRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.VerifyGymDto;
+import demos.springdata.fitmanage.domain.dto.auth.*;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -93,14 +90,9 @@ public class AuthenticationServiceImplTest {
         gymAdminRole.setName(RoleType.GYM_ADMIN);
         when(roleService.findByName(RoleType.GYM_ADMIN)).thenReturn(gymAdminRole);
 
-        Gym result = authenticationService.registerGym(validGymRegistrationDto);
-
+        RegistrationResponseDto result = authenticationService.registerGym(validGymRegistrationDto);
         Assertions.assertNotNull(result);
-        assertEquals("encryptedPass", result.getPassword());
-        Assertions.assertFalse(result.isEnabled());
         Assertions.assertNotNull(result.getVerificationCode());
-        Assertions.assertNotNull(result.getVerificationCodeExpiresAt());
-        Assertions.assertTrue(result.getRoles().contains(gymAdminRole));
     }
 
     @Test

@@ -2,22 +2,23 @@ package demos.springdata.fitmanage.domain.dto.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class RegistrationRequestDto {
-    @NotBlank(message = "Name is required")
+    @NotNull(message = "Name is required")
     @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
     private String username;
 
-    @NotBlank(message = "Email is required")
+    @NotBlank
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
+    @NotNull(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
 
-    @NotBlank(message = "Confirm password should match password.")
+    @NotNull(message = "Confirm password should match password.")
     private String confirmPassword;
 
 

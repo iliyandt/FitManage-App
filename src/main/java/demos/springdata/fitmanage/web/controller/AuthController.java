@@ -39,37 +39,13 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<?> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
-        if (!gymDto.isPasswordConfirmed()) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(Map.of("message", "Passwords do not match"));
-        }
-
-        try {
-            Gym registeredGym = authenticationService.registerGym(gymDto);
-            LOGGER.info("Registration successful for username: {}", gymDto.getUsername());
-            return ResponseEntity.ok(registeredGym);
-        } catch (FitManageAppException e) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(Map.of("message", "Email is already taken"));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "An unexpected error occurred."));
-        }
+    public ResponseEntity<RegistrationResponseDto> register(@RequestBody @Valid RegistrationRequestDto gymDto) {
+        return new ResponseEntity<>(authenticationService.registerGym(gymDto), HttpStatus.CREATED);
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<?> verifyUser(@Valid @RequestBody VerifyGymDto verifyGymDto) {
-        try {
-            authenticationService.verifyUser(verifyGymDto);
-            return ResponseEntity.ok("Account verified successfully.");
-        } catch (FitManageAppException e) {
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(Map.of("message", "Invalid code."));
-        }
+    public ResponseEntity<VerificationResponseDto> verifyUser(@Valid @RequestBody VerifyGymDto verifyGymDto) {
+        return new ResponseEntity<>(authenticationService.verifyUser(verifyGymDto), HttpStatus.OK);
     }
 
     @PostMapping("/resend")
@@ -130,20 +106,20 @@ public class AuthController {
     }
 
 
-        @PostMapping("/refreshToken")
-        public LoginResponse refreshToken (@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+    @PostMapping("/refreshToken")
+    public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
 
-            return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
-                    .map(refreshTokenService::verifyExpiration)
-                    .map(RefreshToken::getGym)
-                    .map(gym -> {
-                        String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(gym.getEmail()));
-                        return LoginResponse.builder()
-                                .accessToken(accessToken)
-                                .refreshToken(refreshTokenRequestDto.getToken())
-                                .build();
-                    }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
-        }
-
-
+        return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
+                .map(refreshTokenService::verifyExpiration)
+                .map(RefreshToken::getGym)
+                .map(gym -> {
+                    String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(gym.getEmail()));
+                    return LoginResponse.builder()
+                            .accessToken(accessToken)
+                            .refreshToken(refreshTokenRequestDto.getToken())
+                            .build();
+                }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
     }
+
+
+}
