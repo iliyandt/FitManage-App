@@ -15,7 +15,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex) {
         Map<String, String> errorMap = new HashMap<>();
@@ -26,13 +26,13 @@ public class ApplicationExceptionHandler {
     }
 
     @ExceptionHandler(FitManageAppException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.OK)
     public Map<String, String> handleFitManageAppException(FitManageAppException ex) {
         return Map.of("error", ex.getMessage());
     }
 
     @ExceptionHandler(MultipleValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     public Map<String, String> handleMultipleValidationException(MultipleValidationException ex) {
         return ex.getErrors();
     }
