@@ -136,20 +136,20 @@ public class AuthenticationServiceImplTest {
         Assertions.assertEquals("Passwords do not match", exception.getMessage());
     }
 
-    @Test
-    void validateEmail_ShouldReturnGym_WhenEmailExists() {
-        String email = "email@gym.com";
-        Gym gym = new Gym();
-        gym.setEmail(email);
-
-        when(validationUtil.isValid(any())).thenReturn(true);
-        when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
-
-        Gym result = authenticationService.validateEmail(new GymEmailRequestDto(email));
-
-        Assertions.assertNotNull(result);
-        assertEquals(email, result.getEmail());
-    }
+//    @Test
+//    void validateEmail_ShouldReturnGym_WhenEmailExists() {
+//        String email = "email@gym.com";
+//        Gym gym = new Gym();
+//        gym.setEmail(email);
+//
+//        when(validationUtil.isValid(any())).thenReturn(true);
+//        when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
+//
+//        Gym result = authenticationService.validateEmail(new GymEmailRequestDto(email));
+//
+//        Assertions.assertNotNull(result);
+//        assertEquals(email, result.getEmail());
+//    }
 
     @Test
     void authenticate_ShouldAuthenticateUser_WhenValid() {

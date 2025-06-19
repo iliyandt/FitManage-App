@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.auth.request.GymEmailRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
@@ -106,10 +107,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public Gym validateEmail(GymEmailRequestDto gymEmailRequestDto) {
+    public Optional<GymEmailResponseDto> validateEmail(GymEmailRequestDto gymEmailRequestDto) {
         validateDto(gymEmailRequestDto);
-        return this.gymRepository.findByEmail(gymEmailRequestDto.getEmail()).orElseThrow(() ->
-                new FitManageAppException("Account with this email does not exist.", ApiErrorCode.CONFLICT));
+        Optional<Gym> gymEmail = this.gymRepository.findByEmail(gymEmailRequestDto.getEmail());
+
+        if (gymEmail.isPresent()) {
+            return gymEmail.map(gym -> modelMapper.map(gym, GymEmailResponseDto.class));
+        } else {
+            throw new FitManageAppException("Gym with this email does not exist", ApiErrorCode.NOT_FOUND);
+        }
     }
 
     @Override

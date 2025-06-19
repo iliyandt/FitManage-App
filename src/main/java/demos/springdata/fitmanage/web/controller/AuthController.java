@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
+import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
@@ -50,24 +51,14 @@ public class AuthController {
     }
 
     @PostMapping("/resend")
-    public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
+    public ResponseEntity<VerificationResponseDto> resendVerificationCode(@RequestParam String email) {
         return new ResponseEntity<>(authenticationService.resendVerificationCode(email), HttpStatus.CREATED);
     }
 
 
     @PostMapping(path = "/validate-email")
-    public ResponseEntity<?> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
-        try {
-            authenticationService.validateEmail(gymEmailRequestDto);
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Email is valid.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (FitManageAppException e) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(Map.of("message", "Account with this email does not exists."));
-        }
-
+    public ResponseEntity<GymEmailResponseDto> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
+            return new ResponseEntity<>(authenticationService.validateEmail(gymEmailRequestDto).get(), HttpStatus.ACCEPTED);
     }
 
     @PostMapping(path = "/login")
@@ -104,7 +95,6 @@ public class AuthController {
 
     @PostMapping("/refreshToken")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
-
         return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getGym)
@@ -116,6 +106,5 @@ public class AuthController {
                             .build();
                 }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
     }
-
 
 }
