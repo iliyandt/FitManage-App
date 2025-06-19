@@ -1,6 +1,10 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.auth.*;
+import demos.springdata.fitmanage.domain.dto.auth.request.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -179,7 +183,7 @@ public class AuthenticationServiceImplTest {
         gym.setVerificationCodeExpiresAt(futureTime);
         gym.setEnabled(false);
 
-        VerifyGymDto dto = new VerifyGymDto();
+        VerificationRequestDto dto = new VerificationRequestDto();
         dto.setEmail(email);
         dto.setVerificationCode(code);
 
@@ -202,7 +206,7 @@ public class AuthenticationServiceImplTest {
         gym.setVerificationCode("correctCode");
         gym.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(10));
 
-        VerifyGymDto dto = new VerifyGymDto();
+        VerificationRequestDto dto = new VerificationRequestDto();
         dto.setEmail(email);
         dto.setVerificationCode("wrongCode");
 
@@ -222,7 +226,7 @@ public class AuthenticationServiceImplTest {
         gym.setVerificationCode("123456");
         gym.setVerificationCodeExpiresAt(LocalDateTime.now().minusMinutes(1));
 
-        VerifyGymDto dto = new VerifyGymDto();
+        VerificationRequestDto dto = new VerificationRequestDto();
         dto.setEmail(email);
         dto.setVerificationCode("123456");
 
@@ -237,7 +241,7 @@ public class AuthenticationServiceImplTest {
     @Test
     void verifyUser_ShouldThrowException_WhenUserNotFound() {
         String email = "notfound@example.com";
-        VerifyGymDto dto = new VerifyGymDto();
+        VerificationRequestDto dto = new VerificationRequestDto();
         dto.setEmail(email);
         dto.setVerificationCode("123456");
 

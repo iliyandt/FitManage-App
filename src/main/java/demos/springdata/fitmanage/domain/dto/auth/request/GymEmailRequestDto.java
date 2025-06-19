@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.auth;
+package demos.springdata.fitmanage.domain.dto.auth.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

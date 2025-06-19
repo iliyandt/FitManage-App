@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.auth;
+package demos.springdata.fitmanage.domain.dto.auth.request;
 
 public class RefreshTokenRequestDto {
     private String token;

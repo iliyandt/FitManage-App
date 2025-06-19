@@ -1,7 +1,8 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.auth.*;
-import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.dto.auth.request.*;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -44,18 +45,13 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<VerificationResponseDto> verifyUser(@Valid @RequestBody VerifyGymDto verifyGymDto) {
-        return new ResponseEntity<>(authenticationService.verifyUser(verifyGymDto), HttpStatus.OK);
+    public ResponseEntity<VerificationResponseDto> verifyUser(@Valid @RequestBody VerificationRequestDto verificationRequestDto) {
+        return new ResponseEntity<>(authenticationService.verifyUser(verificationRequestDto), HttpStatus.OK);
     }
 
     @PostMapping("/resend")
     public ResponseEntity<?> resendVerificationCode(@RequestParam String email) {
-        try {
-            authenticationService.resendVerificationCode(email);
-            return ResponseEntity.ok("Verification code sent");
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return new ResponseEntity<>(authenticationService.resendVerificationCode(email), HttpStatus.CREATED);
     }
 
 

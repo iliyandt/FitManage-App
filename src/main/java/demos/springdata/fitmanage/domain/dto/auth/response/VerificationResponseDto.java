@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.auth;
+package demos.springdata.fitmanage.domain.dto.auth.response;
 
 public class VerificationResponseDto {
     private String message;

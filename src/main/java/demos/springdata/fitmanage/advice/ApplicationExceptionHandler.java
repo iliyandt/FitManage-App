@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.advice;
 
-import demos.springdata.fitmanage.exception.ApiErrorCode;
+
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import org.springframework.http.HttpStatus;
@@ -36,12 +36,4 @@ public class ApplicationExceptionHandler {
     public Map<String, String> handleMultipleValidationException(MultipleValidationException ex) {
         return ex.getErrors();
     }
-
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    @ExceptionHandler(UserNotFoundException.class)
-//    public Map<String, String> handleBusinessException(UserNotFoundException ex) {
-//        Map<String, String> errorMap = new HashMap<>();
-//        errorMap.put("errorMessage", ex.getMessage());
-//        return errorMap;
-//    }
 }

@@ -1,6 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.auth.*;
+import demos.springdata.fitmanage.domain.dto.auth.request.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -138,10 +143,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 
-    public VerificationResponseDto verifyUser(VerifyGymDto verifyGymDto) {
-        LOGGER.info("Verification attempt for user: {}", verifyGymDto.getEmail());
 
-        Optional<Gym> optionalGym = gymRepository.findByEmail(verifyGymDto.getEmail());
+    public VerificationResponseDto verifyUser(VerificationRequestDto verificationRequestDto) {
+        LOGGER.info("Verification attempt for user: {}", verificationRequestDto.getEmail());
+
+        Optional<Gym> optionalGym = gymRepository.findByEmail(verificationRequestDto.getEmail());
         if (optionalGym.isPresent()) {
             Gym gym = optionalGym.get();
 
@@ -149,7 +155,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new FitManageAppException("Verification code expired.", ApiErrorCode.BAD_REQUEST);
             }
 
-            if (gym.getVerificationCode().equals(verifyGymDto.getVerificationCode())) {
+            if (gym.getVerificationCode().equals(verificationRequestDto.getVerificationCode())) {
                 gym.setEnabled(true);
                 gym.setVerificationCode(null);
                 gym.setVerificationCodeExpiresAt(null);
@@ -167,13 +173,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
 
-    public void resendVerificationCode(String email) {
+    public VerificationResponseDto resendVerificationCode(String email) {
+
         Optional<Gym> optionalUser = gymRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
             Gym gym = optionalUser.get();
 
             if (gym.isEnabled()) {
-                throw new RuntimeException("Account is already verified");
+                throw new FitManageAppException("Account is already verified", ApiErrorCode.OK);
             }
 
             LOGGER.info("Resending verification code to: {}", email);
@@ -183,8 +190,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             sendVerificationEmail(gym);
             gymRepository.save(gym);
         } else {
-            throw new RuntimeException("User not found");
+            throw new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
         }
+
+        return new VerificationResponseDto("New verification code successfully delivered", true);
     }
 
     private void sendVerificationEmail(Gym gym) { //TODO: Update with company logo
