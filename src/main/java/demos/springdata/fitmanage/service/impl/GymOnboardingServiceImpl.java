@@ -83,7 +83,7 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
                 })
                 .toList();
 
-        staffMemberRepository.saveAll(staffMembers);
         LOGGER.info("Added {} staff members to gym: {}", staffMembers.size(), gymEmail);
+        staffMemberRepository.saveAll(staffMembers);
     }
 }

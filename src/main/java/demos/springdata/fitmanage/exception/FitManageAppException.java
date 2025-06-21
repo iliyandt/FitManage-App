@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.exception;
 
-public class FitManageAppException extends RuntimeException{
+public class FitManageAppException extends RuntimeException {
     private final ApiErrorCode errorCode;
 
     public FitManageAppException(String message, ApiErrorCode errorCode) {

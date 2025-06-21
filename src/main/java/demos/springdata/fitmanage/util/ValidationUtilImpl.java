@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.util;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import lombok.experimental.UtilityClass;
 
 import java.util.Set;
 

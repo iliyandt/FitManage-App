@@ -84,8 +84,9 @@ public class Gym extends BaseEntity implements UserDetails {
         return email;
     }
 
-    public void setEmail(String email) {
+    public Gym setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {

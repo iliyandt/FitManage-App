@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.advice;
 
 
+import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import org.springframework.http.HttpStatus;
@@ -15,25 +16,25 @@ import java.util.Map;
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
-    @ResponseStatus(HttpStatus.OK)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleInvalidArgument(MethodArgumentNotValidException ex) {
-        Map<String, String> errorMap = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->{
-            errorMap.put(error.getField(), error.getDefaultMessage());
-        });
-        return errorMap;
-    }
+//    @ResponseStatus(HttpStatus.OK)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public ApiResponse<?> handleInvalidArgument(MethodArgumentNotValidException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getFieldErrors().forEach(error ->{
+//            errors.put(error.getField(), error.getDefaultMessage());
+//        });
+//        return ApiResponse.failure("Validation failed", "BAD_REQUEST", errors);
+//    }
 
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(FitManageAppException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public Map<String, String> handleFitManageAppException(FitManageAppException ex) {
-        return Map.of("error", ex.getMessage());
+    public ApiResponse<?> handleFitManageAppException(FitManageAppException ex) {
+        return ApiResponse.failure("Validation failed", "BAD_REQUEST");
     }
 
-    @ExceptionHandler(MultipleValidationException.class)
     @ResponseStatus(HttpStatus.OK)
-    public Map<String, String> handleMultipleValidationException(MultipleValidationException ex) {
-        return ex.getErrors();
+    @ExceptionHandler(MultipleValidationException.class)
+    public ApiResponse<?> handleMultipleValidationException(MultipleValidationException ex) {
+        return ApiResponse.failure("Validation failed", "BAD_REQUEST", ex.getErrors());
     }
 }

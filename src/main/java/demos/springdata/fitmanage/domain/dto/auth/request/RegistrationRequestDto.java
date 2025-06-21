@@ -9,15 +9,12 @@ public class RegistrationRequestDto {
     @NotNull(message = "Name is required")
     @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
     private String username;
-
     @NotBlank
     @Email(message = "Email must be valid")
     private String email;
-
     @NotNull(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
-
     @NotNull(message = "Confirm password should match password.")
     private String confirmPassword;
 
