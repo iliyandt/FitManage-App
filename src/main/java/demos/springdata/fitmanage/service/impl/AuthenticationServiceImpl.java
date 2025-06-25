@@ -164,13 +164,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (gym.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-            LOGGER.warn("Verification failed: Code expired for user {}", gym.getEmail());
-            errors.put("code", "Verification code expired");
+            LOGGER.warn("Verification failed: verificationCode expired for user {}", gym.getEmail());
+            errors.put("verificationCode", "Verification code expired");
         }
 
         if (!gym.getVerificationCode().equals(code)) {
             LOGGER.warn("Verification failed: Invalid code for user {}", gym.getEmail());
-            errors.put("code", "Invalid verification code");
+            errors.put("verificationCode", "Invalid verification code");
         }
 
         if (!errors.isEmpty()) {
