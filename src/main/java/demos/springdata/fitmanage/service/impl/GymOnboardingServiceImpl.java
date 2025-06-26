@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.StaffMemberRepository;
 import demos.springdata.fitmanage.service.GymOnboardingService;
@@ -17,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -40,24 +43,49 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
 
     @Override
     public void updateBasicInfo(String email, GymBasicInfoDto dto) {
-        Gym gym = gymRepository.findByEmail(email)
-                .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+        Map<String, String> errors = new HashMap<>();
+        Gym gym = getGymOrElseThrow(email);
 
-        if (!gym.getUsername().equals(dto.getUsername())) {
-            Optional<Gym> existing = gymRepository.findByUsername(dto.getUsername());
-            if (existing.isPresent() && !existing.get().getId().equals(gym.getId())) {
-                throw new FitManageAppException("Username is taken", ApiErrorCode.CONFLICT);
-            }
-            gym.setUsername(dto.getUsername());
+        updateUsernameIfChanged(gym, dto.getUsername(), errors);
+        updateGymDetails(dto, gym);
+
+        if (!errors.isEmpty()) {
+            throw new MultipleValidationException(errors);
         }
 
+        gymRepository.save(gym);
+        LOGGER.info("Updated basic info for gym: {}", email);
+    }
+
+    private static void updateGymDetails(GymBasicInfoDto dto, Gym gym) {
         gym.setEmail(dto.getEmail());
         gym.setPhone(dto.getPhone());
         gym.setAddress(dto.getAddress());
         gym.setCity(dto.getCity());
+    }
 
-        gymRepository.save(gym);
-        LOGGER.info("Updated basic info for gym: {}", email);
+    private void updateUsernameIfChanged(Gym gym, String username, Map<String, String> errors) {
+        if (!gym.getUsername().equals(username)) {
+            validateUsernameUniqueness(username, gym.getId(), errors);
+            if (!errors.containsKey("username")) {
+                gym.setUsername(username);
+            }
+        }
+    }
+
+    private void validateUsernameUniqueness(String username, Long currentGymId, Map<String, String> errors) {
+        Optional<Gym> existing = gymRepository.findByUsername(username);
+        if (existing.isPresent() && !existing.get().getId().equals(currentGymId)) {
+            errors.put("username", "Username is taken");
+        }
+    }
+
+    private Gym getGymOrElseThrow(String email) {
+        return gymRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    LOGGER.warn("Gym with email {} not found", email);
+                    return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
+                });
     }
 
     @Override

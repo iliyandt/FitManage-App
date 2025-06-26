@@ -1,13 +1,19 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "gym_members")
-public class GymMember extends BaseEntity {
+public class GymMember extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String firstName;
 
@@ -18,6 +24,7 @@ public class GymMember extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     private String phone;
 
@@ -29,8 +36,9 @@ public class GymMember extends BaseEntity {
     )
     private Set<Role> roles = new HashSet<>();
 
-    private boolean isActive;
+    private boolean enabled;
     private LocalDateTime createdAt;
+    private String subscriptionPlan;
 
     @ManyToOne
     @JoinColumn(name = "gym_id")
@@ -42,7 +50,7 @@ public class GymMember extends BaseEntity {
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        this.isActive = true;
+        this.enabled = true;
     }
 
     public String getFirstName() {
@@ -69,8 +77,40 @@ public class GymMember extends BaseEntity {
         this.email = email;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .toList();
+    }
+
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void setPassword(String password) {
@@ -93,12 +133,8 @@ public class GymMember extends BaseEntity {
         this.roles = roles;
     }
 
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -116,4 +152,14 @@ public class GymMember extends BaseEntity {
     public void setGym(Gym gym) {
         this.gym = gym;
     }
+
+    public String getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(String subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
+    }
+
+
 }

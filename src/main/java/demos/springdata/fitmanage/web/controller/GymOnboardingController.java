@@ -1,11 +1,14 @@
 package demos.springdata.fitmanage.web.controller;
 
+import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.service.GymOnboardingService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -30,10 +33,10 @@ public class GymOnboardingController {
     }
 
     @PostMapping("/basic-info")
-    public ResponseEntity<Void> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
+    public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         gymOnboardingService.updateBasicInfo(email, dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success("Basic info updated successfully"));
     }
 
 
