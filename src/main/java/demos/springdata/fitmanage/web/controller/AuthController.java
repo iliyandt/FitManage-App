@@ -41,7 +41,6 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
-
         try {
             RegistrationResponseDto response = authenticationService.registerGym(gymDto);
             return ResponseEntity.ok(ApiResponse.success(response));
@@ -71,7 +70,7 @@ public class AuthController {
     }
 
 
-    @PostMapping(path = "/validate-email")
+    @PostMapping(path = "/validate_email")
     public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
         try {
             GymEmailResponseDto response = authenticationService.validateEmail(gymEmailRequestDto).get();
@@ -100,7 +99,7 @@ public class AuthController {
     }
 
 
-    @PostMapping("/refreshToken")
+    @PostMapping("/refresh_token")
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
         return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
                 .map(refreshTokenService::verifyExpiration)

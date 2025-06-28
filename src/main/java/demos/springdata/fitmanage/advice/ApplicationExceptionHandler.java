@@ -42,6 +42,6 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(DuplicateEmailException.class)
     public ApiResponse<?> handleDuplicateEmailException(DuplicateEmailException ex) {
-        return ApiResponse.failure("Validation failed", "EMAIL_ALREADY_TAKEN", ex.getErrors());
+        return ApiResponse.failure("Email validation failed", "EMAIL_ALREADY_TAKEN", ex.getErrors());
     }
 }

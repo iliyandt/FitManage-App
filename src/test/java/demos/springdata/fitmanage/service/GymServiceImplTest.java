@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymRepository;
+import demos.springdata.fitmanage.service.impl.GymMemberServiceImpl;
 import demos.springdata.fitmanage.service.impl.GymServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 public class GymServiceImplTest {
     private GymRepository gymRepository;
+    private GymMemberServiceImpl gymMemberService;
     private ModelMapper modelMapper;
     private GymServiceImpl gymService;
 
@@ -26,7 +28,7 @@ public class GymServiceImplTest {
     void setUp() {
         gymRepository = mock(GymRepository.class);
         modelMapper = new ModelMapper();
-        gymService = new GymServiceImpl(gymRepository, modelMapper);
+        gymService = new GymServiceImpl(gymRepository, modelMapper, gymMemberService);
     }
 
 
