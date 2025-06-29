@@ -42,7 +42,7 @@ public class UserValidationService {
             exists = true;
         }
 
-        if (!exists) {
+        if (exists) {
             throw new DuplicateEmailException(errors);
         }
     }

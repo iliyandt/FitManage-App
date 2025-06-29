@@ -21,7 +21,6 @@ import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.util.ValidationUtil;
 import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
-import jakarta.validation.ConstraintViolation;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,7 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Map<String, String> errors = new HashMap<>();
 
         userValidationService.checkDuplicateEmailOrThrow(gymRegistrationDto.getEmail());
-        //validateLoginRequest(gymRegistrationDto);
         validateCredentials(gymRegistrationDto, errors);
         Gym gym = initializeNewGym(gymRegistrationDto);
 
@@ -86,9 +84,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Optional<GymEmailResponseDto> validateEmail(GymEmailRequestDto gymEmailRequestDto) {
         Map<String, String> errors = new HashMap<>();
-        //validateLoginRequest(gymEmailRequestDto);
         Optional<Gym> gym = this.gymRepository.findByEmail(gymEmailRequestDto.getEmail());
-
         if (gym.isPresent()) {
             return gym.map(g -> modelMapper.map(g, GymEmailResponseDto.class));
         } else {
@@ -100,16 +96,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDetails login(LoginRequestDto loginRequestDto) {
-//        validateLoginRequest(loginRequestDto);
-
-        userValidationService.checkDuplicateEmailOrThrow(loginRequestDto.getEmail());
-
         UserDetails authUser = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
-
         verifyAccountStatus(authUser);
-
         authenticateCredentials(loginRequestDto);
-
         return authUser;
     }
 
@@ -283,17 +272,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         int code = random.nextInt(900000) + 100000;
         return String.valueOf(code);
     }
-
-
-//    private <T> void validateLoginRequest(T dto) {
-//        if (!validationUtil.isValid(dto)) {
-//            Set<ConstraintViolation<T>> violations = validationUtil.violations(dto);
-//            String errorMessage = violations.stream()
-//                    .map(ConstraintViolation::getMessage)
-//                    .collect(Collectors.joining(", "));
-//            throw new FitManageAppException(errorMessage, ApiErrorCode.BAD_REQUEST);
-//        }
-//    }
 
     private void encryptGymPassword(Gym gym) {
         String encryptedPassword = passwordEncoder.encode(gym.getPassword());
