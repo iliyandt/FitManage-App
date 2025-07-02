@@ -65,7 +65,7 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
     }
 
     private void updateUsernameIfChanged(Gym gym, String username, Map<String, String> errors) {
-        if (!gym.getUsername().equals(username)) {
+        if (!gym.getActualUsername().equals(username)) {
             validateUsernameUniqueness(username, gym.getId(), errors);
             if (!errors.containsKey("username")) {
                 gym.setUsername(username);

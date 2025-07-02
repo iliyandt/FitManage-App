@@ -18,6 +18,8 @@ public class GymMemberCreateRequestDto {
     @NotBlank
     private String phone;
 
+    public GymMemberCreateRequestDto() {
+    }
 
     public GymMemberCreateRequestDto(String firstName, String lastName, String email, String phone) {
         this.firstName = firstName;

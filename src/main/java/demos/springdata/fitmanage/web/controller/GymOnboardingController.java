@@ -3,17 +3,13 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
-import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.service.GymOnboardingService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,8 +37,9 @@ public class GymOnboardingController {
 
 
     @PostMapping("/team")
-    public ResponseEntity<Void> addTeam(@RequestBody List<StaffMemberRequestDto> staffDtos, @AuthenticationPrincipal UserDetails currentUser) {
-        gymOnboardingService.addTeamMembers(currentUser.getUsername(), staffDtos);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ApiResponse<String>> addTeam(@RequestBody List<StaffMemberRequestDto> staffDtos) {
+        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        gymOnboardingService.addTeamMembers(currentUser, staffDtos);
+        return ResponseEntity.ok(ApiResponse.success("Team member added successfully"));
     }
 }

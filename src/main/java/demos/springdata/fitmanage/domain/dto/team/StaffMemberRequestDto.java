@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
-import demos.springdata.fitmanage.domain.entity.Gym;
 
 public class StaffMemberRequestDto {
     private String username;

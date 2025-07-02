@@ -4,8 +4,10 @@ import demos.springdata.fitmanage.domain.dto.gym.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.GymService;
@@ -61,4 +63,5 @@ public class GymServiceImpl implements GymService {
 
         return gymMemberService.createMemberForGym(gym, requestDto);
     }
+
 }

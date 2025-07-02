@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
     private final GymMemberRepository gymMemberRepository;
@@ -40,5 +42,20 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         LOGGER.info("the entity for member {} will be mapped to response dto", savedMember.getFirstName());
         return modelMapper.map(savedMember, GymMemberResponseDto.class);
+    }
+
+    @Override
+    public List<GymMemberCreateRequestDto> findAllGymMembers() {
+        List<GymMember> members = gymMemberRepository.findAll();
+
+        try {
+            return members.stream()
+                    .map(member -> modelMapper.map(member, GymMemberCreateRequestDto.class))
+                    .toList();
+        } catch (Exception ex) {
+            LOGGER.error("Mapping failed: {}", ex.getMessage(), ex);
+            throw ex;
+        }
+
     }
 }
