@@ -31,11 +31,11 @@ import java.util.regex.Pattern;
 public class GymController {
     private final GymService gymService;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymController.class);
-    private final GymMemberService gymMemberService;
 
-    public GymController(GymService gymService, GymMemberService gymMemberService) {
+
+    public GymController(GymService gymService) {
         this.gymService = gymService;
-        this.gymMemberService = gymMemberService;
+
     }
 
     @GetMapping("/me")
@@ -61,51 +61,4 @@ public class GymController {
                 .body(ApiResponse.success(responseDto));
     }
 
-    @GetMapping("/gym_members_table")
-    public ResponseEntity<GymMemberTableResponseDto> getAllGymMembers() {
-
-        List<GymMemberTableDto> members = gymMemberService.findAllGymMembers();
-
-        PaginationConfigDto pagination = new PaginationConfigDto();
-        pagination.setPageSize(10);
-
-        ConfigDto config = new ConfigDto();
-        config.setTitle("Gym Members");
-        config.setSortable(true);
-        config.setPagination(pagination);
-
-        List<ColumnConfigDto> columns = Arrays.stream(GymMemberCreateRequestDto.class.getDeclaredFields())
-                .map(field -> new ColumnConfigDto(
-                        field.getName(),
-                        beautifyColumnName(field.getName())
-                ))
-                .toList();
-
-        List<Map<String, String>> rows = members.stream()
-                .map(member -> Map.of(
-                        "firstName", member.getFirstName(),
-                        "lastName", member.getLastName(),
-                        "subscriptionPlan", member.getSubscriptionPlan() != null ? member.getSubscriptionPlan() : "No Subscription",
-                        "phone", member.getPhone()
-                ))
-                .toList();
-
-        GymMemberTableResponseDto response = new GymMemberTableResponseDto();
-        response.setConfig(config);
-        response.setColumns(columns);
-        response.setRows(rows);
-
-        return ResponseEntity.ok(response);
-    }
-
-    private String beautifyColumnName(String fieldName) {
-        if (fieldName == null || fieldName.isEmpty()) return fieldName;
-
-        String withSpaces = fieldName.replaceAll("([a-z])([A-Z])", "$1 $2");
-
-        return Pattern.compile("\\b\\w")
-                .matcher(withSpaces)
-                .replaceAll(match -> match.group().toUpperCase())
-                .trim();
-    }
 }
