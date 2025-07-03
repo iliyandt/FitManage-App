@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 
 @RestController
@@ -61,9 +62,9 @@ public class GymController {
     }
 
     @GetMapping("/gym_members_table")
-    public ResponseEntity<GymMembersTableResponseDto> getAllGymMembers() {
+    public ResponseEntity<GymMemberTableResponseDto> getAllGymMembers() {
 
-        List<GymMemberCreateRequestDto> members = gymMemberService.findAllGymMembers();
+        List<GymMemberTableDto> members = gymMemberService.findAllGymMembers();
 
         PaginationConfigDto pagination = new PaginationConfigDto();
         pagination.setPageSize(10);
@@ -76,7 +77,7 @@ public class GymController {
         List<ColumnConfigDto> columns = Arrays.stream(GymMemberCreateRequestDto.class.getDeclaredFields())
                 .map(field -> new ColumnConfigDto(
                         field.getName(),
-                        capitalize(field.getName())
+                        beautifyColumnName(field.getName())
                 ))
                 .toList();
 
@@ -84,12 +85,12 @@ public class GymController {
                 .map(member -> Map.of(
                         "firstName", member.getFirstName(),
                         "lastName", member.getLastName(),
-                        "email", member.getEmail(),
+                        "subscriptionPlan", member.getSubscriptionPlan() != null ? member.getSubscriptionPlan() : "No Subscription",
                         "phone", member.getPhone()
                 ))
                 .toList();
 
-        GymMembersTableResponseDto response = new GymMembersTableResponseDto();
+        GymMemberTableResponseDto response = new GymMemberTableResponseDto();
         response.setConfig(config);
         response.setColumns(columns);
         response.setRows(rows);
@@ -97,8 +98,14 @@ public class GymController {
         return ResponseEntity.ok(response);
     }
 
-    private String capitalize(String input) {
-        if (input == null || input.isEmpty()) return input;
-        return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+    private String beautifyColumnName(String fieldName) {
+        if (fieldName == null || fieldName.isEmpty()) return fieldName;
+
+        String withSpaces = fieldName.replaceAll("([a-z])([A-Z])", "$1 $2");
+
+        return Pattern.compile("\\b\\w")
+                .matcher(withSpaces)
+                .replaceAll(match -> match.group().toUpperCase())
+                .trim();
     }
 }

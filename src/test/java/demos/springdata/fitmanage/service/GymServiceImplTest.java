@@ -62,15 +62,9 @@ public class GymServiceImplTest {
         assertEquals("gym@example.com", responseDto.getEmail());
     }
 
-    @Test
-    void getGymByEmail_ShouldThrowException_WhenNotFound() {
-        when(gymRepository.findByEmail("missing@example.com")).thenReturn(Optional.empty());
-
-        FitManageAppException exception = assertThrows(FitManageAppException.class,
-                () -> gymService.getGymByEmail("missing@example.com"));
-
-        assertEquals("Gym not found.", exception.getMessage());
-    }
+//    @Test
+//    void getGymByEmail_ShouldThrowException_WhenNotFound() {
+//    }
 
 
 

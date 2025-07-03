@@ -6,15 +6,15 @@ import demos.springdata.fitmanage.domain.dto.ConfigDto;
 import java.util.List;
 import java.util.Map;
 
-public class GymMembersTableResponseDto {
+public class GymMemberTableResponseDto {
     private ConfigDto config;
     private List<ColumnConfigDto> columns;
     private List<Map<String, String>> rows;
 
-    public GymMembersTableResponseDto() {
+    public GymMemberTableResponseDto() {
     }
 
-    public GymMembersTableResponseDto(ConfigDto config, List<ColumnConfigDto> columns, List<Map<String, String>> rows) {
+    public GymMemberTableResponseDto(ConfigDto config, List<ColumnConfigDto> columns, List<Map<String, String>> rows) {
         this.config = config;
         this.columns = columns;
         this.rows = rows;

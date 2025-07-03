@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gym.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.entity.Role;
@@ -45,12 +46,12 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
     @Override
-    public List<GymMemberCreateRequestDto> findAllGymMembers() {
+    public List<GymMemberTableDto> findAllGymMembers() {
         List<GymMember> members = gymMemberRepository.findAll();
 
         try {
             return members.stream()
-                    .map(member -> modelMapper.map(member, GymMemberCreateRequestDto.class))
+                    .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();
         } catch (Exception ex) {
             LOGGER.error("Mapping failed: {}", ex.getMessage(), ex);
