@@ -1,13 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.GymService;

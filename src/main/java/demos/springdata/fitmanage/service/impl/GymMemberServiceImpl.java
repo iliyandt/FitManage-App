@@ -1,12 +1,15 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.RoleService;
@@ -48,15 +51,28 @@ public class GymMemberServiceImpl implements GymMemberService {
     @Override
     public List<GymMemberTableDto> findAllGymMembers() {
         List<GymMember> members = gymMemberRepository.findAll();
-
-        try {
             return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();
-        } catch (Exception ex) {
-            LOGGER.error("Mapping failed: {}", ex.getMessage(), ex);
-            throw ex;
-        }
+    }
 
+
+    @Override
+    public GymMemberResponseDto updateGymMember(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto) {
+        GymMember existingMember = gymMemberRepository.findById(memberId)
+                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+
+        existingMember.setFirstName(memberUpdateRequestDto.getFirstName());
+        existingMember.setLastName(memberUpdateRequestDto.getLastName());
+        existingMember.setSubscriptionPlan(memberUpdateRequestDto.getSubscriptionPlan());
+        existingMember.setPhone(memberUpdateRequestDto.getPhone());
+
+        GymMember updatedMember = gymMemberRepository.save(existingMember);
+
+        return mapToResponseDto(updatedMember);
+    }
+
+    private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
+        return modelMapper.map(updatedMember, GymMemberResponseDto.class);
     }
 }

@@ -3,23 +3,25 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
 import demos.springdata.fitmanage.domain.dto.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.PaginationConfigDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberTableResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.service.GymMemberService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping(path = "/api/v1/gym/members")
+@RequestMapping(path = "/api/v1/gym-members")
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class GymMemberController {
 
@@ -31,11 +33,53 @@ public class GymMemberController {
     }
 
 
-    @GetMapping("/gym_members_table")
+    @GetMapping("/table")
     public ResponseEntity<GymMemberTableResponseDto> getAllGymMembers() {
-
         List<GymMemberTableDto> members = gymMemberService.findAllGymMembers();
 
+        GymMemberTableResponseDto response = new GymMemberTableResponseDto();
+        response.setConfig(buildTableConfig());
+        response.setColumns(buildColumns(GymMemberTableDto.class));
+        response.setRows(buildRows(members));
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateGymMember(@PathVariable Long id, @Valid @RequestBody GymMemberUpdateRequestDto memberUpdateRequestDto) {
+        GymMemberResponseDto updatedGymMember = gymMemberService.updateGymMember(id, memberUpdateRequestDto);
+        return ResponseEntity.ok(ApiResponse.success(updatedGymMember));
+    }
+
+
+    private List<Map<String, Object>> buildRows(List<GymMemberTableDto> members) {
+        return members.stream()
+                .map(this::buildRowMap)
+                .toList();
+    }
+
+    private Map<String, Object> buildRowMap(GymMemberTableDto member) {
+        Map<String, Object> row = new LinkedHashMap<>();
+
+        row.put("id", member.getId());
+        row.put("firstName", member.getFirstName());
+        row.put("lastName", member.getLastName());
+        row.put("subscriptionPlan", member.getSubscriptionPlan() != null ? member.getSubscriptionPlan() : "No Subscription");
+        row.put("phone", member.getPhone());
+
+        return row;
+    }
+
+    private List<ColumnConfigDto> buildColumns(Class<GymMemberTableDto> gymMemberTableDtoClass) {
+        return Arrays.stream(GymMemberTableDto.class.getDeclaredFields())
+                .map(field -> new ColumnConfigDto(
+                        field.getName(),
+                        beautifyColumnName(field.getName())
+                ))
+                .toList();
+    }
+
+    private ConfigDto buildTableConfig() {
         PaginationConfigDto pagination = new PaginationConfigDto();
         pagination.setPageSize(10);
 
@@ -44,28 +88,7 @@ public class GymMemberController {
         config.setSortable(true);
         config.setPagination(pagination);
 
-        List<ColumnConfigDto> columns = Arrays.stream(GymMemberTableDto.class.getDeclaredFields())
-                .map(field -> new ColumnConfigDto(
-                        field.getName(),
-                        beautifyColumnName(field.getName())
-                ))
-                .toList();
-
-        List<Map<String, String>> rows = members.stream()
-                .map(member -> Map.of(
-                        "firstName", member.getFirstName(),
-                        "lastName", member.getLastName(),
-                        "subscriptionPlan", member.getSubscriptionPlan() != null ? member.getSubscriptionPlan() : "No Subscription",
-                        "phone", member.getPhone()
-                ))
-                .toList();
-
-        GymMemberTableResponseDto response = new GymMemberTableResponseDto();
-        response.setConfig(config);
-        response.setColumns(columns);
-        response.setRows(rows);
-
-        return ResponseEntity.ok(response);
+        return config;
     }
 
     private String beautifyColumnName(String fieldName) {

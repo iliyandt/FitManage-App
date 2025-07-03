@@ -1,13 +1,11 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
-import demos.springdata.fitmanage.domain.dto.ConfigDto;
-import demos.springdata.fitmanage.domain.dto.PaginationConfigDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gym.*;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.GymService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -18,11 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
 
 
 @RestController
@@ -49,12 +42,9 @@ public class GymController {
     }
 
 
-    @PostMapping("/add_member")
+    @PostMapping("/members")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
-
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
+        SecurityContextHolder.getContext().getAuthentication();
         GymMemberResponseDto responseDto = gymService.addGymMemberToGym(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

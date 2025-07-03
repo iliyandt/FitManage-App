@@ -1,31 +1,23 @@
-package demos.springdata.fitmanage.domain.dto.gym;
+package demos.springdata.fitmanage.domain.dto.gymmember;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class GymMemberCreateRequestDto {
-
-    @NotBlank
-    @Size(min = 2, max = 15)
+public class GymMemberUpdateRequestDto {
+    @Size
     private String firstName;
-    @NotBlank
-    @Size(min = 2, max = 20)
     private String lastName;
-    @NotBlank
-    @Email(message = "Email must be valid")
-    private String email;
-    @NotBlank
+    private String subscriptionPlan;
     private String phone;
 
-    public GymMemberCreateRequestDto() {
+    public GymMemberUpdateRequestDto() {
     }
 
-    public GymMemberCreateRequestDto(String firstName, String lastName, String email, String phone) {
+    public GymMemberUpdateRequestDto(String firstName, String lastName, String subscriptionPlan, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
+        this.subscriptionPlan = subscriptionPlan;
         this.phone = phone;
+
     }
 
     public String getFirstName() {
@@ -44,12 +36,12 @@ public class GymMemberCreateRequestDto {
         this.lastName = lastName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getSubscriptionPlan() {
+        return subscriptionPlan;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setSubscriptionPlan(String subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
     }
 
     public String getPhone() {
@@ -59,4 +51,5 @@ public class GymMemberCreateRequestDto {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 }

@@ -1,7 +1,8 @@
-package demos.springdata.fitmanage.domain.dto.gym;
+package demos.springdata.fitmanage.domain.dto.gymmember;
 
 public class GymMemberTableDto {
 
+    private Long id;
     private String firstName;
     private String lastName;
     private String subscriptionPlan;
@@ -10,11 +11,20 @@ public class GymMemberTableDto {
     public GymMemberTableDto() {
     }
 
-    public GymMemberTableDto(String firstName, String lastName, String subscriptionPlan, String phone) {
+    public GymMemberTableDto(Long id, String firstName, String lastName, String subscriptionPlan, String phone) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.subscriptionPlan = subscriptionPlan;
         this.phone = phone;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {

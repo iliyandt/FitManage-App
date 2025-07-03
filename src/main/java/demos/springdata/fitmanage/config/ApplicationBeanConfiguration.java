@@ -1,9 +1,7 @@
 package demos.springdata.fitmanage.config;
 
-import demos.springdata.fitmanage.domain.dto.gym.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.util.ValidationUtil;
