@@ -45,10 +45,16 @@ public class GymMemberController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateGymMember(@PathVariable Long id, @Valid @RequestBody GymMemberUpdateRequestDto memberUpdateRequestDto) {
-        GymMemberResponseDto updatedGymMember = gymMemberService.updateGymMember(id, memberUpdateRequestDto);
+    @PutMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateGymMember(@PathVariable Long memberId, @Valid @RequestBody GymMemberUpdateRequestDto memberUpdateRequestDto) {
+        GymMemberResponseDto updatedGymMember = gymMemberService.updateGymMember(memberId, memberUpdateRequestDto);
         return ResponseEntity.ok(ApiResponse.success(updatedGymMember));
+    }
+
+    @DeleteMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<Void>> deleteGymMember(@PathVariable Long memberId) {
+        gymMemberService.deleteGymMember(memberId);
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
 

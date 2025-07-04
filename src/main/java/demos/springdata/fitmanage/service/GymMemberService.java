@@ -11,6 +11,6 @@ import java.util.List;
 public interface GymMemberService {
     GymMemberResponseDto createMemberForGym(Gym gym, GymMemberCreateRequestDto requestDto);
     List<GymMemberTableDto> findAllGymMembers();
-
     GymMemberResponseDto updateGymMember(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto);
+    void deleteGymMember(Long memberId);
 }

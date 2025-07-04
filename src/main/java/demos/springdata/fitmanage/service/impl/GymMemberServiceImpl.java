@@ -72,6 +72,13 @@ public class GymMemberServiceImpl implements GymMemberService {
         return mapToResponseDto(updatedMember);
     }
 
+    @Override
+    public void deleteGymMember(Long memberId) {
+        GymMember gymMember = gymMemberRepository.findById(memberId)
+                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+        gymMemberRepository.delete(gymMember);
+    }
+
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
         return modelMapper.map(updatedMember, GymMemberResponseDto.class);
     }
