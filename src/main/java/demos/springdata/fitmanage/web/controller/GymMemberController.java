@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
+import demos.springdata.fitmanage.domain.dto.ActionConfigDto;
 import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
 import demos.springdata.fitmanage.domain.dto.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.PaginationConfigDto;
@@ -14,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
@@ -89,9 +87,15 @@ public class GymMemberController {
         PaginationConfigDto pagination = new PaginationConfigDto();
         pagination.setPageSize(10);
 
+        List<ActionConfigDto> actions = List.of(
+                new ActionConfigDto("details", "Details", "/gym-members/{id}"),
+                new ActionConfigDto("edit", "Edit", "/gym-members/{id}"),
+                new ActionConfigDto("delete", "Delete", "/gym-members/{id}")
+        );
+
         ConfigDto config = new ConfigDto();
-        config.setTitle("Gym Members");
         config.setSortable(true);
+        config.setActions(actions);
         config.setPagination(pagination);
 
         return config;

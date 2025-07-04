@@ -1,25 +1,19 @@
 package demos.springdata.fitmanage.domain.dto;
 
+import java.util.List;
+
 public class ConfigDto {
-    private String title;
     private boolean sortable;
+    private List<ActionConfigDto> actions;
     private PaginationConfigDto pagination;
 
     public ConfigDto() {
     }
 
-    public ConfigDto(String title, boolean sortable, PaginationConfigDto pagination) {
-        this.title = title;
+    public ConfigDto(boolean sortable, List<ActionConfigDto> actions, PaginationConfigDto pagination) {
         this.sortable = sortable;
+        this.actions = actions;
         this.pagination = pagination;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public boolean isSortable() {
@@ -28,6 +22,14 @@ public class ConfigDto {
 
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
+    }
+
+    public List<ActionConfigDto> getActions() {
+        return actions;
+    }
+
+    public void setActions(List<ActionConfigDto> actions) {
+        this.actions = actions;
     }
 
     public PaginationConfigDto getPagination() {
