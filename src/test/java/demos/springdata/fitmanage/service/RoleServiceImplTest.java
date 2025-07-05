@@ -65,7 +65,19 @@ public class RoleServiceImplTest {
         verify(gymRoleRepository, times(RoleType.values().length)).save(any(Role.class));
     }
 
-//    @Test
-//    void initRoles_shouldDoNothing_whenRolesAlreadyExist() {
-//    }
+
+    @Test
+    void save_shouldSaveRoleInRoleRepository() {
+        Role roleToSave = new Role(RoleType.GYM_ADMIN);
+        Role savedRole = new Role(RoleType.GYM_ADMIN);
+        savedRole.setId(1L);
+
+        when(gymRoleRepository.save(any(Role.class))).thenReturn(savedRole);
+
+        Role result = roleService.save(roleToSave);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals(RoleType.GYM_ADMIN, result.getName());
+    }
 }

@@ -60,8 +60,4 @@ public class RegistrationRequestDto {
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
     }
-
-    public boolean isPasswordConfirmed() {
-        return password != null && password.equals(confirmPassword);
-    }
 }

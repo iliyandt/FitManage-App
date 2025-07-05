@@ -5,10 +5,13 @@ import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto
 import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.Role;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
-import demos.springdata.fitmanage.util.ValidationUtil;
+import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +46,7 @@ public class AuthenticationServiceImplTest {
     private BCryptPasswordEncoder passwordEncoder;
 
     @Mock
-    private ValidationUtil validationUtil;
+    private UserValidationService userValidationService;
 
     @Mock
     private RoleService roleService;
@@ -72,9 +75,32 @@ public class AuthenticationServiceImplTest {
     }
 
 
-//    @Test
-//    void registerGym_ShouldSaveGym_WhenValidInput() {
-//    }
+    @Test
+    void registerGym_ShouldSaveGym_WhenValidInput() {
+        Role gymAdminRole = new Role(RoleType.GYM_ADMIN);
+        when(roleService.findByName(RoleType.GYM_ADMIN)).thenReturn(gymAdminRole);
+
+        Gym mappedGym = new Gym();
+        mappedGym.setUsername(validGymRegistrationDto.getUsername());
+        mappedGym.setEmail(validGymRegistrationDto.getEmail());
+        mappedGym.setPassword("plainPassword");
+
+        when(modelMapper.map(any(RegistrationRequestDto.class), eq(Gym.class))).thenReturn(mappedGym);
+
+        Gym savedGym = new Gym();
+        savedGym.setUsername(validGymRegistrationDto.getUsername());
+        savedGym.setEmail(validGymRegistrationDto.getEmail());
+        savedGym.setVerificationCode("123456");
+
+        when(gymRepository.save(any(Gym.class))).thenReturn(savedGym);
+
+        RegistrationResponseDto response = authenticationService.registerGym(validGymRegistrationDto);
+
+        assertNotNull(response);
+        assertEquals(validGymRegistrationDto.getUsername(), response.getUsername());
+        assertEquals(validGymRegistrationDto.getEmail(), response.getEmail());
+        assertNotNull(response.getVerificationCode());
+    }
 
 //    @Test
 //    void registerGym_ShouldThrowException_WhenUsernameExists() {

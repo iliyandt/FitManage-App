@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role save(Role superAdminRole) {
-        return gymRoleRepository.save(superAdminRole);
+    public Role save(Role role) {
+        return gymRoleRepository.save(role);
     }
 }
