@@ -43,6 +43,7 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
 
     @Override
     public void updateBasicInfo(String email, GymBasicInfoDto dto) {
+        LOGGER.info("Updating basic info for gym with email: {}", email);
         Map<String, String> errors = new HashMap<>();
         Gym gym = getGymOrElseThrow(email);
 
@@ -57,6 +58,37 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
         LOGGER.info("Updated basic info for gym: {}", email);
     }
 
+
+    @Override
+    public void addTeamMembers(String gymEmail, List<StaffMemberRequestDto> dtos) {
+        LOGGER.info("Adding {} team members to gym with email: {}", dtos.size(), gymEmail);
+        List<StaffMember> staffMembers = dtos.stream()
+                .map(dto -> {
+                    if (staffMemberRepository.existsByUsername(dto.getUsername())) {
+                        LOGGER.error("Username {} already exists", dto.getGymUsername());
+                        throw new FitManageAppException("Username already exists", ApiErrorCode.CONFLICT);
+                    } else if (staffMemberRepository.existsByEmail(dto.getEmail())) {
+                        LOGGER.error("Email {} already exists", dto.getEmail());
+                        throw new FitManageAppException("Email already exists", ApiErrorCode.CONFLICT);
+                    }
+
+                    Gym gym = gymRepository.findByUsername(dto.getGymUsername())
+                            .orElseThrow(() -> {
+                                LOGGER.warn("Gym with username {} not found when adding staff member", dto.getGymUsername());
+                                return new FitManageAppException("Gym not found for username: " + dto.getGymUsername(), ApiErrorCode.NOT_FOUND);
+                            });
+                    StaffMember staff = modelMapper.map(dto, StaffMember.class);
+                    staff.setPassword(passwordEncoder.encode(dto.getPassword()));
+                    staff.setGym(gym);
+                    return staff;
+                })
+                .toList();
+
+        staffMemberRepository.saveAll(staffMembers);
+        LOGGER.info("Added {} staff members to gym: {}", staffMembers.size(), gymEmail);
+    }
+
+
     private static void updateGymDetails(GymBasicInfoDto dto, Gym gym) {
         gym.setEmail(dto.getEmail());
         gym.setPhone(dto.getPhone());
@@ -66,9 +98,11 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
 
     private void updateUsernameIfChanged(Gym gym, String username, Map<String, String> errors) {
         if (!gym.getActualUsername().equals(username)) {
+            LOGGER.info("Gym username change detected: {} -> {}", gym.getActualUsername(), username);
             validateUsernameUniqueness(username, gym.getId(), errors);
             if (!errors.containsKey("username")) {
                 gym.setUsername(username);
+                LOGGER.info("Gym username updated to {}", username);
             }
         }
     }
@@ -86,32 +120,5 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
                     LOGGER.warn("Gym with email {} not found", email);
                     return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
                 });
-    }
-
-    @Override
-    public void addTeamMembers(String gymEmail, List<StaffMemberRequestDto> dtos) {
-
-        List<StaffMember> staffMembers = dtos.stream()
-                .map(dto -> {
-                    if (staffMemberRepository.existsByUsername(dto.getUsername())) {
-                        LOGGER.error("Username {} already exists", dto.getGymUsername());
-                        throw new FitManageAppException("Username already exists", ApiErrorCode.CONFLICT);
-                    } else if (staffMemberRepository.existsByEmail(dto.getEmail())) {
-                        LOGGER.error("Email {} already exists", dto.getEmail());
-                        throw new FitManageAppException("Email already exists", ApiErrorCode.CONFLICT);
-                    }
-
-                    Gym gym = gymRepository.findByUsername(dto.getGymUsername())
-                            .orElseThrow(() -> new FitManageAppException("Gym not found for username: " + dto.getGymUsername(), ApiErrorCode.NOT_FOUND));
-
-                    StaffMember staff = modelMapper.map(dto, StaffMember.class);
-                    staff.setPassword(passwordEncoder.encode(dto.getPassword()));
-                    staff.setGym(gym);
-                    return staff;
-                })
-                .toList();
-
-        LOGGER.info("Added {} staff members to gym: {}", staffMembers.size(), gymEmail);
-        staffMemberRepository.saveAll(staffMembers);
     }
 }

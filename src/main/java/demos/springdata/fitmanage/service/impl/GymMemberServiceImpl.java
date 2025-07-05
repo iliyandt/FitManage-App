@@ -85,12 +85,20 @@ public class GymMemberServiceImpl implements GymMemberService {
         GymMember existingMember = gymMemberRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
 
+        LOGGER.info("Updating member with ID {}", memberId);
+
         existingMember.setFirstName(memberUpdateRequestDto.getFirstName());
         existingMember.setLastName(memberUpdateRequestDto.getLastName());
         existingMember.setSubscriptionPlan(memberUpdateRequestDto.getSubscriptionPlan());
+
+        if (gymMemberRepository.existsByPhone(memberUpdateRequestDto.getPhone()) &&
+                !existingMember.getPhone().equals(memberUpdateRequestDto.getPhone())) {
+            throw new MultipleValidationException(Map.of("Phone", "Phone used by another member"));
+        }
         existingMember.setPhone(memberUpdateRequestDto.getPhone());
 
         GymMember updatedMember = gymMemberRepository.save(existingMember);
+        LOGGER.info("Member with ID {} updated successfully", memberId);
 
         return mapToResponseDto(updatedMember);
     }
@@ -99,7 +107,10 @@ public class GymMemberServiceImpl implements GymMemberService {
     public void deleteGymMember(Long memberId) {
         GymMember gymMember = gymMemberRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+        LOGGER.info("Deleting member with ID {}", memberId);
+
         gymMemberRepository.delete(gymMember);
+        LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
 
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {

@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.service.JwtService;
 import io.jsonwebtoken.Claims;
@@ -23,6 +24,7 @@ public class JwtServiceImpl implements JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
     @Value("${security.jwt.expiration-time}")
+    private Long jwtExpiration;
     private final static Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
 
     @Override
@@ -44,9 +46,9 @@ public class JwtServiceImpl implements JwtService {
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
-        } catch (FitManageAppException e) {
+        } catch (Exception e) {
             LOGGER.error("Error parsing JWT token", e);
-            throw e;
+            throw new FitManageAppException("Invalid JWT token", ApiErrorCode.INVALID_TOKEN);
         }
 
     }
@@ -73,7 +75,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 900_000))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

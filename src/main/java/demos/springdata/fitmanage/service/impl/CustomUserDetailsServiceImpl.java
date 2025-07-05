@@ -6,6 +6,8 @@ import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,6 +18,7 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     private final SuperAdminRepository superAdminRepository;
     private final GymRepository gymRepository;
     private final GymMemberRepository gymMemberRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(CustomUserDetailsServiceImpl.class);
 
     @Autowired
     public CustomUserDetailsServiceImpl(SuperAdminRepository superAdminRepository, GymRepository gymRepository, GymMemberRepository gymMemberRepository) {
@@ -24,22 +27,23 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
         this.gymMemberRepository = gymMemberRepository;
     }
 
-//    @Override
-//    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-//        return superAdminRepository.findByEmail(email)
-//                .map(user -> (UserDetails) user)
-//                .orElseGet(() ->
-//                        gymRepository.findByEmail(email)
-//                                .map(gym -> (UserDetails) gym)
-//                                .orElseThrow(() -> new FitManageAppException("User/Gym not found", ApiErrorCode.NOT_FOUND)));
-//    }
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return superAdminRepository.findByEmail(email).<UserDetails>map(user -> user)
+        LOGGER.info("Attempting to load user details for email: {}", email);
+
+        return superAdminRepository.findByEmail(email).<UserDetails>map(user -> {
+                    LOGGER.info("SuperAdmin found with email: {}", email);
+                    return user;
+                })
                 .or(() -> gymRepository.findByEmail(email).map(gym -> (UserDetails) gym))
-                .or(() -> gymMemberRepository.findByEmail(email).map(member -> (UserDetails) member))
-                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+                .or(() -> gymMemberRepository.findByEmail(email).map(member -> {
+                    LOGGER.info("Gym account found with email: {}", email);
+                    return (UserDetails) member;
+                }))
+                .orElseThrow(() -> {
+                    LOGGER.warn("No user found with email: {}", email);
+                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
+                });
     }
 
 

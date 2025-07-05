@@ -30,7 +30,7 @@ public class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(FitManageAppException.class)
     public ApiResponse<?> handleFitManageAppException(FitManageAppException ex) {
-        return ApiResponse.failure("Validation failed", "BAD_REQUEST");
+        return ApiResponse.failure("Validation failed", ex.getErrorCode().name());
     }
 
     @ResponseStatus(HttpStatus.OK)

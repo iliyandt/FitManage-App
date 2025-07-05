@@ -88,9 +88,9 @@ public class GymMemberController {
         pagination.setPageSize(10);
 
         List<ActionConfigDto> actions = List.of(
-                new ActionConfigDto("details", "Details", "/gym-members/{id}"),
-                new ActionConfigDto("edit", "Edit", "/gym-members/{id}"),
-                new ActionConfigDto("delete", "Delete", "/gym-members/{id}")
+                new ActionConfigDto("details", "Details", "gym-members/{id}"),
+                new ActionConfigDto("edit", "Edit", "gym-members/{id}"),
+                new ActionConfigDto("delete", "Delete", "gym-members/{id}")
         );
 
         ConfigDto config = new ConfigDto();

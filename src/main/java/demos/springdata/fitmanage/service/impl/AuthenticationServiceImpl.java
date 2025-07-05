@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -65,13 +64,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public RegistrationResponseDto registerGym(RegistrationRequestDto gymRegistrationDto) {
-        Map<String, String> errors = new HashMap<>();
+        LOGGER.info("Registration attempt for email: {}", gymRegistrationDto.getEmail());
 
+        Map<String, String> errors = new HashMap<>();
         userValidationService.checkDuplicateEmailOrThrow(gymRegistrationDto.getEmail());
         validateCredentials(gymRegistrationDto, errors);
         Gym gym = initializeNewGym(gymRegistrationDto);
 
         gymRepository.save(gym);
+        LOGGER.info("Registration successful for user: {}", gym.getEmail());
 
         return new RegistrationResponseDto(
                 gym.getActualUsername(),
@@ -96,9 +97,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserDetails login(LoginRequestDto loginRequestDto) {
+        LOGGER.info("Login attempt for email: {}", loginRequestDto.getEmail());
         UserDetails authUser = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         verifyAccountStatus(authUser);
         authenticateCredentials(loginRequestDto);
+        LOGGER.info("Login successful for user: {}", loginRequestDto.getEmail());
         return authUser;
     }
 
@@ -146,6 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private void enableGymAccount(Gym gym) {
+        LOGGER.info("Enabling account for user: {}", gym.getEmail());
         gym.setEnabled(true);
         gym.setVerificationCode(null);
         gym.setVerificationCodeExpiresAt(null);
@@ -193,6 +197,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     )
             );
         } catch (AuthenticationException ex) {
+            LOGGER.warn("Login failed for email: {}", loginRequestDto.getEmail());
             throw new FitManageAppException("Invalid email or password", ApiErrorCode.UNAUTHORIZED);
         }
     }

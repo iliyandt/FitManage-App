@@ -47,6 +47,7 @@ public class GymServiceImpl implements GymService {
 
     @Override
     public Optional<GymSummaryDto> getGymByEmail(String email) {
+        LOGGER.info("Fetching gym with email: {}", email);
         return this.gymRepository.findByEmail(email)
                 .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class));
     }
@@ -57,10 +58,15 @@ public class GymServiceImpl implements GymService {
         String gymEmail = authentication.getName();
         LOGGER.info("Authenticated gym email: {}", gymEmail);
         Gym gym = gymRepository.findByEmail(gymEmail)
-                .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> {
+                    LOGGER.warn("Gym with email {} not found when adding member", gymEmail);
+                    return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
+                });
 
+        GymMemberResponseDto memberResponse = gymMemberService.createMemberForGym(gym, requestDto);
+        LOGGER.info("Successfully added member with ID {} to gym '{}'", memberResponse.getId(), gym.getEmail());
 
-        return gymMemberService.createMemberForGym(gym, requestDto);
+        return memberResponse;
     }
 
 }

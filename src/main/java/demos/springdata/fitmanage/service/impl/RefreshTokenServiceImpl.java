@@ -44,7 +44,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken createRefreshToken(String email) {
-
+        LOGGER.info("Creating refresh token for email: {}", email);
         Optional<GymSummaryDto> gymDtoOpt = gymService.getGymByEmail(email);
         Optional<SuperAdminDto> adminDtoOpt = superAdminService.findByEmail(email);
 
@@ -58,8 +58,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                     .token(UUID.randomUUID().toString())
                     .expiryDate(Instant.now().plusMillis(604_800_000))
                     .build();
+            RefreshToken saved = refreshTokenRepository.save(refreshToken);
+            LOGGER.info("New refresh token created with token value: {}", saved.getToken());
 
-            return refreshTokenRepository.save(refreshToken);
+            return saved;
 
         } else if (adminDtoOpt.isPresent()) {
             SuperAdminUser superAdmin = modelMapper.map(adminDtoOpt.get(), SuperAdminUser.class);
@@ -73,8 +75,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
                     .build();
 
             return refreshTokenRepository.save(refreshToken);
-
         } else {
+            LOGGER.warn("No gym or super admin found for email: {}", email);
             throw new FitManageAppException("User not found with email: " + email, ApiErrorCode.NOT_FOUND);
         }
     }
