@@ -59,6 +59,7 @@ public class GymServiceImpl implements GymService {
         Gym gym = gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 
+
         return gymMemberService.createMemberForGym(gym, requestDto);
     }
 

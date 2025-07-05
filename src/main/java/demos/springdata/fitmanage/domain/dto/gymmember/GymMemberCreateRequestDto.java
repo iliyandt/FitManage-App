@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,10 +13,14 @@ public class GymMemberCreateRequestDto {
     @NotBlank
     @Size(min = 2, max = 20)
     private String lastName;
+
     @NotBlank
+    @Column(unique = true)
     @Email(message = "Email must be valid")
     private String email;
+
     @NotBlank
+    @Column(unique = true)
     private String phone;
 
     public GymMemberCreateRequestDto() {

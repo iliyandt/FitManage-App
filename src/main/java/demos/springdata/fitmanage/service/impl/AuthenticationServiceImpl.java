@@ -222,17 +222,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void validateCredentials(RegistrationRequestDto gymRegistrationDto, Map<String, String> errors) {
         if (gymRepository.findByUsername(gymRegistrationDto.getUsername()).isPresent()) {
-            LOGGER.error("Username {} already exists", gymRegistrationDto.getUsername());
+            LOGGER.warn("Username {} already exists", gymRegistrationDto.getUsername());
             errors.put("username", "Gym with this username already exists");
         }
 
         if (gymRepository.findByEmail(gymRegistrationDto.getEmail()).isPresent()) {
-            LOGGER.error("Account with email {} already exists", gymRegistrationDto.getEmail());
+            LOGGER.warn("Account with email {} already exists", gymRegistrationDto.getEmail());
             errors.put("email", "Email is already registered");
         }
 
         if (!gymRegistrationDto.getPassword().equals(gymRegistrationDto.getConfirmPassword())) {
-            LOGGER.error("Passwords do not match.");
+            LOGGER.warn("Passwords do not match.");
             errors.put("confirmPassword", "Passwords do not match");
         }
 

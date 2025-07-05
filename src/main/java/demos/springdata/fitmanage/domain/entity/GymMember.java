@@ -25,6 +25,8 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     @JsonIgnore
     private String password;
+
+    @Column(unique = true)
     private String phone;
 
     @ManyToMany(fetch = FetchType.EAGER)

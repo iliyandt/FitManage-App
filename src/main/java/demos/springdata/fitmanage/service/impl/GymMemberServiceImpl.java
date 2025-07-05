@@ -10,6 +10,7 @@ import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.RoleService;
@@ -19,7 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
@@ -37,15 +40,35 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     @Override
     public GymMemberResponseDto createMemberForGym(Gym gym, GymMemberCreateRequestDto requestDto) {
+        Map<String, String> errors = new HashMap<>();
+
+        validateCredentials(requestDto, errors);
+
         GymMember member = modelMapper.map(requestDto, GymMember.class);
         member.setGym(gym);
         Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(gymAdminRole);
-        LOGGER.info("member with email {} will be saved in the database", member.getEmail());
+
+        LOGGER.info("Member with email {} will be saved in the database", member.getEmail());
         GymMember savedMember = gymMemberRepository.save(member);
 
-        LOGGER.info("the entity for member {} will be mapped to response dto", savedMember.getFirstName());
         return modelMapper.map(savedMember, GymMemberResponseDto.class);
+    }
+
+    private void validateCredentials(GymMemberCreateRequestDto requestDto, Map<String, String> errors) {
+        if (gymMemberRepository.existsByEmail(requestDto.getEmail())) {
+            LOGGER.warn("Member with email {} already exists", requestDto.getEmail());
+            errors.put("Email", "Email is already registered");
+        }
+
+        if (gymMemberRepository.existsByPhone(requestDto.getPhone())) {
+            LOGGER.warn("Member with phone {} already exists", requestDto.getPhone());
+            errors.put("Phone", "Phone used from another member");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultipleValidationException(errors);
+        }
     }
 
     @Override
