@@ -8,7 +8,6 @@ import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto
 import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;

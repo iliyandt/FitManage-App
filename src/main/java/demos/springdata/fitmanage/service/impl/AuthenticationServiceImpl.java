@@ -18,7 +18,6 @@ import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.EmailService;
 import demos.springdata.fitmanage.service.RoleService;
-import demos.springdata.fitmanage.util.ValidationUtil;
 import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
@@ -40,7 +39,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final GymRepository gymRepository;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final ValidationUtil validationUtil;
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
@@ -50,11 +48,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Autowired
-    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, ValidationUtil validationUtil, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, UserValidationService userValidationService) {
+    public AuthenticationServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, UserValidationService userValidationService) {
         this.gymRepository = gymRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
-        this.validationUtil = validationUtil;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;

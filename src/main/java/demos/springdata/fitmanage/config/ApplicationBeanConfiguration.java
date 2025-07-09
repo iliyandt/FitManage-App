@@ -4,8 +4,6 @@ import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
-import demos.springdata.fitmanage.util.ValidationUtil;
-import demos.springdata.fitmanage.util.ValidationUtilImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,10 +40,6 @@ public class ApplicationBeanConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public ValidationUtil validationUtil() {
-        return new ValidationUtilImpl();
-    }
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
