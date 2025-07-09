@@ -1,21 +1,21 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
+
 public class GymMemberTableDto {
 
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String subscriptionPlan;
+    private String fullName;
+    private SubscriptionStatus subscriptionStatus; //subscriptionStatus
     private String phone;
 
     public GymMemberTableDto() {
     }
 
-    public GymMemberTableDto(Long id, String firstName, String lastName, String subscriptionPlan, String phone) {
+    public GymMemberTableDto(Long id, String fullName, SubscriptionStatus subscriptionStatus, String phone) {
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.subscriptionPlan = subscriptionPlan;
+        this.fullName = fullName;
+        this.subscriptionStatus = subscriptionStatus;
         this.phone = phone;
     }
 
@@ -27,28 +27,20 @@ public class GymMemberTableDto {
         this.id = id;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getSubscriptionPlan() {
-        return subscriptionPlan;
-    }
-
-    public void setSubscriptionPlan(String subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
+    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
 
     public String getPhone() {

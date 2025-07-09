@@ -89,7 +89,7 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         existingMember.setFirstName(memberUpdateRequestDto.getFirstName());
         existingMember.setLastName(memberUpdateRequestDto.getLastName());
-        existingMember.setSubscriptionPlan(memberUpdateRequestDto.getSubscriptionPlan());
+        existingMember.setSubscriptionStatus(memberUpdateRequestDto.getSubscriptionStatus());
 
         if (gymMemberRepository.existsByPhone(memberUpdateRequestDto.getPhone()) &&
                 !existingMember.getPhone().equals(memberUpdateRequestDto.getPhone())) {

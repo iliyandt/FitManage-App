@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -39,7 +40,9 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     private boolean enabled;
     private LocalDateTime createdAt;
-    private String subscriptionPlan;
+
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus subscriptionStatus;
 
     @ManyToOne
     @JoinColumn(name = "gym_id")
@@ -52,6 +55,10 @@ public class GymMember extends BaseEntity implements UserDetails {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.enabled = true;
+
+        if (this.subscriptionStatus == null) {
+            this.subscriptionStatus = SubscriptionStatus.INACTIVE;
+        }
     }
 
     public String getFirstName() {
@@ -68,6 +75,11 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Transient
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     public String getEmail() {
@@ -154,13 +166,11 @@ public class GymMember extends BaseEntity implements UserDetails {
         this.gym = gym;
     }
 
-    public String getSubscriptionPlan() {
-        return subscriptionPlan;
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
     }
 
-    public void setSubscriptionPlan(String subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
+    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
-
-
 }

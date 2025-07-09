@@ -40,9 +40,8 @@ public class GymMemberTableHelper {
         Map<String, Object> row = new LinkedHashMap<>();
 
         row.put("id", member.getId());
-        row.put("firstName", member.getFirstName());
-        row.put("lastName", member.getLastName());
-        row.put("subscriptionPlan", member.getSubscriptionPlan() != null ? member.getSubscriptionPlan() : "No Subscription");
+        row.put("fullName", member.getFullName());
+        row.put("subscriptionStatus", member.getSubscriptionStatus() != null ? member.getSubscriptionStatus() : "No Subscription");
         row.put("phone", member.getPhone());
 
         return row;

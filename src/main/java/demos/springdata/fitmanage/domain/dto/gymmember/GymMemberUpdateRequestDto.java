@@ -1,21 +1,22 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.validation.constraints.Size;
 
 public class GymMemberUpdateRequestDto {
     @Size
     private String firstName;
     private String lastName;
-    private String subscriptionPlan;
+    private SubscriptionStatus subscriptionStatus;
     private String phone;
 
     public GymMemberUpdateRequestDto() {
     }
 
-    public GymMemberUpdateRequestDto(String firstName, String lastName, String subscriptionPlan, String phone) {
+    public GymMemberUpdateRequestDto(String firstName, String lastName, SubscriptionStatus subscriptionStatus, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.subscriptionPlan = subscriptionPlan;
+        this.subscriptionStatus = subscriptionStatus;
         this.phone = phone;
 
     }
@@ -36,12 +37,12 @@ public class GymMemberUpdateRequestDto {
         this.lastName = lastName;
     }
 
-    public String getSubscriptionPlan() {
-        return subscriptionPlan;
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
     }
 
-    public void setSubscriptionPlan(String subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
+    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
 
     public String getPhone() {

@@ -5,6 +5,7 @@ public class ColumnConfigDto {
     private String header;
     private String type;
 
+
     public ColumnConfigDto() {
     }
 
