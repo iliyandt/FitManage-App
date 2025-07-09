@@ -1,23 +1,25 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
+
 public class GymMemberResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
     private String email;
     private String phone;
-    private String subscriptionPlan;
+    private SubscriptionStatus subscriptionStatus;
 
     public GymMemberResponseDto() {
     }
 
-    public GymMemberResponseDto(Long id, String firstName, String lastName, String email, String phone, String subscriptionPlan) {
+    public GymMemberResponseDto(Long id, String firstName, String lastName, String email, String phone, SubscriptionStatus subscriptionStatus) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
-        this.subscriptionPlan = subscriptionPlan;
+        this.subscriptionStatus = subscriptionStatus;
     }
 
     public Long getId() {
@@ -60,11 +62,11 @@ public class GymMemberResponseDto {
         this.phone = phone;
     }
 
-    public String getSubscriptionPlan() {
-        return subscriptionPlan;
+    public SubscriptionStatus getSubscriptionStatus() {
+        return subscriptionStatus;
     }
 
-    public void setSubscriptionPlan(String subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
+    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
 }
