@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.auth.request.GymEmailRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
-
 import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
@@ -11,7 +11,6 @@ import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
-import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +19,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -33,7 +34,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class AuthenticationServiceImplTest {
 
     @Mock
@@ -41,12 +42,6 @@ public class AuthenticationServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
-
-    @Mock
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Mock
-    private UserValidationService userValidationService;
 
     @Mock
     private RoleService roleService;
@@ -164,9 +159,9 @@ public class AuthenticationServiceImplTest {
         verify(gymRepository).save(gym);
     }
 
-//    @Test
-//    void verifyUser_ShouldThrowException_WhenCodeIsInvalid() {
-//    }
+    @Test
+    void verifyUser_ShouldThrowException_WhenCodeIsInvalid() {
+    }
 
 //    @Test
 //    void verifyUser_ShouldThrowException_WhenCodeIsExpired() {
@@ -238,5 +233,35 @@ public class AuthenticationServiceImplTest {
 
         verify(emailService, Mockito.never()).sendVerificationEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         verify(gymRepository, Mockito.never()).save(any());
+    }
+
+    @Test
+    void login_ShouldAuthenticateSuccessfully_WhenCredentialsAreValid() {
+        String email = "email@gym.com";
+        String password = "securePassword";
+
+        LoginRequestDto loginRequest = new LoginRequestDto();
+        loginRequest.setEmail(email);
+        loginRequest.setPassword(password);
+
+        Gym gymUser = new Gym();
+        gymUser.setEmail(email);
+        gymUser.setPassword(password);
+        gymUser.setEnabled(true);
+
+        when(customUserDetailsService.loadUserByUsername(email)).thenReturn(gymUser);
+
+        when(authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        )).thenReturn(null);
+
+
+        UserDetails result = authenticationService.login(loginRequest);
+
+        assertNotNull(result);
+        assertEquals(email, result.getUsername());
+
+        verify(customUserDetailsService).loadUserByUsername(email);
+        verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
     }
 }

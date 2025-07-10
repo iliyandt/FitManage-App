@@ -1,0 +1,221 @@
+package demos.springdata.fitmanage.service;
+
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.GymMember;
+import demos.springdata.fitmanage.domain.entity.Role;
+import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
+import demos.springdata.fitmanage.repository.GymMemberRepository;
+import demos.springdata.fitmanage.service.impl.GymMemberServiceImpl;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
+public class GymMemberServiceImplTest {
+    @Mock
+    private GymMemberRepository gymMemberRepository;
+    @Mock
+    private RoleService roleService;
+    @Mock
+    private ModelMapper modelMapper;
+
+    @InjectMocks
+    private GymMemberServiceImpl gymMemberService;
+
+    private GymMemberCreateRequestDto requestDto;
+    private GymMember gymMemberEntity;
+    private Gym gym;
+    private Role memberRole;
+
+
+    @BeforeEach
+    void setup() {
+        requestDto = new GymMemberCreateRequestDto();
+        requestDto.setEmail("test@example.com");
+        requestDto.setPhone("123456789");
+
+        gymMemberEntity = new GymMember();
+        gymMemberEntity.setEmail("test@example.com");
+        gymMemberEntity.setPhone("0877202011");
+        gymMemberEntity.setRoles(new HashSet<>());
+
+        gym = new Gym();
+
+        memberRole = new Role();
+        memberRole.setName(RoleType.MEMBER);
+    }
+
+
+    @Test
+    void shouldCreateGymMemberSuccessfully() {
+        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
+        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
+        Mockito.when(modelMapper.map(requestDto, GymMember.class)).thenReturn(gymMemberEntity);
+        Mockito.when(roleService.findByName(RoleType.MEMBER)).thenReturn(memberRole);
+        Mockito.when(gymMemberRepository.save(gymMemberEntity)).thenReturn(gymMemberEntity);
+        Mockito.when(modelMapper.map(gymMemberEntity, GymMemberResponseDto.class)).thenReturn(new GymMemberResponseDto());
+
+        GymMemberResponseDto response = gymMemberService.createMemberForGym(gym, requestDto);
+        Assertions.assertNotNull(response);
+        Mockito.verify(gymMemberRepository).save(gymMemberEntity);
+    }
+
+    @Test
+    void shouldThrowValidationException_WhenEmailExists() {
+        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(true);
+        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
+
+        MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
+                () -> gymMemberService.createMemberForGym(gym, requestDto));
+
+        Assertions.assertTrue(ex.getErrors().containsKey("Email"));
+    }
+
+    @Test
+    void shouldThrowValidationException_WhenPhoneExists() {
+        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
+        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(true);
+
+        MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
+                () -> gymMemberService.createMemberForGym(gym, requestDto));
+
+        Assertions.assertTrue(ex.getErrors().containsKey("Phone"));
+    }
+
+
+    @Test
+    void shouldReturnAllExistingMembers() {
+        GymMember member1 = new GymMember();
+        GymMember member2 = new GymMember();
+
+        GymMemberTableDto dto1 = new GymMemberTableDto();
+        GymMemberTableDto dto2 = new GymMemberTableDto();
+
+        List<GymMember> gymMembers = List.of(member1, member2);
+
+        Mockito.when(gymMemberRepository.findAll()).thenReturn(gymMembers);
+        Mockito.when(modelMapper.map(member1, GymMemberTableDto.class)).thenReturn(dto1);
+        Mockito.when(modelMapper.map(member2, GymMemberTableDto.class)).thenReturn(dto2);
+
+        List<GymMemberTableDto> result = gymMemberService.findAllGymMembers();
+
+        Assertions.assertEquals(2, result.size());
+        Assertions.assertTrue(result.contains(dto1));
+        Assertions.assertTrue(result.contains(dto2));
+
+        Mockito.verify(gymMemberRepository).findAll();
+        Mockito.verify(modelMapper).map(member1, GymMemberTableDto.class);
+        Mockito.verify(modelMapper).map(member2, GymMemberTableDto.class);
+    }
+
+
+    @Test
+    void shouldUpdateGymMemberSuccessfully() {
+        Long memberId = 1L;
+        GymMember existingMember = new GymMember();
+        existingMember.setId(memberId);
+        existingMember.setPhone("0888123456");
+
+        GymMemberUpdateRequestDto updateDto = new GymMemberUpdateRequestDto();
+        updateDto.setFirstName("Old");
+        updateDto.setLastName("OldName");
+        updateDto.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+        updateDto.setPhone("0877202011");
+
+        GymMember updatedMember = new GymMember();
+        updatedMember.setFirstName("Updated");
+        updatedMember.setLastName("NewName");
+        updatedMember.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+        updatedMember.setPhone("0888999999");
+
+        GymMemberResponseDto responseDto = new GymMemberResponseDto();
+
+        Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(gymMemberRepository.existsByPhone(updateDto.getPhone())).thenReturn(false);
+        Mockito.when(gymMemberRepository.save(existingMember)).thenReturn(updatedMember);
+        Mockito.when(modelMapper.map(updatedMember, GymMemberResponseDto.class)).thenReturn(responseDto);
+
+
+        GymMemberResponseDto result = gymMemberService.updateGymMember(memberId, updateDto);
+
+
+        Assertions.assertEquals(responseDto, result);
+        Mockito.verify(gymMemberRepository).findById(memberId);
+        Mockito.verify(gymMemberRepository).existsByPhone(updateDto.getPhone());
+        Mockito.verify(gymMemberRepository).save(existingMember);
+        Mockito.verify(modelMapper).map(updatedMember, GymMemberResponseDto.class);
+    }
+
+    @Test
+    void shouldThrowException_WhenMemberNotFound() {
+        Long memberId = 42L;
+        GymMemberUpdateRequestDto dto = new GymMemberUpdateRequestDto();
+
+        Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        FitManageAppException exception = Assertions.assertThrows(
+                FitManageAppException.class,
+                () -> gymMemberService.updateGymMember(memberId, dto)
+        );
+
+        Assertions.assertEquals(ApiErrorCode.NOT_FOUND, exception.getErrorCode());
+        Mockito.verify(gymMemberRepository).findById(memberId);
+    }
+
+    @Test
+    void shouldThrowException_WhenPhoneAlreadyTaken() {
+        Long memberId = 1L;
+        GymMember existingMember = new GymMember();
+        existingMember.setId(memberId);
+        existingMember.setPhone("0899240177");
+
+        GymMemberUpdateRequestDto updateDto = new GymMemberUpdateRequestDto();
+        updateDto.setPhone("0877202011");
+
+        Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.of(existingMember));
+        Mockito.when(gymMemberRepository.existsByPhone(updateDto.getPhone())).thenReturn(true);
+
+        MultipleValidationException ex = Assertions.assertThrows(
+                MultipleValidationException.class,
+                () -> gymMemberService.updateGymMember(memberId, updateDto)
+        );
+
+        Assertions.assertTrue(ex.getErrors().containsKey("Phone"));
+        Mockito.verify(gymMemberRepository).existsByPhone(updateDto.getPhone());
+
+    }
+
+    @Test
+    void shouldDeleteGymMemberSuccessfully() {
+        Long memberId = 1L;
+        GymMember mockMember = new GymMember();
+        mockMember.setId(memberId);
+
+        Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.of(mockMember));
+        gymMemberService.deleteGymMember(memberId);
+
+        Mockito.verify(gymMemberRepository).findById(memberId);
+        Mockito.verify(gymMemberRepository).delete(mockMember);
+    }
+
+
+
+}
