@@ -12,20 +12,20 @@ import java.util.Map;
 
 @Component
 public class GymMemberTableHelper {
-    public List<Map<String, Object>> buildRows(List<GymMemberTableDto> members) {
-        return members.stream()
-                .map(this::buildRowMap)
+    public <T> List<Map<String, Object>> buildRows(List<T> data, RowMapper<T> rowMapper) {
+        return data.stream()
+                .map(rowMapper::mapRow)
                 .toList();
     }
 
-    public ConfigDto buildTableConfig() {
+    public ConfigDto buildTableConfig(String basePath) {
         PaginationConfigDto pagination = new PaginationConfigDto();
         pagination.setPageSize(10);
 
         List<ActionConfigDto> actions = List.of(
-                new ActionConfigDto("details", "Details", "gym-members/{id}"),
-                new ActionConfigDto("edit", "Edit", "gym-members/{id}"),
-                new ActionConfigDto("delete", "Delete", "gym-members/{id}")
+                new ActionConfigDto("details", "Details", basePath + "/{id}"),
+                new ActionConfigDto("edit", "Edit", basePath + "/{id}"),
+                new ActionConfigDto("delete", "Delete", basePath + "/{id}")
         );
 
         ConfigDto config = new ConfigDto();

@@ -28,7 +28,7 @@ public class SuperAdminServiceImplTest {
     }
 
     @Test
-    void findByEmail_ShouldReturnSuperAdminDto_whenEmailExists() {
+    void getByEmail_ShouldReturnSuperAdminDto_whenEmailExists() {
         String email = "admin@example.com";
         SuperAdminUser superAdminUser = new SuperAdminUser();
         superAdminUser.setEmail(email);
@@ -39,7 +39,7 @@ public class SuperAdminServiceImplTest {
         when(superAdminRepository.findByEmail(email)).thenReturn(Optional.of(superAdminUser));
         when(modelMapper.map(superAdminUser, SuperAdminDto.class)).thenReturn(superAdminDto);
 
-        SuperAdminDto result = superAdminService.findByEmail(email).get();
+        SuperAdminDto result = superAdminService.getByEmail(email).get();
 
 
         assertNotNull(result);

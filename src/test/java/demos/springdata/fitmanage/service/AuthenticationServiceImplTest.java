@@ -111,7 +111,7 @@ public class AuthenticationServiceImplTest {
 //    }
 
     @Test
-    void validateEmail_ShouldReturnGym_WhenEmailExists() {
+    void checkIfEmail_ShouldReturnGym_WhenEmailIsAvailableExists() {
         String email = "email@gym.com";
         Gym gym = new Gym();
         gym.setEmail(email);
@@ -122,7 +122,7 @@ public class AuthenticationServiceImplTest {
         when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
         when(modelMapper.map(any(Gym.class), eq(GymEmailResponseDto.class))).thenReturn(responseDto);
 
-        Optional<GymEmailResponseDto> result = authenticationService.validateEmail(new GymEmailRequestDto(email));
+        Optional<GymEmailResponseDto> result = authenticationService.checkIfEmailIsAvailable(new GymEmailRequestDto(email));
 
         Assertions.assertTrue(result.isPresent());
         Assertions.assertEquals(email, result.get().getEmail());
@@ -133,7 +133,7 @@ public class AuthenticationServiceImplTest {
 //    }
 
     @Test
-    void verifyUser_ShouldEnableGym_WhenCodeIsCorrectAndNotExpired() {
+    void verifyUser_Registration_ShouldEnableGym_WhenCodeIsCorrectAndNotExpired() {
         String email = "test@example.com";
         String code = "123456";
         LocalDateTime futureTime = LocalDateTime.now().plusMinutes(10);
@@ -150,7 +150,7 @@ public class AuthenticationServiceImplTest {
 
         Mockito.when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
 
-        authenticationService.verifyUser(dto);
+        authenticationService.verifyUserRegistration(dto);
 
         Assertions.assertTrue(gym.isEnabled());
         Assertions.assertNull(gym.getVerificationCode());
@@ -160,7 +160,7 @@ public class AuthenticationServiceImplTest {
     }
 
     @Test
-    void verifyUser_ShouldThrowException_WhenCodeIsInvalid() {
+    void verifyUser_Registration_ShouldThrowException_WhenCodeIsInvalid() {
     }
 
 //    @Test
@@ -168,7 +168,7 @@ public class AuthenticationServiceImplTest {
 //    }
 
     @Test
-    void verifyUser_ShouldThrowException_WhenUserNotFound() {
+    void verifyUser_ShouldThrowException_WhenUserRegistrationNotFound() {
         String email = "notfound@example.com";
         VerificationRequestDto dto = new VerificationRequestDto();
         dto.setEmail(email);
@@ -177,13 +177,13 @@ public class AuthenticationServiceImplTest {
         when(gymRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> authenticationService.verifyUser(dto));
+                () -> authenticationService.verifyUserRegistration(dto));
 
         assertEquals("User not found", exception.getMessage());
     }
 
     @Test
-    void resendVerificationCode_ShouldGenerateNewCode_WhenUserExistsAndNotEnabled() throws MessagingException {
+    void resendUserVerificationCode_ShouldGenerateNewCode_WhenUserExistsAndNotEnabled() throws MessagingException {
 
         String email = "test@example.com";
         Gym gym = new Gym();
@@ -192,18 +192,18 @@ public class AuthenticationServiceImplTest {
 
         Mockito.when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
 
-        authenticationService.resendVerificationCode(email);
+        authenticationService.resendUserVerificationCode(email);
 
         assertNotNull(gym.getVerificationCode());
         assertNotNull(gym.getVerificationCodeExpiresAt());
         Assertions.assertTrue(gym.getVerificationCodeExpiresAt().isAfter(LocalDateTime.now()));
 
-        verify(emailService).sendVerificationEmail(eq(email), Mockito.anyString(), Mockito.anyString());
+        verify(emailService).sendUserVerificationEmail(eq(email), Mockito.anyString(), Mockito.anyString());
         verify(gymRepository).save(gym);
     }
 
     @Test
-    void resendVerificationCode_ShouldThrowException_WhenAccountIsAlreadyVerified() throws MessagingException {
+    void resendUserVerificationCode_ShouldThrowException_WhenAccountIsAlreadyVerified() throws MessagingException {
         String email = "test@example.com";
         Gym gym = new Gym();
         gym.setEmail(email);
@@ -212,31 +212,31 @@ public class AuthenticationServiceImplTest {
         when(gymRepository.findByEmail(email)).thenReturn(Optional.of(gym));
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> authenticationService.resendVerificationCode(email));
+                () -> authenticationService.resendUserVerificationCode(email));
 
         assertEquals("Account is already verified", exception.getMessage());
 
-        verify(emailService, Mockito.never()).sendVerificationEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        verify(emailService, Mockito.never()).sendUserVerificationEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         verify(gymRepository, Mockito.never()).save(any());
     }
 
     @Test
-    void resendVerificationCode_ShouldThrowException_WhenUserNotFound() throws MessagingException {
+    void resendUserVerificationCode_ShouldThrowException_WhenUserNotFound() throws MessagingException {
         String email = "missing@example.com";
 
         when(gymRepository.findByEmail(email)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> authenticationService.resendVerificationCode(email));
+                () -> authenticationService.resendUserVerificationCode(email));
 
         assertEquals("User not found", exception.getMessage());
 
-        verify(emailService, Mockito.never()).sendVerificationEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+        verify(emailService, Mockito.never()).sendUserVerificationEmail(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
         verify(gymRepository, Mockito.never()).save(any());
     }
 
     @Test
-    void login_ShouldAuthenticateSuccessfully_WhenCredentialsAreValid() {
+    void authenticateUser_ShouldAuthenticateSuccessfully_WhenCredentialsAreValid() {
         String email = "email@gym.com";
         String password = "securePassword";
 
@@ -256,7 +256,7 @@ public class AuthenticationServiceImplTest {
         )).thenReturn(null);
 
 
-        UserDetails result = authenticationService.login(loginRequest);
+        UserDetails result = authenticationService.authenticateUser(loginRequest);
 
         assertNotNull(result);
         assertEquals(email, result.getUsername());

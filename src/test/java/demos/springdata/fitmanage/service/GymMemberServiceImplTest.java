@@ -73,7 +73,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(gymMemberRepository.save(gymMemberEntity)).thenReturn(gymMemberEntity);
         Mockito.when(modelMapper.map(gymMemberEntity, GymMemberResponseDto.class)).thenReturn(new GymMemberResponseDto());
 
-        GymMemberResponseDto response = gymMemberService.createMemberForGym(gym, requestDto);
+        GymMemberResponseDto response = gymMemberService.registerMemberToGym(gym, requestDto);
         Assertions.assertNotNull(response);
         Mockito.verify(gymMemberRepository).save(gymMemberEntity);
     }
@@ -84,7 +84,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
 
         MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
-                () -> gymMemberService.createMemberForGym(gym, requestDto));
+                () -> gymMemberService.registerMemberToGym(gym, requestDto));
 
         Assertions.assertTrue(ex.getErrors().containsKey("Email"));
     }
@@ -95,7 +95,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(true);
 
         MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
-                () -> gymMemberService.createMemberForGym(gym, requestDto));
+                () -> gymMemberService.registerMemberToGym(gym, requestDto));
 
         Assertions.assertTrue(ex.getErrors().containsKey("Phone"));
     }
@@ -115,7 +115,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(modelMapper.map(member1, GymMemberTableDto.class)).thenReturn(dto1);
         Mockito.when(modelMapper.map(member2, GymMemberTableDto.class)).thenReturn(dto2);
 
-        List<GymMemberTableDto> result = gymMemberService.findAllGymMembers();
+        List<GymMemberTableDto> result = gymMemberService.getAllGymMembersForTable();
 
         Assertions.assertEquals(2, result.size());
         Assertions.assertTrue(result.contains(dto1));
@@ -128,7 +128,7 @@ public class GymMemberServiceImplTest {
 
 
     @Test
-    void shouldUpdateGymMemberSuccessfully() {
+    void shouldUpdateMemberDetailsSuccessfully() {
         Long memberId = 1L;
         GymMember existingMember = new GymMember();
         existingMember.setId(memberId);
@@ -154,7 +154,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(modelMapper.map(updatedMember, GymMemberResponseDto.class)).thenReturn(responseDto);
 
 
-        GymMemberResponseDto result = gymMemberService.updateGymMember(memberId, updateDto);
+        GymMemberResponseDto result = gymMemberService.updateMemberDetails(memberId, updateDto);
 
 
         Assertions.assertEquals(responseDto, result);
@@ -173,7 +173,7 @@ public class GymMemberServiceImplTest {
 
         FitManageAppException exception = Assertions.assertThrows(
                 FitManageAppException.class,
-                () -> gymMemberService.updateGymMember(memberId, dto)
+                () -> gymMemberService.updateMemberDetails(memberId, dto)
         );
 
         Assertions.assertEquals(ApiErrorCode.NOT_FOUND, exception.getErrorCode());
@@ -195,7 +195,7 @@ public class GymMemberServiceImplTest {
 
         MultipleValidationException ex = Assertions.assertThrows(
                 MultipleValidationException.class,
-                () -> gymMemberService.updateGymMember(memberId, updateDto)
+                () -> gymMemberService.updateMemberDetails(memberId, updateDto)
         );
 
         Assertions.assertTrue(ex.getErrors().containsKey("Phone"));
@@ -204,13 +204,13 @@ public class GymMemberServiceImplTest {
     }
 
     @Test
-    void shouldDeleteGymMemberSuccessfully() {
+    void shouldRemoveGymMemberSuccessfully() {
         Long memberId = 1L;
         GymMember mockMember = new GymMember();
         mockMember.setId(memberId);
 
         Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.of(mockMember));
-        gymMemberService.deleteGymMember(memberId);
+        gymMemberService.removeGymMember(memberId);
 
         Mockito.verify(gymMemberRepository).findById(memberId);
         Mockito.verify(gymMemberRepository).delete(mockMember);
