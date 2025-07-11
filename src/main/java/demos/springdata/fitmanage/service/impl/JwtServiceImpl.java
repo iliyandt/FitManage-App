@@ -66,8 +66,7 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        String token = buildToken(extraClaims, userDetails);
-        return token;
+        return buildToken(extraClaims, userDetails);
     }
 
     private String buildToken(Map<String, Object> extraClaims, UserDetails userDetails) {

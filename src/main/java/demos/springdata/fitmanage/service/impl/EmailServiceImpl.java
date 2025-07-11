@@ -21,7 +21,7 @@ public class EmailServiceImpl implements EmailService {
         this.emailSender = emailSender;
     }
 
-    public void sendVerificationEmail(String to, String subject, String text) throws MessagingException {
+    public void sendUserVerificationEmail(String to, String subject, String text) throws MessagingException {
         LOGGER.info("Preparing to send verification email to: {}, subject: {}", to, subject);
 
         MimeMessage message = emailSender.createMimeMessage();

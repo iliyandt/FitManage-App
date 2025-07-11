@@ -9,8 +9,8 @@ import demos.springdata.fitmanage.domain.entity.Gym;
 import java.util.List;
 
 public interface GymMemberService {
-    GymMemberResponseDto createMemberForGym(Gym gym, GymMemberCreateRequestDto requestDto);
-    List<GymMemberTableDto> findAllGymMembers();
-    GymMemberResponseDto updateGymMember(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto);
-    void deleteGymMember(Long memberId);
+    GymMemberResponseDto registerMemberToGym(Gym gym, GymMemberCreateRequestDto requestDto);
+    List<GymMemberTableDto> getAllGymMembersForTable();
+    GymMemberResponseDto updateMemberDetails(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto);
+    void removeGymMember(Long memberId);
 }

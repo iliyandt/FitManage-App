@@ -53,7 +53,7 @@ public class GymServiceImpl implements GymService {
     }
 
     @Override
-    public GymMemberResponseDto addGymMemberToGym(GymMemberCreateRequestDto requestDto) {
+    public GymMemberResponseDto registerNewMemberToGym(GymMemberCreateRequestDto requestDto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String gymEmail = authentication.getName();
         LOGGER.info("Authenticated gym email: {}", gymEmail);
@@ -63,7 +63,7 @@ public class GymServiceImpl implements GymService {
                     return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
                 });
 
-        GymMemberResponseDto memberResponse = gymMemberService.createMemberForGym(gym, requestDto);
+        GymMemberResponseDto memberResponse = gymMemberService.registerMemberToGym(gym, requestDto);
         LOGGER.info("Successfully added member with ID {} to gym '{}'", memberResponse.getId(), gym.getEmail());
 
         return memberResponse;

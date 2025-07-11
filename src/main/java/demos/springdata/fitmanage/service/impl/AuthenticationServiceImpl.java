@@ -80,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public Optional<GymEmailResponseDto> validateEmail(GymEmailRequestDto gymEmailRequestDto) {
+    public Optional<GymEmailResponseDto> checkIfEmailIsAvailable(GymEmailRequestDto gymEmailRequestDto) {
         Map<String, String> errors = new HashMap<>();
         Optional<Gym> gym = this.gymRepository.findByEmail(gymEmailRequestDto.getEmail());
         if (gym.isPresent()) {
@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public UserDetails login(LoginRequestDto loginRequestDto) {
+    public UserDetails authenticateUser(LoginRequestDto loginRequestDto) {
         LOGGER.info("Login attempt for email: {}", loginRequestDto.getEmail());
         UserDetails authUser = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
         verifyAccountStatus(authUser);
@@ -104,7 +104,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public VerificationResponseDto verifyUser(VerificationRequestDto verificationRequestDto) {
+    public VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto) {
         Map<String, String> errors = new HashMap<>();
         LOGGER.info("Verification attempt for user: {}", verificationRequestDto.getEmail());
 
@@ -122,7 +122,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public VerificationResponseDto resendVerificationCode(String email) {
+    public VerificationResponseDto resendUserVerificationCode(String email) {
 
         Optional<Gym> optionalUser = gymRepository.findByEmail(email);
         if (optionalUser.isPresent()) {
@@ -261,7 +261,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             LOGGER.info("Sending verification email to: {}", gym.getEmail());
-            emailService.sendVerificationEmail(gym.getEmail(), subject, htmlMessage);
+            emailService.sendUserVerificationEmail(gym.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
             LOGGER.error("Failed to send verification email to: {}", gym.getEmail(), e);
             // Handle email sending exception

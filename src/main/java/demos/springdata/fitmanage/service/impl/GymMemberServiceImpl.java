@@ -39,7 +39,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
     @Override
-    public GymMemberResponseDto createMemberForGym(Gym gym, GymMemberCreateRequestDto requestDto) {
+    public GymMemberResponseDto registerMemberToGym(Gym gym, GymMemberCreateRequestDto requestDto) {
         Map<String, String> errors = new HashMap<>();
 
         validateCredentials(requestDto, errors);
@@ -72,7 +72,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
     @Override
-    public List<GymMemberTableDto> findAllGymMembers() {
+    public List<GymMemberTableDto> getAllGymMembersForTable() {
         List<GymMember> members = gymMemberRepository.findAll();
             return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
@@ -81,7 +81,7 @@ public class GymMemberServiceImpl implements GymMemberService {
 
 
     @Override
-    public GymMemberResponseDto updateGymMember(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto) {
+    public GymMemberResponseDto updateMemberDetails(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto) {
         GymMember existingMember = gymMemberRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
 
@@ -104,7 +104,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
     @Override
-    public void deleteGymMember(Long memberId) {
+    public void removeGymMember(Long memberId) {
         GymMember gymMember = gymMemberRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
         LOGGER.info("Deleting member with ID {}", memberId);

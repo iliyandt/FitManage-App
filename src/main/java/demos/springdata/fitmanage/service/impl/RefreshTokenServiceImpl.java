@@ -6,9 +6,7 @@ import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
-import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.GymService;
 import demos.springdata.fitmanage.service.RefreshTokenService;
 import demos.springdata.fitmanage.service.SuperAdminService;
@@ -16,9 +14,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -33,6 +30,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
+    @Value("${security.jwt.refresh-token-expiration}")
+    private Long refreshTokenExpiration;
+
 
     @Autowired
     public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymService gymService, SuperAdminService superAdminService, ModelMapper modelMapper) {
@@ -46,7 +46,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);
         Optional<GymSummaryDto> gymDtoOpt = gymService.getGymByEmail(email);
-        Optional<SuperAdminDto> adminDtoOpt = superAdminService.findByEmail(email);
+        Optional<SuperAdminDto> adminDtoOpt = superAdminService.getByEmail(email);
 
         if (gymDtoOpt.isPresent()) {
             Gym gym = modelMapper.map(gymDtoOpt.get(), Gym.class);
@@ -56,7 +56,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             RefreshToken refreshToken = RefreshToken.builder()
                     .gym(gym)
                     .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(604_800_000))
+                    .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
                     .build();
             RefreshToken saved = refreshTokenRepository.save(refreshToken);
             LOGGER.info("New refresh token created with token value: {}", saved.getToken());
@@ -71,7 +71,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             RefreshToken refreshToken = RefreshToken.builder()
                     .superAdminUser(superAdmin)
                     .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(604_800_000))
+                    .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
                     .build();
 
             return refreshTokenRepository.save(refreshToken);

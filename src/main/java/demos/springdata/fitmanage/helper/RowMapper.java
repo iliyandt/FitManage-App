@@ -1,4 +1,8 @@
 package demos.springdata.fitmanage.helper;
 
-public interface RowMapper {
+import java.util.Map;
+
+@FunctionalInterface
+public interface RowMapper<T> {
+    Map<String, Object> mapRow(T dto);
 }

@@ -29,7 +29,7 @@ public class SuperAdminServiceImpl implements SuperAdminService {
 
 
     @Override
-    public Optional<SuperAdminDto> findByEmail(String email) {
+    public Optional<SuperAdminDto> getByEmail(String email) {
         LOGGER.info("Searching for super admin user with email: {}", email);
         return superAdminRepository.findByEmail(email)
                 .map(superAdminUser -> this.modelMapper.map(superAdminUser, SuperAdminDto.class));

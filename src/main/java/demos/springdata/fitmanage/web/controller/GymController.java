@@ -45,7 +45,7 @@ public class GymController {
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
         SecurityContextHolder.getContext().getAuthentication();
-        GymMemberResponseDto responseDto = gymService.addGymMemberToGym(requestDto);
+        GymMemberResponseDto responseDto = gymService.registerNewMemberToGym(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));

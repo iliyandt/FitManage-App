@@ -55,7 +55,7 @@ public class AuthController {
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<VerificationResponseDto>> verifyUser(@Valid @RequestBody VerificationRequestDto verificationRequestDto) {
         try {
-            VerificationResponseDto response = authenticationService.verifyUser(verificationRequestDto);
+            VerificationResponseDto response = authenticationService.verifyUserRegistration(verificationRequestDto);
             return ResponseEntity.ok(ApiResponse.success(response));
         } catch (AuthenticationException ex) {
             return ResponseEntity
@@ -66,14 +66,14 @@ public class AuthController {
 
     @PostMapping("/resend")
     public ResponseEntity<VerificationResponseDto> resendVerificationCode(@RequestParam String email) {
-        return new ResponseEntity<>(authenticationService.resendVerificationCode(email), HttpStatus.CREATED);
+        return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), HttpStatus.CREATED);
     }
 
 
     @PostMapping(path = "/validate_email")
     public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
         try {
-            GymEmailResponseDto response = authenticationService.validateEmail(gymEmailRequestDto).get();
+            GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(gymEmailRequestDto).get();
             return ResponseEntity.ok(ApiResponse.success(response));
         } catch (FitManageAppException ex) {
             return ResponseEntity
@@ -86,7 +86,7 @@ public class AuthController {
     @PostMapping(path = "/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
 
-        UserDetails authenticatedUser = authenticationService.login(loginRequestDto);
+        UserDetails authenticatedUser = authenticationService.authenticateUser(loginRequestDto);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getUsername());
 

@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 public class TableColumnBuilder {
 
-    public static List<ColumnConfigDto> buildColumns(Class<GymMemberTableDto> gymMemberTableDtoClass) {
-        return Arrays.stream(GymMemberTableDto.class.getDeclaredFields())
+    public static <T> List<ColumnConfigDto> buildColumns(Class<T> clazz) {
+        return Arrays.stream(clazz.getDeclaredFields())
                 .map(field -> new ColumnConfigDto(
                         field.getName(),
                         beautifyColumnName(field.getName()),
@@ -31,8 +31,10 @@ public class TableColumnBuilder {
             return "boolean";
         } else if (type.getName().contains("LocalDate") || type.getName().contains("Date")) {
             return "date";
+        } else if (type.isEnum()) {
+            return "enum";
         } else {
-            return "string";
+            return "object"; 
         }
     }
 

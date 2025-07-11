@@ -14,9 +14,9 @@ import java.util.Optional;
 
 public interface AuthenticationService {
     RegistrationResponseDto registerGym(RegistrationRequestDto registrationRequestDto);
-    Optional<GymEmailResponseDto> validateEmail(GymEmailRequestDto gymEmailRequestDto);
-    UserDetails login(LoginRequestDto loginRequestDto);
-    VerificationResponseDto verifyUser(VerificationRequestDto verificationRequestDto);
-    VerificationResponseDto resendVerificationCode(String email);
+    Optional<GymEmailResponseDto> checkIfEmailIsAvailable(GymEmailRequestDto gymEmailRequestDto);
+    UserDetails authenticateUser(LoginRequestDto loginRequestDto);
+    VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto);
+    VerificationResponseDto resendUserVerificationCode(String email);
 
 }

@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import demos.springdata.fitmanage.domain.enums.StaffPosition;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -12,6 +13,11 @@ import java.util.Set;
 @Entity
 @Table(name = "staff_members")
 public class StaffMember extends BaseEntity implements UserDetails {
+    @Column(nullable = false)
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -19,8 +25,9 @@ public class StaffMember extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String position;
+    private StaffPosition staffPosition;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -41,6 +48,22 @@ public class StaffMember extends BaseEntity implements UserDetails {
     public StaffMember() {
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -58,12 +81,12 @@ public class StaffMember extends BaseEntity implements UserDetails {
         this.password = password;
     }
 
-    public String getPosition() {
-        return position;
+    public StaffPosition getStaffPosition() {
+        return staffPosition;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public void setStaffPosition(StaffPosition staffPosition) {
+        this.staffPosition = staffPosition;
     }
 
     public String getEmail() {

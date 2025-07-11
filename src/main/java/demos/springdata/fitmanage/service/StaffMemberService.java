@@ -1,4 +1,11 @@
-package demos.springdata.fitmanage.service.impl;
+package demos.springdata.fitmanage.service;
 
-public class StaffMemberService {
+import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public interface StaffMemberService {
+    List<StaffMemberTableDto> getStaffMembersTableData();
 }

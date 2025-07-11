@@ -31,7 +31,7 @@ public class GymOnboardingController {
     @PostMapping("/basic-info")
     public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        gymOnboardingService.updateBasicInfo(email, dto);
+        gymOnboardingService.updateGymBasicInfo(email, dto);
         return ResponseEntity.ok(ApiResponse.success("Basic info updated successfully"));
     }
 
@@ -39,7 +39,7 @@ public class GymOnboardingController {
     @PostMapping("/team")
     public ResponseEntity<ApiResponse<String>> addTeam(@RequestBody List<StaffMemberRequestDto> staffDtos) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        gymOnboardingService.addTeamMembers(currentUser, staffDtos);
+        gymOnboardingService.registerGymTeamMembers(currentUser, staffDtos);
         return ResponseEntity.ok(ApiResponse.success("Team member added successfully"));
     }
 }

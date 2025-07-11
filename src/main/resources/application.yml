@@ -71,6 +71,7 @@ security:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
     expiration-time: 3600000
+    refresh-token-expiration: 800600000
 
 logging:
   level:

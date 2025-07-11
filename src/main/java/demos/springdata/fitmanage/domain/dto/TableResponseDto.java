@@ -1,20 +1,17 @@
-package demos.springdata.fitmanage.domain.dto.gymmember;
-
-import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
-import demos.springdata.fitmanage.domain.dto.ConfigDto;
+package demos.springdata.fitmanage.domain.dto;
 
 import java.util.List;
 import java.util.Map;
 
-public class GymMemberTableResponseDto {
+public class TableResponseDto {
     private ConfigDto config;
     private List<ColumnConfigDto> columns;
     private List<Map<String, Object>> rows;
 
-    public GymMemberTableResponseDto() {
+    public TableResponseDto() {
     }
 
-    public GymMemberTableResponseDto(ConfigDto config, List<ColumnConfigDto> columns, List<Map<String, Object>> rows) {
+    public TableResponseDto(ConfigDto config, List<ColumnConfigDto> columns, List<Map<String, Object>> rows) {
         this.config = config;
         this.columns = columns;
         this.rows = rows;

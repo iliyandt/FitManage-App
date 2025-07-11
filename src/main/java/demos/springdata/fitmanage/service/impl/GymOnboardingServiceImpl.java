@@ -42,11 +42,10 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
     }
 
     @Override
-    public void updateBasicInfo(String email, GymBasicInfoDto dto) {
+    public void updateGymBasicInfo(String email, GymBasicInfoDto dto) {
         LOGGER.info("Updating basic info for gym with email: {}", email);
         Map<String, String> errors = new HashMap<>();
         Gym gym = getGymOrElseThrow(email);
-
         updateUsernameIfChanged(gym, dto.getUsername(), errors);
         updateGymDetails(dto, gym);
 
@@ -60,7 +59,7 @@ public class GymOnboardingServiceImpl implements GymOnboardingService {
 
 
     @Override
-    public void addTeamMembers(String gymEmail, List<StaffMemberRequestDto> dtos) {
+    public void registerGymTeamMembers(String gymEmail, List<StaffMemberRequestDto> dtos) {
         LOGGER.info("Adding {} team members to gym with email: {}", dtos.size(), gymEmail);
         List<StaffMember> staffMembers = dtos.stream()
                 .map(dto -> {
