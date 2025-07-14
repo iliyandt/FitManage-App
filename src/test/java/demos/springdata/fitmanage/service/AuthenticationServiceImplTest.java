@@ -11,6 +11,7 @@ import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
+import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,6 +25,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -54,6 +56,12 @@ public class AuthenticationServiceImplTest {
 
     @Mock
     private CustomUserDetailsService customUserDetailsService;
+
+    @Mock
+    private UserValidationService userValidationService;
+
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private AuthenticationServiceImpl authenticationService;
