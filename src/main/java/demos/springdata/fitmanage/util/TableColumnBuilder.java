@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.util;
 
 import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
+import demos.springdata.fitmanage.domain.dto.DropDownConfig;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
 
 import java.util.Arrays;
@@ -11,13 +12,23 @@ public class TableColumnBuilder {
 
     public static <T> List<ColumnConfigDto> buildColumns(Class<T> clazz) {
         return Arrays.stream(clazz.getDeclaredFields())
-                .map(field -> new ColumnConfigDto(
-                        field.getName(),
-                        beautifyColumnName(field.getName()),
-                        mapJavaTypeToFrontendType(field.getType())
-                ))
+                .map(field -> {
+                    String fieldName = field.getName();
+                    String header = beautifyColumnName(fieldName);
+                    String type = mapJavaTypeToFrontendType(field.getType());
+
+                    DropDownConfig dropdownConfig = null;
+
+                    if (field.getType().isEnum()) {
+                        String url = "/v1/" + fieldName.replaceAll("([A-Z])", "_$1").toLowerCase() + "/values";
+                        dropdownConfig = new DropDownConfig(url);
+                    }
+
+                    return new ColumnConfigDto(fieldName, header, type, dropdownConfig);
+                })
                 .toList();
     }
+
 
     private static String mapJavaTypeToFrontendType(Class<?> type) {
         if (type == String.class) {

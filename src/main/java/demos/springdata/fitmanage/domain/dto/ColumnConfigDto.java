@@ -4,7 +4,7 @@ public class ColumnConfigDto {
     private String field;
     private String header;
     private String type;
-
+    private DropDownConfig dropDownConfig;
 
     public ColumnConfigDto() {
     }
@@ -13,6 +13,13 @@ public class ColumnConfigDto {
         this.field = field;
         this.header = header;
         this.type = type;
+    }
+
+    public ColumnConfigDto(String field, String header, String type, DropDownConfig dropDownConfig) {
+        this.field = field;
+        this.header = header;
+        this.type = type;
+        this.dropDownConfig = dropDownConfig;
     }
 
     public String getField() {
@@ -37,5 +44,13 @@ public class ColumnConfigDto {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public DropDownConfig getDropDownConfig() {
+        return dropDownConfig;
+    }
+
+    public void setDropDownConfig(DropDownConfig dropDownConfig) {
+        this.dropDownConfig = dropDownConfig;
     }
 }
