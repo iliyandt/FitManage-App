@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto;
+package demos.springdata.fitmanage.domain.dto.common;
 
 import java.util.List;
 import java.util.Map;

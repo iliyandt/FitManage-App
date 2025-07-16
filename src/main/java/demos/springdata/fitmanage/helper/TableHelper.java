@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.helper;
 
-import demos.springdata.fitmanage.domain.dto.ActionConfigDto;
-import demos.springdata.fitmanage.domain.dto.ConfigDto;
-import demos.springdata.fitmanage.domain.dto.PaginationConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.ActionConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.ConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.PaginationConfigDto;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;

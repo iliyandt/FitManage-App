@@ -1,8 +1,7 @@
 package demos.springdata.fitmanage.util;
 
-import demos.springdata.fitmanage.domain.dto.ColumnConfigDto;
-import demos.springdata.fitmanage.domain.dto.DropDownConfig;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.common.ColumnConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.DropDownConfig;
 
 import java.util.Arrays;
 import java.util.List;

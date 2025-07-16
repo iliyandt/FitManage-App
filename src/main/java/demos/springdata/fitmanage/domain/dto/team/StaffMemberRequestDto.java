@@ -1,10 +1,12 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
 
+import demos.springdata.fitmanage.domain.enums.StaffPosition;
+
 public class StaffMemberRequestDto {
     private String username;
     private String password;
-    private String position;
+    private StaffPosition position;
     private String email;
     private String phone;
     private String gymUsername;
@@ -28,11 +30,11 @@ public class StaffMemberRequestDto {
         this.password = password;
     }
 
-    public String getPosition() {
+    public StaffPosition getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(StaffPosition position) {
         this.position = position;
     }
 
@@ -54,6 +56,10 @@ public class StaffMemberRequestDto {
 
     public String getGymUsername() {
         return gymUsername;
+    }
+
+    public void setGymUsername(String gymUsername) {
+        this.gymUsername = gymUsername;
     }
 
     public void setGym(String gymUsername) {
