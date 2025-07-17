@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.enums.StaffPosition;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +23,7 @@ public class StaffMember extends BaseEntity implements UserDetails {
 
     private String password;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "staff_role_id", nullable = false)
     private StaffRole staffRole;
 

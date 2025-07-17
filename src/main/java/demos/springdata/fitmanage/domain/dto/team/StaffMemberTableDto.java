@@ -1,11 +1,12 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
-import demos.springdata.fitmanage.domain.enums.StaffPosition;
+import demos.springdata.fitmanage.domain.entity.StaffRole;
 
 public class StaffMemberTableDto {
     private Long id;
-    private String fullName;
-    private StaffPosition staffPosition;
+    private String firstName;
+    private String lastName;
+    //private StaffRole staffRole;
     private String phone;
 
     public StaffMemberTableDto() {
@@ -19,21 +20,30 @@ public class StaffMemberTableDto {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public StaffPosition getStaffPosition() {
-        return staffPosition;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setStaffPosition(StaffPosition staffPosition) {
-        this.staffPosition = staffPosition;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
+
+//    public StaffRole getStaffRole() {
+//        return staffRole;
+//    }
+//
+//    public void setStaffRole(StaffRole staffRole) {
+//        this.staffRole = staffRole;
+//    }
 
     public String getPhone() {
         return phone;

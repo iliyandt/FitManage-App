@@ -1,16 +1,34 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class StaffMemberRequestDto {
-    private String username;
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50, message = "First name must be between 2 and 50 characters")
     private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50, message = "Last name must be between 2 and 50 characters")
     private String lastName;
+
+    private String username;
+
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
+
+    @NotBlank(message = "Phone is required")
+    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Invalid phone number format")
     private String phone;
-    private Long staffRoleId;
-    private Long predefinedRoleId;
-    private String customRoleName;
+
+    @NotBlank(message = "Role selection is required")
+    @Pattern(regexp = "^(existing|predefined|custom):.+$", message = "Invalid role selection format")
+    private String roleSelection;
+
 
     public StaffMemberRequestDto() {
     }
@@ -55,27 +73,11 @@ public class StaffMemberRequestDto {
         this.phone = phone;
     }
 
-    public Long getStaffRoleId() {
-        return staffRoleId;
+    public String getRoleSelection() {
+        return roleSelection;
     }
 
-    public void setStaffRoleId(Long staffRoleId) {
-        this.staffRoleId = staffRoleId;
-    }
-
-    public Long getPredefinedRoleId() {
-        return predefinedRoleId;
-    }
-
-    public void setPredefinedRoleId(Long predefinedRoleId) {
-        this.predefinedRoleId = predefinedRoleId;
-    }
-
-    public String getCustomRoleName() {
-        return customRoleName;
-    }
-
-    public void setCustomRoleName(String customRoleName) {
-        this.customRoleName = customRoleName;
+    public void setRoleSelection(String roleSelection) {
+        this.roleSelection = roleSelection;
     }
 }

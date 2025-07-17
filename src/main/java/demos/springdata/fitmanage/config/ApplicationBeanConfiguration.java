@@ -1,7 +1,9 @@
 package demos.springdata.fitmanage.config;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
+import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.StaffMember;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import org.modelmapper.ModelMapper;
@@ -27,6 +29,7 @@ public class ApplicationBeanConfiguration {
         ModelMapper modelMapper = new ModelMapper();
 
         configureGymMapper(modelMapper);
+        configureStaffMemberMapper(modelMapper);
         return modelMapper;
     }
 
@@ -34,6 +37,15 @@ public class ApplicationBeanConfiguration {
         modelMapper.typeMap(Gym.class, GymSummaryDto.class)
                 .addMappings(mapper -> mapper.map(Gym::getActualUsername, GymSummaryDto::setUsername));
     }
+
+    private void configureStaffMemberMapper(ModelMapper modelMapper) {
+        modelMapper.typeMap(StaffMember.class, StaffMemberResponseDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(src -> src.getStaffRole().getName(), StaffMemberResponseDto::setRoleName);
+                    mapper.map(src -> src.getGym().getActualUsername(), StaffMemberResponseDto::setGymName);
+                });
+    }
+
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

@@ -5,11 +5,8 @@ import demos.springdata.fitmanage.domain.dto.common.EnumOption;
 import demos.springdata.fitmanage.domain.dto.gym.*;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.service.EnumService;
-import demos.springdata.fitmanage.service.GymOnboardingService;
 import demos.springdata.fitmanage.service.GymService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -21,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 
 @RestController
@@ -29,16 +25,11 @@ import java.util.List;
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class GymController {
     private final GymService gymService;
-    private final GymOnboardingService gymOnboardingService;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymController.class);
-    private final EnumService enumService;
 
 
-    public GymController(GymService gymService, GymOnboardingService gymOnboardingService, EnumService enumService) {
+    public GymController(GymService gymService) {
         this.gymService = gymService;
-
-        this.gymOnboardingService = gymOnboardingService;
-        this.enumService = enumService;
     }
 
     @GetMapping("/me")
@@ -64,22 +55,9 @@ public class GymController {
     @PostMapping("/basic-info")
     public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        gymOnboardingService.updateGymBasicInfo(email, dto);
+        gymService.updateGymBasicInfo(email, dto);
         return ResponseEntity.ok(ApiResponse.success("Basic info updated successfully"));
     }
 
-    @PostMapping("/staff")
-    public ResponseEntity<ApiResponse<String>> addStaff(@RequestBody List<StaffMemberRequestDto> staffDtos) {
-        String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        gymOnboardingService.registerGymStaffMembers(currentUser, staffDtos);
-        return ResponseEntity.ok(ApiResponse.success("Staff member added successfully"));
-    }
-
-    @GetMapping("/staff/roles")
-    public ResponseEntity<ApiResponse<List<EnumOption>>> getStaffRoleOptionsForGym() {
-        String gymUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<EnumOption> options = enumService.getAllStaffRoleOptionsForGym(gymUsername);
-        return ResponseEntity.ok(ApiResponse.success(options));
-    }
 
 }

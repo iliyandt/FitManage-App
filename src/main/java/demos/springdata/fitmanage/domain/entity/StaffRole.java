@@ -1,7 +1,10 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.enums.StaffPosition;
+import demos.springdata.fitmanage.domain.enums.Permission;
 import jakarta.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "staff_roles",
@@ -17,6 +20,13 @@ public class StaffRole extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "predefined_role_id")
     private PredefinedStaffRole predefinedStaffRole;
+
+    @ElementCollection
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "staff_role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"))
+    @Column(name = "permission")
+    private Set<Permission> permissions = new HashSet<>();
 
     public StaffRole() {
     }
@@ -43,5 +53,13 @@ public class StaffRole extends BaseEntity {
 
     public void setPredefinedStaffRole(PredefinedStaffRole predefinedStaffRole) {
         this.predefinedStaffRole = predefinedStaffRole;
+    }
+
+    public Set<Permission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<Permission> permissions) {
+        this.permissions = permissions;
     }
 }
