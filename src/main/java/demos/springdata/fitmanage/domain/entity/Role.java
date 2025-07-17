@@ -4,7 +4,7 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "security_roles")
 public class Role extends BaseEntity {
 
     @Enumerated(EnumType.STRING)

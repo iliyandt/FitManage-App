@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface EnumService {
     List<EnumOption> getEnumOptions(String enumName);
+    List<EnumOption> getAllStaffRoleOptionsForGym(String gymEmail);
 }

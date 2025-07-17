@@ -22,12 +22,12 @@ public class StaffMember extends BaseEntity implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StaffPosition staffPosition;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_role_id", nullable = false)
+    private StaffRole staffRole;
+
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -40,7 +40,9 @@ public class StaffMember extends BaseEntity implements UserDetails {
     private Gym gym;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "staff_roles", joinColumns = @JoinColumn(name = "staff_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @JoinTable(name = "staff_member_security_roles", // avoid collision
+            joinColumns = @JoinColumn(name = "staff_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     private boolean enabled = true;
@@ -81,12 +83,12 @@ public class StaffMember extends BaseEntity implements UserDetails {
         this.password = password;
     }
 
-    public StaffPosition getStaffPosition() {
-        return staffPosition;
+    public StaffRole getStaffRole() {
+        return staffRole;
     }
 
-    public void setStaffPosition(StaffPosition staffPosition) {
-        this.staffPosition = staffPosition;
+    public void setStaffRole(StaffRole staffRole) {
+        this.staffRole = staffRole;
     }
 
     public String getEmail() {

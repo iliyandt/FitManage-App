@@ -1,13 +1,18 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.common.EnumOption;
+import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.repository.GymRepository;
+import demos.springdata.fitmanage.repository.StaffRoleRepository;
 import demos.springdata.fitmanage.service.EnumService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,8 +20,16 @@ import java.util.stream.Collectors;
 @Service
 public class EnumServiceImpl implements EnumService {
 
+    private final GymRepository gymRepository;
+    private final StaffRoleRepository staffRoleRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(EnumServiceImpl.class);
     private static final String ENUM_PACKAGE = "demos.springdata.fitmanage.domain.enums.";
+
+    @Autowired
+    public EnumServiceImpl(GymRepository gymRepository, StaffRoleRepository staffRoleRepository) {
+        this.gymRepository = gymRepository;
+        this.staffRoleRepository = staffRoleRepository;
+    }
 
     @Override
     public List<EnumOption> getEnumOptions(String enumName) {
@@ -41,6 +54,31 @@ public class EnumServiceImpl implements EnumService {
             LOGGER.error("Enum not found: {}", enumName, e);
             throw new FitManageAppException("Enum not found: " + enumName, ApiErrorCode.NOT_FOUND);
         }
+    }
+
+    @Override
+    public List<EnumOption> getAllStaffRoleOptionsForGym(String gymEmail) {
+        Gym gym = gymRepository.findByEmail(gymEmail)
+                .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+
+        List<EnumOption> predefined = staffRoleRepository.findAllByGym(gym).stream()
+                .filter(role -> role.getPredefinedStaffRole() != null)
+                .map(role -> {
+                    String name = role.getPredefinedStaffRole().getName();
+                    return new EnumOption(capitalize(name), name);
+                })
+                .toList();
+
+        List<EnumOption> custom = staffRoleRepository.findAllByGym(gym).stream()
+                .filter(role -> role.getPredefinedStaffRole() == null)
+                .map(role -> new EnumOption(capitalize(role.getName()), role.getName()))
+                .toList();
+
+        List<EnumOption> allRoles = new ArrayList<>();
+        allRoles.addAll(predefined);
+        allRoles.addAll(custom);
+
+        return allRoles;
     }
 
     private String capitalize(String input) {

@@ -1,15 +1,16 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
 
-import demos.springdata.fitmanage.domain.enums.StaffPosition;
 
 public class StaffMemberRequestDto {
     private String username;
-    private String password;
-    private StaffPosition position;
+    private String firstName;
+    private String lastName;
     private String email;
     private String phone;
-    private String gymUsername;
+    private Long staffRoleId;
+    private Long predefinedRoleId;
+    private String customRoleName;
 
     public StaffMemberRequestDto() {
     }
@@ -22,20 +23,20 @@ public class StaffMemberRequestDto {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public StaffPosition getPosition() {
-        return position;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setPosition(StaffPosition position) {
-        this.position = position;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -54,15 +55,27 @@ public class StaffMemberRequestDto {
         this.phone = phone;
     }
 
-    public String getGymUsername() {
-        return gymUsername;
+    public Long getStaffRoleId() {
+        return staffRoleId;
     }
 
-    public void setGymUsername(String gymUsername) {
-        this.gymUsername = gymUsername;
+    public void setStaffRoleId(Long staffRoleId) {
+        this.staffRoleId = staffRoleId;
     }
 
-    public void setGym(String gymUsername) {
-        this.gymUsername = gymUsername;
+    public Long getPredefinedRoleId() {
+        return predefinedRoleId;
+    }
+
+    public void setPredefinedRoleId(Long predefinedRoleId) {
+        this.predefinedRoleId = predefinedRoleId;
+    }
+
+    public String getCustomRoleName() {
+        return customRoleName;
+    }
+
+    public void setCustomRoleName(String customRoleName) {
+        this.customRoleName = customRoleName;
     }
 }

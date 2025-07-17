@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface GymOnboardingService {
     void updateGymBasicInfo(String email, GymBasicInfoDto dto);
-    void registerGymTeamMembers(String gymEmail, List<StaffMemberRequestDto> dtos);
+    void registerGymStaffMembers(String gymEmail, List<StaffMemberRequestDto> dtos);
 }

@@ -2,11 +2,15 @@ package demos.springdata.fitmanage.init;
 
 import demos.springdata.fitmanage.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoleInit implements CommandLineRunner {
+@Order(1)
+public class RoleInit implements ApplicationRunner {
 
     private final RoleService roleService;
 
@@ -16,7 +20,7 @@ public class RoleInit implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(ApplicationArguments args) throws Exception {
         roleService.initRoles();
     }
 }

@@ -6,14 +6,17 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.RoleService;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SuperAdminDataInitializer {
+@Order(3)
+public class SuperAdminDataInitializer implements ApplicationRunner {
     private final SuperAdminRepository superAdminRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -34,8 +37,9 @@ public class SuperAdminDataInitializer {
         this.passwordEncoder = passwordEncoder;
     }
 
-    @PostConstruct
-    public void init() {
+    //todo: should it be transactional, add logger
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
         if (superAdminRepository.count() == 0) {
             Role superAdminRole;
             try {
