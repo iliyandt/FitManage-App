@@ -55,12 +55,10 @@ public class StaffMemberServiceImpl implements StaffMemberService {
         Gym gym = gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 
-        List<StaffMemberTableDto> staffMemberTableDtoList = staffMemberRepository.findAllByGym(gym).stream()
+
+        return staffMemberRepository.findAllByGym(gym).stream()
                 .map(staff -> modelMapper.map(staff, StaffMemberTableDto.class))
                 .toList();
-
-
-        return staffMemberTableDtoList;
     }
 
     @Override
@@ -81,6 +79,11 @@ public class StaffMemberServiceImpl implements StaffMemberService {
         List<RoleOptionDto> options = new ArrayList<>();
 
         List<StaffRole> existingRoles = staffRoleRepository.findAllByGym(gym);
+
+        Set<String> existingRoleNames = existingRoles.stream()
+                .map(role -> role.getName().toUpperCase())
+                .collect(Collectors.toSet());
+
         for (StaffRole role : existingRoles) {
             options.add(new RoleOptionDto(
                     "existing:" + role.getId(),
@@ -90,14 +93,15 @@ public class StaffMemberServiceImpl implements StaffMemberService {
             ));
         }
 
-        // Add predefined roles
         for (StaffPosition predefinedRole : StaffPosition.values()) {
-            options.add(new RoleOptionDto(
-                    "predefined:" + predefinedRole.name(),
-                    predefinedRole.name(),
-                    "predefined",
-                    predefinedRole.name() + " (Predefined)"
-            ));
+            if (!existingRoleNames.contains(predefinedRole.name().toUpperCase())) {
+                options.add(new RoleOptionDto(
+                        "predefined:" + predefinedRole.name(),
+                        predefinedRole.name(),
+                        "predefined",
+                        predefinedRole.name() + " (Predefined)"
+                ));
+            }
         }
 
         return options;
