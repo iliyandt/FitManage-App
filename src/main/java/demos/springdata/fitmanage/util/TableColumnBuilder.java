@@ -23,6 +23,10 @@ public class TableColumnBuilder {
                         dropdownConfig = new DropDownConfig(url);
                     }
 
+                    if (field.getName().equals("staffRoleId")) {
+                        dropdownConfig = new DropDownConfig("/v1/staff-members/staff/roles");
+                    }
+
                     return new ColumnConfigDto(fieldName, header, type, dropdownConfig);
                 })
                 .toList();

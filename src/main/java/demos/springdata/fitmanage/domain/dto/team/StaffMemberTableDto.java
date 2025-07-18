@@ -6,11 +6,13 @@ public class StaffMemberTableDto {
     private Long id;
     private String firstName;
     private String lastName;
-    //private StaffRole staffRole;
+    private Long staffRoleId;
+    private String staffRoleName;
     private String phone;
 
     public StaffMemberTableDto() {
     }
+
 
     public Long getId() {
         return id;
@@ -37,13 +39,21 @@ public class StaffMemberTableDto {
         this.lastName = lastName;
     }
 
-//    public StaffRole getStaffRole() {
-//        return staffRole;
-//    }
-//
-//    public void setStaffRole(StaffRole staffRole) {
-//        this.staffRole = staffRole;
-//    }
+    public Long getStaffRoleId() {
+        return staffRoleId;
+    }
+
+    public void setStaffRoleId(Long staffRoleId) {
+        this.staffRoleId = staffRoleId;
+    }
+
+    public String getStaffRoleName() {
+        return staffRoleName;
+    }
+
+    public void setStaffRoleName(String staffRoleName) {
+        this.staffRoleName = staffRoleName;
+    }
 
     public String getPhone() {
         return phone;

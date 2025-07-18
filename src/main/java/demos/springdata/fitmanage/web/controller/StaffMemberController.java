@@ -37,7 +37,7 @@ public class StaffMemberController {
         List<StaffMemberTableDto> staff = staffMemberService.getStaffMembersTableData();
 
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("staff-members"));
+        response.setConfig(tableHelper.buildTableConfig("/staff-members"));
         response.setColumns(TableColumnBuilder.buildColumns(StaffMemberTableDto.class));
         response.setRows(tableHelper.buildRows(staff, tableHelper::buildRowMap));
 

@@ -22,7 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -56,8 +55,18 @@ public class StaffMemberServiceImpl implements StaffMemberService {
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 
 
-        return staffMemberRepository.findAllByGym(gym).stream()
-                .map(staff -> modelMapper.map(staff, StaffMemberTableDto.class))
+        List<StaffMember> staffMembers = staffMemberRepository.findAllByGymWithRole(gym);
+        return staffMembers.stream()
+                .map(s -> {
+                    StaffMemberTableDto dto = new StaffMemberTableDto();
+                    dto.setId(s.getId());
+                    dto.setFirstName(s.getFirstName());
+                    dto.setLastName(s.getLastName());
+                    dto.setPhone(s.getPhone());
+                    dto.setStaffRoleId(s.getStaffRole().getId());
+                    dto.setStaffRoleName(s.getStaffRole().getName());
+                    return dto;
+                })
                 .toList();
     }
 
