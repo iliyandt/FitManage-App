@@ -6,7 +6,7 @@ public class GymMemberTableDto {
 
     private Long id;
     private String fullName;
-    private SubscriptionStatus subscriptionStatus; //subscriptionStatus
+    private SubscriptionStatus subscriptionStatus;
     private String phone;
 
     public GymMemberTableDto() {

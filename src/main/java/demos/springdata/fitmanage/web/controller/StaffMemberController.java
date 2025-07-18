@@ -3,10 +3,7 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.common.EnumOption;
 import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.team.RoleOptionDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.team.*;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.helper.TableHelper;
@@ -16,6 +13,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,22 +45,10 @@ public class StaffMemberController {
 
 
     @PostMapping("/staff")
-    public ResponseEntity<ApiResponse<List<StaffMemberResponseDto>>> addStaff(@Valid @RequestBody List<StaffMemberRequestDto> staffDtos) {
+    public ResponseEntity<ApiResponse<List<StaffMemberResponseDto>>> addStaff(@Valid @RequestBody StaffMemberRequestListDto staffListDto) {
         String currentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        try {
-            List<StaffMemberResponseDto> createdStaff = staffMemberService.createStaffMembers(staffDtos, currentUser);
-            return ResponseEntity.ok(ApiResponse.success(createdStaff));
-        } catch (FitManageAppException e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.failure(e.getMessage(), e.getErrorCode().name())
-            );
-        } catch (MultipleValidationException e) {
-            return ResponseEntity.badRequest().body(
-                    ApiResponse.failure("Validation failed", "VALIDATION_ERROR", e.getErrors())
-            );
-        }
-
+        List<StaffMemberResponseDto> createdStaff = staffMemberService.createStaffMembers(staffListDto.getStaff(), currentUser);
+        return ResponseEntity.ok(ApiResponse.success(createdStaff));
     }
 
     @GetMapping("/staff/roles")
@@ -69,6 +56,5 @@ public class StaffMemberController {
         String gymEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         List<RoleOptionDto> options = staffMemberService.getAllRoleOptionsForGym(gymEmail);
         return ResponseEntity.ok(ApiResponse.success(options));
-
     }
 }

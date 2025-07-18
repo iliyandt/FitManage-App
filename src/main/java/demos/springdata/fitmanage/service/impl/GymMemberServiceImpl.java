@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
@@ -12,28 +13,35 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
+import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
+import demos.springdata.fitmanage.service.GymService;
 import demos.springdata.fitmanage.service.RoleService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
     private final GymMemberRepository gymMemberRepository;
+    private final GymRepository gymRepository;
     private final RoleService roleService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymMemberServiceImpl.class);
 
     @Autowired
-    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, RoleService roleService, ModelMapper modelMapper) {
+    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, GymRepository gymRepository, RoleService roleService, ModelMapper modelMapper) {
         this.gymMemberRepository = gymMemberRepository;
+        this.gymRepository = gymRepository;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
     }
@@ -73,7 +81,15 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     @Override
     public List<GymMemberTableDto> getAllGymMembersForTable() {
-        List<GymMember> members = gymMemberRepository.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String gymEmail = authentication.getName();
+
+        Gym gym = gymRepository.findByEmail(gymEmail).orElseThrow(() -> {
+            LOGGER.warn("Gym with email {} not found", gymEmail);
+            return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
+        });
+
+        List<GymMember> members = gymMemberRepository.findGymMembersByGym(gym);
             return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();

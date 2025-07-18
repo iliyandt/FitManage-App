@@ -4,10 +4,8 @@ import demos.springdata.fitmanage.domain.dto.team.RoleOptionDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.domain.entity.PredefinedStaffRole;
-import demos.springdata.fitmanage.domain.entity.StaffMember;
-import demos.springdata.fitmanage.domain.entity.StaffRole;
+import demos.springdata.fitmanage.domain.entity.*;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.StaffPosition;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -16,6 +14,7 @@ import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.PredefinedStaffRoleRepository;
 import demos.springdata.fitmanage.repository.StaffMemberRepository;
 import demos.springdata.fitmanage.repository.StaffRoleRepository;
+import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.service.StaffMemberService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -36,15 +35,17 @@ public class StaffMemberServiceImpl implements StaffMemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final PredefinedStaffRoleRepository predefinedStaffRoleRepository;
     private final ModelMapper modelMapper;
+    private final RoleService roleService;
 
     @Autowired
-    public StaffMemberServiceImpl(GymRepository gymRepository, StaffRoleRepository staffRoleRepository, StaffMemberRepository staffMemberRepository, BCryptPasswordEncoder passwordEncoder, PredefinedStaffRoleRepository predefinedStaffRoleRepository, ModelMapper modelMapper) {
+    public StaffMemberServiceImpl(GymRepository gymRepository, StaffRoleRepository staffRoleRepository, StaffMemberRepository staffMemberRepository, BCryptPasswordEncoder passwordEncoder, PredefinedStaffRoleRepository predefinedStaffRoleRepository, ModelMapper modelMapper, RoleService roleService) {
         this.gymRepository = gymRepository;
         this.staffRoleRepository = staffRoleRepository;
         this.staffMemberRepository = staffMemberRepository;
         this.passwordEncoder = passwordEncoder;
         this.predefinedStaffRoleRepository = predefinedStaffRoleRepository;
         this.modelMapper = modelMapper;
+        this.roleService = roleService;
     }
 
     @Override
@@ -132,8 +133,8 @@ public class StaffMemberServiceImpl implements StaffMemberService {
         staffMember.setGym(gym);
         staffMember.setStaffRole(staffRole);
         staffMember.setEnabled(true);
-
-
+        Role staffMemberRole = roleService.findByName(RoleType.STAFF_MEMBER);
+        staffMember.getRoles().add(staffMemberRole);
         StaffMember savedStaffMember = staffMemberRepository.save(staffMember);
 
         StaffMemberResponseDto response = modelMapper.map(savedStaffMember, StaffMemberResponseDto.class);

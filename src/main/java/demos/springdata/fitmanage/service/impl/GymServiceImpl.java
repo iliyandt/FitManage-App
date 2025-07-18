@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
+import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -56,6 +57,8 @@ public class GymServiceImpl implements GymService {
         return this.gymRepository.findByEmail(email)
                 .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class));
     }
+
+
 
     @Override
     public void updateGymBasicInfo(String email, GymBasicInfoDto dto) {

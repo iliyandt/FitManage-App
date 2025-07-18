@@ -38,8 +38,8 @@ public class StaffMember extends BaseEntity implements UserDetails {
     @JoinColumn(name = "gym_id", nullable = false)
     private Gym gym;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "staff_member_security_roles", // avoid collision
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "staff_member_security_roles",
             joinColumns = @JoinColumn(name = "staff_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
