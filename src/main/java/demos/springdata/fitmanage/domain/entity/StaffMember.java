@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import demos.springdata.fitmanage.annotation.DropDown;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

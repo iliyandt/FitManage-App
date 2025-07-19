@@ -1,12 +1,16 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
+import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.entity.StaffRole;
 
 public class StaffMemberTableDto {
     private Long id;
     private String firstName;
     private String lastName;
+
+    @DropDown(url = "/v1/staff-members/staff/roles")
     private Long staffRoleId;
+
     private String staffRoleName;
     private String phone;
 

@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.util;
 
+import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.dto.common.ColumnConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.DropDownConfig;
 
@@ -14,20 +15,23 @@ public class TableColumnBuilder {
                 .map(field -> {
                     String fieldName = field.getName();
                     String header = beautifyColumnName(fieldName);
-                    String type = mapJavaTypeToFrontendType(field.getType());
 
-                    DropDownConfig dropdownConfig = null;
+                    DropDownConfig dropDownConfig = null;
+
+                    if (field.isAnnotationPresent(DropDown.class)) {
+                        DropDown dropDown = field.getAnnotation(DropDown.class);
+                        if (dropDown != null) {
+                            dropDownConfig = new DropDownConfig(dropDown.url());
+                        }
+                    }
 
                     if (field.getType().isEnum()) {
                         String url = "/v1/" + fieldName.replaceAll("([A-Z])", "_$1").toLowerCase() + "/values";
-                        dropdownConfig = new DropDownConfig(url);
+                        dropDownConfig = new DropDownConfig(url);
                     }
 
-                    if (field.getName().equals("staffRoleId")) {
-                        dropdownConfig = new DropDownConfig("/v1/staff-members/staff/roles");
-                    }
-
-                    return new ColumnConfigDto(fieldName, header, type, dropdownConfig);
+                    String type = (dropDownConfig != null) ? "dropdown" : mapJavaTypeToFrontendType(field.getType());
+                    return new ColumnConfigDto(fieldName, header, type, dropDownConfig);
                 })
                 .toList();
     }
