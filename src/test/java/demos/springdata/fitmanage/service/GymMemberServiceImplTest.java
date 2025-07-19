@@ -13,6 +13,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
+import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.impl.GymMemberServiceImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -32,6 +36,10 @@ import java.util.Optional;
 public class GymMemberServiceImplTest {
     @Mock
     private GymMemberRepository gymMemberRepository;
+
+    @Mock
+    private GymRepository gymRepository;
+
     @Mock
     private RoleService roleService;
     @Mock
@@ -103,6 +111,10 @@ public class GymMemberServiceImplTest {
 
     @Test
     void shouldReturnAllExistingMembers() {
+        String gymEmail = "test@gym.com";
+        Gym gym = new Gym();
+        gym.setEmail(gymEmail);
+
         GymMember member1 = new GymMember();
         GymMember member2 = new GymMember();
 
@@ -111,7 +123,14 @@ public class GymMemberServiceImplTest {
 
         List<GymMember> gymMembers = List.of(member1, member2);
 
-        Mockito.when(gymMemberRepository.findAll()).thenReturn(gymMembers);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.getName()).thenReturn(gymEmail);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        Mockito.when(gymRepository.findByEmail(gymEmail)).thenReturn(Optional.of(gym));
+
+        Mockito.when(gymMemberRepository.findGymMembersByGym(gym)).thenReturn(gymMembers);
         Mockito.when(modelMapper.map(member1, GymMemberTableDto.class)).thenReturn(dto1);
         Mockito.when(modelMapper.map(member2, GymMemberTableDto.class)).thenReturn(dto2);
 
@@ -121,9 +140,10 @@ public class GymMemberServiceImplTest {
         Assertions.assertTrue(result.contains(dto1));
         Assertions.assertTrue(result.contains(dto2));
 
-        Mockito.verify(gymMemberRepository).findAll();
+        Mockito.verify(gymMemberRepository).findGymMembersByGym(gym);
         Mockito.verify(modelMapper).map(member1, GymMemberTableDto.class);
         Mockito.verify(modelMapper).map(member2, GymMemberTableDto.class);
+        Mockito.verify(gymRepository).findByEmail(gymEmail);
     }
 
 
