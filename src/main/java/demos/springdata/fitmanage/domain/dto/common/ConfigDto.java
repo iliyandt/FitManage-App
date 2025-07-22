@@ -5,14 +5,16 @@ import java.util.List;
 public class ConfigDto {
     private boolean sortable;
     private List<ActionConfigDto> actions;
+    private ColumnsLayoutConfigDto columnsLayoutConfig;
     private PaginationConfigDto pagination;
 
     public ConfigDto() {
     }
 
-    public ConfigDto(boolean sortable, List<ActionConfigDto> actions, PaginationConfigDto pagination) {
+    public ConfigDto(boolean sortable, List<ActionConfigDto> actions, ColumnsLayoutConfigDto columnsLayoutConfig, PaginationConfigDto pagination) {
         this.sortable = sortable;
         this.actions = actions;
+        this.columnsLayoutConfig = columnsLayoutConfig;
         this.pagination = pagination;
     }
 
@@ -30,6 +32,14 @@ public class ConfigDto {
 
     public void setActions(List<ActionConfigDto> actions) {
         this.actions = actions;
+    }
+
+    public ColumnsLayoutConfigDto getColumnsLayoutConfig() {
+        return columnsLayoutConfig;
+    }
+
+    public void setColumnsLayoutConfig(ColumnsLayoutConfigDto columnsLayoutConfig) {
+        this.columnsLayoutConfig = columnsLayoutConfig;
     }
 
     public PaginationConfigDto getPagination() {

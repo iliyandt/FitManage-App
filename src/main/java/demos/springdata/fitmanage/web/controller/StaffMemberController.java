@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
+import demos.springdata.fitmanage.domain.dto.common.ColumnsLayoutConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.EnumOption;
 import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/staff-members")
@@ -36,7 +38,7 @@ public class StaffMemberController {
         List<StaffMemberTableDto> staff = staffMemberService.getStaffMembersTableData();
 
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/staff-members"));
+        response.setConfig(tableHelper.buildTableConfig("/staff-members", StaffMemberTableDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(StaffMemberTableDto.class));
         response.setRows(tableHelper.buildRows(staff, tableHelper::buildRowMap));
 

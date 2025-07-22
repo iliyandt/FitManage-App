@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.ActionConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.ColumnsLayoutConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.PaginationConfigDto;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ public class TableHelper {
                 .toList();
     }
 
-    public ConfigDto buildTableConfig(String basePath) {
+    public <T> ConfigDto buildTableConfig(String basePath, Class<T> dtoClass) {
         PaginationConfigDto pagination = new PaginationConfigDto();
         pagination.setPageSize(10);
 
@@ -28,10 +29,14 @@ public class TableHelper {
                 new ActionConfigDto("delete", "Delete", basePath + "/{id}")
         );
 
+        Map<String, Boolean> columnVisibility = buildColumnVisibility(dtoClass, true);
+        ColumnsLayoutConfigDto columnsLayoutConfig = new ColumnsLayoutConfigDto(columnVisibility);
+
         ConfigDto config = new ConfigDto();
         config.setSortable(true);
         config.setActions(actions);
         config.setPagination(pagination);
+        config.setColumnsLayoutConfig(columnsLayoutConfig);
 
         return config;
     }
@@ -52,4 +57,18 @@ public class TableHelper {
 
         return row;
     }
+
+    public <T> Map<String, Boolean> buildColumnVisibility(Class<T> dtoClass, boolean defaultVisible) {
+        Map<String, Boolean> columnVisibility = new LinkedHashMap<>();
+        Field[] fields = dtoClass.getDeclaredFields();
+
+        for (Field field : fields) {
+            String name = field.getName();
+            columnVisibility.put(name, defaultVisible);
+            //todo: make the visibility custom for every table
+        }
+
+        return columnVisibility;
+    }
+
 }

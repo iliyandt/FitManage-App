@@ -5,16 +5,20 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 public class GymMemberTableDto {
 
     private Long id;
-    private String fullName;
+    private String firstName;
+    private String lastName;
+    private String email;
     private SubscriptionStatus subscriptionStatus;
     private String phone;
 
     public GymMemberTableDto() {
     }
 
-    public GymMemberTableDto(Long id, String fullName, SubscriptionStatus subscriptionStatus, String phone) {
+    public GymMemberTableDto(Long id, String firstName, String lastName, String email, SubscriptionStatus subscriptionStatus, String phone) {
         this.id = id;
-        this.fullName = fullName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
         this.subscriptionStatus = subscriptionStatus;
         this.phone = phone;
     }
@@ -27,12 +31,28 @@ public class GymMemberTableDto {
         this.id = id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public SubscriptionStatus getSubscriptionStatus() {

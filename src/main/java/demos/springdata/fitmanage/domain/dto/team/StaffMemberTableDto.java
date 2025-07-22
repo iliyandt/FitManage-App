@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.team;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import demos.springdata.fitmanage.domain.entity.StaffRole;
+import demos.springdata.fitmanage.domain.entity.StaffMember;
 
 public class StaffMemberTableDto {
     private Long id;
@@ -17,54 +17,70 @@ public class StaffMemberTableDto {
     public StaffMemberTableDto() {
     }
 
+    public static StaffMemberTableDto from(StaffMember s) {
+        return new StaffMemberTableDto()
+                .setId(s.getId())
+                .setFirstName(s.getFirstName())
+                .setLastName(s.getLastName())
+                .setPhone(s.getPhone())
+                .setStaffRoleId(s.getStaffRole().getId())
+                .setStaffRoleName(s.getStaffRole().getName());
+    }
+
+    public StaffMemberTableDto setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public StaffMemberTableDto setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public StaffMemberTableDto setLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
+
+    public StaffMemberTableDto setPhone(String phone) {
+        this.phone = phone;
+        return this;
+    }
+
+    public StaffMemberTableDto setStaffRoleId(Long staffRoleId) {
+        this.staffRoleId = staffRoleId;
+        return this;
+    }
+
+    public StaffMemberTableDto setStaffRoleName(String staffRoleName) {
+        this.staffRoleName = staffRoleName;
+        return this;
+    }
+
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
     public String getFirstName() {
         return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public Long getStaffRoleId() {
         return staffRoleId;
-    }
-
-    public void setStaffRoleId(Long staffRoleId) {
-        this.staffRoleId = staffRoleId;
     }
 
     public String getStaffRoleName() {
         return staffRoleName;
     }
 
-    public void setStaffRoleName(String staffRoleName) {
-        this.staffRoleName = staffRoleName;
-    }
-
     public String getPhone() {
         return phone;
     }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
 }
+
 

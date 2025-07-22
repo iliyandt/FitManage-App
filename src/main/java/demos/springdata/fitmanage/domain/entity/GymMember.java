@@ -77,10 +77,6 @@ public class GymMember extends BaseEntity implements UserDetails {
         this.lastName = lastName;
     }
 
-    @Transient
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
 
     public String getEmail() {
         return email;

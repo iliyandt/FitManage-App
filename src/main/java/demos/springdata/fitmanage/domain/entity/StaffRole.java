@@ -35,31 +35,35 @@ public class StaffRole extends BaseEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public StaffRole setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Gym getGym() {
         return gym;
     }
 
-    public void setGym(Gym gym) {
+    public StaffRole setGym(Gym gym) {
         this.gym = gym;
+        return this;
     }
 
     public PredefinedStaffRole getPredefinedStaffRole() {
         return predefinedStaffRole;
     }
 
-    public void setPredefinedStaffRole(PredefinedStaffRole predefinedStaffRole) {
+    public StaffRole setPredefinedStaffRole(PredefinedStaffRole predefinedStaffRole) {
         this.predefinedStaffRole = predefinedStaffRole;
+        return this;
     }
 
     public Set<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
+    public StaffRole setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
+        return this;
     }
 }

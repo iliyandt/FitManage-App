@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StaffMemberServiceImpl implements StaffMemberService {
@@ -51,23 +52,12 @@ public class StaffMemberServiceImpl implements StaffMemberService {
     @Override
     public List<StaffMemberTableDto> getStaffMembersTableData() {
         String gymEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Gym gym = gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 
-
         List<StaffMember> staffMembers = staffMemberRepository.findAllByGymWithRole(gym);
         return staffMembers.stream()
-                .map(s -> {
-                    StaffMemberTableDto dto = new StaffMemberTableDto();
-                    dto.setId(s.getId());
-                    dto.setFirstName(s.getFirstName());
-                    dto.setLastName(s.getLastName());
-                    dto.setPhone(s.getPhone());
-                    dto.setStaffRoleId(s.getStaffRole().getId());
-                    dto.setStaffRoleName(s.getStaffRole().getName());
-                    return dto;
-                })
+                .map(StaffMemberTableDto::from)
                 .toList();
     }
 
@@ -83,10 +73,9 @@ public class StaffMemberServiceImpl implements StaffMemberService {
 
     @Override
     public List<RoleOptionDto> getAllRoleOptionsForGym(String gymEmail) {
+
         Gym gym = gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
-
-        List<RoleOptionDto> options = new ArrayList<>();
 
         List<StaffRole> existingRoles = staffRoleRepository.findAllByGym(gym);
 
@@ -94,28 +83,27 @@ public class StaffMemberServiceImpl implements StaffMemberService {
                 .map(role -> role.getName().toUpperCase())
                 .collect(Collectors.toSet());
 
-        for (StaffRole role : existingRoles) {
-            options.add(new RoleOptionDto(
-                    "existing:" + role.getId(),
-                    role.getName(),
-                    "existing",
-                    role.getName() + " (Custom)"
-            ));
-        }
+        List<RoleOptionDto> existingOptions = existingRoles.stream()
+                .map(role -> createRoleOptionDto("existing",
+                        "existing:" + role.getId(),
+                        role.getName(),
+                        role.getName() + " (Custom)"))
+                .toList();
 
-        for (StaffPosition predefinedRole : StaffPosition.values()) {
-            if (!existingRoleNames.contains(predefinedRole.name().toUpperCase())) {
-                options.add(new RoleOptionDto(
-                        "predefined:" + predefinedRole.name(),
-                        predefinedRole.name(),
-                        "predefined",
-                        predefinedRole.name() + " (Predefined)"
-                ));
-            }
-        }
+        List<RoleOptionDto> predefinedOptions = Arrays.stream(StaffPosition.values())
+                .filter(pos -> !existingRoleNames.contains(pos.name().toUpperCase()))
+                .map(pos -> createRoleOptionDto("predefined",
+                        "predefined:" + pos.name(),
+                        pos.name(),
+                        pos.name() + " (Predefined)"))
+                .toList();
 
-        return options;
+        return Stream.concat(existingOptions.stream(), predefinedOptions.stream())
+                .toList();
+    }
 
+    private RoleOptionDto createRoleOptionDto(String type, String id, String name, String label) {
+        return new RoleOptionDto(id, name, type, label);
     }
 
     private StaffMemberResponseDto createSingleStaffMember(StaffMemberRequestDto request, Gym gym) {
@@ -123,18 +111,18 @@ public class StaffMemberServiceImpl implements StaffMemberService {
 
         StaffRole staffRole = resolveStaffRole(request.getRoleSelection(), gym);
 
-        StaffMember staffMember = new StaffMember();
-        staffMember.setFirstName(request.getFirstName());
-        staffMember.setLastName(request.getLastName());
-        staffMember.setEmail(request.getEmail());
-        staffMember.setPhone(request.getPhone());
-        staffMember.setUsername(request.getUsername());
-        staffMember.setPassword(passwordEncoder.encode(generateDefaultPassword()));
-        staffMember.setGym(gym);
-        staffMember.setStaffRole(staffRole);
-        staffMember.setEnabled(true);
-        Role staffMemberRole = roleService.findByName(RoleType.STAFF_MEMBER);
-        staffMember.getRoles().add(staffMemberRole);
+        StaffMember staffMember = new StaffMember()
+                .setFirstName(request.getFirstName())
+                .setLastName(request.getLastName())
+                .setEmail(request.getEmail())
+                .setPhone(request.getPhone())
+                .setUsername(request.getUsername())
+                .setPassword(passwordEncoder.encode(generateDefaultPassword()))
+                .setGym(gym)
+                .setStaffRole(staffRole)
+                .setEnabled(true);
+
+        assignStaffRole(staffMember);
         StaffMember savedStaffMember = staffMemberRepository.save(staffMember);
 
         StaffMemberResponseDto response = modelMapper.map(savedStaffMember, StaffMemberResponseDto.class);
@@ -142,6 +130,11 @@ public class StaffMemberServiceImpl implements StaffMemberService {
         response.setPasswordNote("Temporary password generated. Please change on first login.");
 
         return response;
+    }
+
+    private void assignStaffRole(StaffMember staffMember) {
+        Role staffMemberRole = roleService.findByName(RoleType.STAFF_MEMBER);
+        staffMember.getRoles().add(staffMemberRole);
     }
 
     private String generateDefaultPassword() {
@@ -199,11 +192,11 @@ public class StaffMemberServiceImpl implements StaffMemberService {
             return existingRole.get();
         }
 
-        StaffRole newRole = new StaffRole();
-        newRole.setName(template.getName());
-        newRole.setGym(gym);
-        newRole.setPredefinedStaffRole(template);
-        newRole.setPermissions(template.getDefaultPermissions());
+        StaffRole newRole = new StaffRole()
+                .setName(template.getName())
+                .setGym(gym)
+                .setPredefinedStaffRole(template)
+                .setPermissions(template.getDefaultPermissions());
 
         return staffRoleRepository.save(newRole);
     }

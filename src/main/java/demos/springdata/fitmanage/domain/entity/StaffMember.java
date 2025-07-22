@@ -1,6 +1,4 @@
 package demos.springdata.fitmanage.domain.entity;
-
-import demos.springdata.fitmanage.annotation.DropDown;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -54,24 +52,27 @@ public class StaffMember extends BaseEntity implements UserDetails {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public StaffMember setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public StaffMember setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public StaffMember setUsername(String username) {
         this.username = username;
+        return this;
     }
 
     @Override
@@ -79,52 +80,59 @@ public class StaffMember extends BaseEntity implements UserDetails {
         return password;
     }
 
-    public void setPassword(String password) {
+    public StaffMember setPassword(String password) {
         this.password = password;
+        return this;
     }
 
     public StaffRole getStaffRole() {
         return staffRole;
     }
 
-    public void setStaffRole(StaffRole staffRole) {
+    public StaffMember setStaffRole(StaffRole staffRole) {
         this.staffRole = staffRole;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public StaffMember setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public StaffMember setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
 
     public Gym getGym() {
         return gym;
     }
 
-    public void setGym(Gym gym) {
+    public StaffMember setGym(Gym gym) {
         this.gym = gym;
+        return this;
     }
 
-    public void setEnabled(boolean enabled) {
+    public StaffMember setEnabled(boolean enabled) {
         this.enabled = enabled;
+        return this;
     }
 
     public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public StaffMember setRoles(Set<Role> roles) {
         this.roles = roles;
+        return this;
     }
 
     @Override

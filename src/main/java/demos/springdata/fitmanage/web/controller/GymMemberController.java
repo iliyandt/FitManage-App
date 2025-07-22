@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -36,7 +37,7 @@ public class GymMemberController {
         List<GymMemberTableDto> members = gymMemberService.getAllGymMembersForTable();
 
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/gym-members"));
+        response.setConfig(tableHelper.buildTableConfig("/gym-members", GymMemberTableDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(GymMemberTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
 

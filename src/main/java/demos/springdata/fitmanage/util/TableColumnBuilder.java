@@ -17,7 +17,6 @@ public class TableColumnBuilder {
                     String fieldName = field.getName();
                     String header = beautifyColumnName(fieldName);
                     DropDownConfig dropDownConfig = resolveDropDownConfig(field);;
-
                     String type = resolveDropDownType(field, dropDownConfig);
                     return new ColumnConfigDto(fieldName, header, type, dropDownConfig);
                 })
