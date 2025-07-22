@@ -12,6 +12,5 @@ import java.util.Optional;
 public interface GymService {
     List<GymSummaryDto> getAllGyms();
     Optional<GymSummaryDto> getGymByEmail(String email);
-    GymMemberResponseDto registerNewMemberToGym(GymMemberCreateRequestDto requestDto);
     void updateGymBasicInfo(String email, GymBasicInfoDto dto);
 }

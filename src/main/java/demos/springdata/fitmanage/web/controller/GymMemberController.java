@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
@@ -9,8 +10,10 @@ import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -38,6 +41,15 @@ public class GymMemberController {
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PostMapping("/members")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
+        SecurityContextHolder.getContext().getAuthentication();
+        GymMemberResponseDto responseDto = gymMemberService.createAndSaveNewMember(requestDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(responseDto));
     }
 
     @PutMapping("/{memberId}")

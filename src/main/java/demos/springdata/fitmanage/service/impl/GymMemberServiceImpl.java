@@ -1,6 +1,4 @@
 package demos.springdata.fitmanage.service.impl;
-
-import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
@@ -15,7 +13,6 @@ import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.GymMemberService;
-import demos.springdata.fitmanage.service.GymService;
 import demos.springdata.fitmanage.service.RoleService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -28,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
@@ -46,37 +42,19 @@ public class GymMemberServiceImpl implements GymMemberService {
         this.modelMapper = modelMapper;
     }
 
+
     @Override
-    public GymMemberResponseDto registerMemberToGym(Gym gym, GymMemberCreateRequestDto requestDto) {
-        Map<String, String> errors = new HashMap<>();
+    public GymMemberResponseDto createAndSaveNewMember(GymMemberCreateRequestDto requestDto) {
+        String gymEmail = getAuthenticatedGymEmail();
+        Gym gym = getGymByEmail(gymEmail);
 
-        validateCredentials(requestDto, errors);
+        GymMember member = buildGymMember(gym, requestDto);
+        validateCredentials(requestDto);
 
-        GymMember member = modelMapper.map(requestDto, GymMember.class);
-        member.setGym(gym);
-        Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
-        member.getRoles().add(gymAdminRole);
-
-        LOGGER.info("Member with email {} will be saved in the database", member.getEmail());
         GymMember savedMember = gymMemberRepository.save(member);
+        LOGGER.info("Successfully added member with ID {} to gym '{}'", savedMember.getId(), gym.getEmail());
 
         return modelMapper.map(savedMember, GymMemberResponseDto.class);
-    }
-
-    private void validateCredentials(GymMemberCreateRequestDto requestDto, Map<String, String> errors) {
-        if (gymMemberRepository.existsByEmail(requestDto.getEmail())) {
-            LOGGER.warn("Member with email {} already exists", requestDto.getEmail());
-            errors.put("Email", "Email is already registered");
-        }
-
-        if (gymMemberRepository.existsByPhone(requestDto.getPhone())) {
-            LOGGER.warn("Member with phone {} already exists", requestDto.getPhone());
-            errors.put("Phone", "Phone used from another member");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new MultipleValidationException(errors);
-        }
     }
 
     @Override
@@ -131,5 +109,48 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
         return modelMapper.map(updatedMember, GymMemberResponseDto.class);
+    }
+
+    private GymMember buildGymMember(Gym gym, GymMemberCreateRequestDto requestDto) {
+        GymMember member = modelMapper.map(requestDto, GymMember.class);
+        member.setGym(gym);
+
+        Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
+        member.getRoles().add(gymAdminRole);
+        LOGGER.info("Member with email {} will be saved in the database", member.getEmail());
+
+        return member;
+    }
+
+    private Gym getGymByEmail(String gymEmail) {
+        return gymRepository.findByEmail(gymEmail)
+                .orElseThrow(() -> {
+                    LOGGER.warn("Gym with email {} not found when adding member", gymEmail);
+                    return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
+                });
+    }
+
+    private String getAuthenticatedGymEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        LOGGER.info("Authenticated gym email: {}", email);
+        return email;
+    }
+
+    private void validateCredentials(GymMemberCreateRequestDto requestDto) {
+        Map<String, String> errors = new HashMap<>();
+        if (gymMemberRepository.existsByEmail(requestDto.getEmail())) {
+            LOGGER.warn("Member with email {} already exists", requestDto.getEmail());
+            errors.put("Email", "Email is already registered");
+        }
+
+        if (gymMemberRepository.existsByPhone(requestDto.getPhone())) {
+            LOGGER.warn("Member with phone {} already exists", requestDto.getPhone());
+            errors.put("Phone", "Phone used from another member");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultipleValidationException(errors);
+        }
     }
 }

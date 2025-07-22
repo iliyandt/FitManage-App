@@ -76,22 +76,7 @@ public class GymServiceImpl implements GymService {
         LOGGER.info("Updated basic info for gym: {}", email);
     }
 
-    @Override
-    public GymMemberResponseDto registerNewMemberToGym(GymMemberCreateRequestDto requestDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String gymEmail = authentication.getName();
-        LOGGER.info("Authenticated gym email: {}", gymEmail);
-        Gym gym = gymRepository.findByEmail(gymEmail)
-                .orElseThrow(() -> {
-                    LOGGER.warn("Gym with email {} not found when adding member", gymEmail);
-                    return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
-                });
 
-        GymMemberResponseDto memberResponse = gymMemberService.registerMemberToGym(gym, requestDto);
-        LOGGER.info("Successfully added member with ID {} to gym '{}'", memberResponse.getId(), gym.getEmail());
-
-        return memberResponse;
-    }
 
 
     private static void updateGymDetails(GymBasicInfoDto dto, Gym gym) {

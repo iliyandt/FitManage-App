@@ -43,15 +43,6 @@ public class GymController {
     }
 
 
-    @PostMapping("/members")
-    public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
-        SecurityContextHolder.getContext().getAuthentication();
-        GymMemberResponseDto responseDto = gymService.registerNewMemberToGym(requestDto);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(responseDto));
-    }
-
     @PostMapping("/basic-info")
     public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

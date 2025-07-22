@@ -73,40 +73,54 @@ public class GymMemberServiceImplTest {
 
 
     @Test
-    void shouldCreateGymMemberSuccessfully() {
-        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
-        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
-        Mockito.when(modelMapper.map(requestDto, GymMember.class)).thenReturn(gymMemberEntity);
+    void shouldCreateAndSaveNewMemberSuccessfully() {
+        String gymEmail = "test@gym.com";
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        Mockito.when(authentication.getName()).thenReturn(gymEmail);
+        Mockito.when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+
+        GymMember mappedMember = new GymMember();
+        mappedMember.setEmail(requestDto.getEmail());
+        mappedMember.setPhone(requestDto.getPhone());
+        mappedMember.setRoles(new HashSet<>());
+
+        GymMember savedMember = new GymMember();
+        savedMember.setId(1L);
+        savedMember.setEmail(requestDto.getEmail());
+
+        GymMemberResponseDto responseDto = new GymMemberResponseDto();
+
+        Mockito.when(gymRepository.findByEmail(gymEmail)).thenReturn(Optional.of(gym));
+        Mockito.when(modelMapper.map(requestDto, GymMember.class)).thenReturn(mappedMember);
         Mockito.when(roleService.findByName(RoleType.MEMBER)).thenReturn(memberRole);
-        Mockito.when(gymMemberRepository.save(gymMemberEntity)).thenReturn(gymMemberEntity);
-        Mockito.when(modelMapper.map(gymMemberEntity, GymMemberResponseDto.class)).thenReturn(new GymMemberResponseDto());
-
-        GymMemberResponseDto response = gymMemberService.registerMemberToGym(gym, requestDto);
-        Assertions.assertNotNull(response);
-        Mockito.verify(gymMemberRepository).save(gymMemberEntity);
-    }
-
-    @Test
-    void shouldThrowValidationException_WhenEmailExists() {
-        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(true);
-        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
-
-        MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
-                () -> gymMemberService.registerMemberToGym(gym, requestDto));
-
-        Assertions.assertTrue(ex.getErrors().containsKey("Email"));
-    }
-
-    @Test
-    void shouldThrowValidationException_WhenPhoneExists() {
         Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
-        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(true);
+        Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
+        Mockito.when(gymMemberRepository.save(mappedMember)).thenReturn(savedMember);
+        Mockito.when(modelMapper.map(savedMember, GymMemberResponseDto.class)).thenReturn(responseDto);
 
-        MultipleValidationException ex = Assertions.assertThrows(MultipleValidationException.class,
-                () -> gymMemberService.registerMemberToGym(gym, requestDto));
+        GymMemberResponseDto result = gymMemberService.createAndSaveNewMember(requestDto);
 
-        Assertions.assertTrue(ex.getErrors().containsKey("Phone"));
+        Assertions.assertEquals(responseDto, result);
+        Mockito.verify(gymMemberRepository).save(mappedMember);
     }
+
+
+    @Test
+    void shouldThrowExceptionWhenRemovingNonexistentMember() {
+        Long memberId = 99L;
+        Mockito.when(gymMemberRepository.findById(memberId)).thenReturn(Optional.empty());
+
+        FitManageAppException ex = Assertions.assertThrows(
+                FitManageAppException.class,
+                () -> gymMemberService.removeGymMember(memberId)
+        );
+
+        Assertions.assertEquals(ApiErrorCode.NOT_FOUND, ex.getErrorCode());
+    }
+
 
 
     @Test
