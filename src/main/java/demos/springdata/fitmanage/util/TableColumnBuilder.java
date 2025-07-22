@@ -37,10 +37,10 @@ public class TableColumnBuilder {
 
         if (field.getType().isEnum()) {
             String url = "/v1/" + field.getName()
-                    .replaceAll("([A-Z])", "_$1")
-                    .toLowerCase() + "/values";
+                     + "/values";
             return new DropDownConfig(url);
         }
+
         return null;
     }
 
