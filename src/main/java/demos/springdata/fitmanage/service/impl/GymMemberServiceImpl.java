@@ -59,43 +59,29 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     @Override
     public List<GymMemberTableDto> getAllGymMembersForTable() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String gymEmail = authentication.getName();
-
-        Gym gym = gymRepository.findByEmail(gymEmail).orElseThrow(() -> {
-            LOGGER.warn("Gym with email {} not found", gymEmail);
-            return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
-        });
-
+        String gymEmail = getAuthenticatedGymEmail();
+        Gym gym = getGymByEmail(gymEmail);
         List<GymMember> members = gymMemberRepository.findGymMembersByGym(gym);
-            return members.stream()
+
+        return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();
     }
 
 
     @Override
-    public GymMemberResponseDto updateMemberDetails(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto) {
-        GymMember existingMember = gymMemberRepository.findById(memberId)
-                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+    public GymMemberResponseDto updateMemberDetails(Long memberId, GymMemberUpdateRequestDto updateRequest) {
+        GymMember member = getGymMemberById(memberId);
 
-        LOGGER.info("Updating member with ID {}", memberId);
+        validateUpdatedPhone(member, updateRequest.getPhone());
+        updateMemberFields(member, updateRequest);
 
-        existingMember.setFirstName(memberUpdateRequestDto.getFirstName());
-        existingMember.setLastName(memberUpdateRequestDto.getLastName());
-        existingMember.setSubscriptionStatus(memberUpdateRequestDto.getSubscriptionStatus());
-
-        if (gymMemberRepository.existsByPhone(memberUpdateRequestDto.getPhone()) &&
-                !existingMember.getPhone().equals(memberUpdateRequestDto.getPhone())) {
-            throw new MultipleValidationException(Map.of("Phone", "Phone used by another member"));
-        }
-        existingMember.setPhone(memberUpdateRequestDto.getPhone());
-
-        GymMember updatedMember = gymMemberRepository.save(existingMember);
+        GymMember updatedMember = gymMemberRepository.save(member);
         LOGGER.info("Member with ID {} updated successfully", memberId);
 
         return mapToResponseDto(updatedMember);
     }
+
 
     @Override
     public void removeGymMember(Long memberId) {
@@ -125,7 +111,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     private Gym getGymByEmail(String gymEmail) {
         return gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> {
-                    LOGGER.warn("Gym with email {} not found when adding member", gymEmail);
+                    LOGGER.warn("Gym with email {} not found.", gymEmail);
                     return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
                 });
     }
@@ -152,5 +138,27 @@ public class GymMemberServiceImpl implements GymMemberService {
         if (!errors.isEmpty()) {
             throw new MultipleValidationException(errors);
         }
+    }
+
+    private void validateUpdatedPhone(GymMember member, String newPhone) {
+        boolean isPhoneChanged = !member.getPhone().equals(newPhone);
+        boolean phoneExists = gymMemberRepository.existsByPhone(newPhone);
+
+        if (isPhoneChanged && phoneExists) {
+            throw new MultipleValidationException(Map.of("Phone", "Phone used by another member"));
+        }
+    }
+
+    private void updateMemberFields(GymMember member, GymMemberUpdateRequestDto updateRequest) {
+        LOGGER.info("Updating member with ID {}", member.getId());
+        member.setFirstName(updateRequest.getFirstName());
+        member.setLastName(updateRequest.getLastName());
+        member.setSubscriptionStatus(updateRequest.getSubscriptionStatus());
+        member.setPhone(updateRequest.getPhone());
+    }
+
+    private GymMember getGymMemberById(Long memberId) {
+        return gymMemberRepository.findById(memberId)
+                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
     }
 }
