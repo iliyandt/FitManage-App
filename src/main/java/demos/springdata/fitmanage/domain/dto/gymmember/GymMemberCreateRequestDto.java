@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
@@ -20,6 +21,8 @@ public class GymMemberCreateRequestDto {
     @Email(message = "Email must be valid")
     private String email;
     private SubscriptionStatus subscriptionStatus;
+    @NotBlank
+    private SubscriptionPlan subscriptionPlan;
     @NotBlank
     @Column(unique = true)
     private String phone;

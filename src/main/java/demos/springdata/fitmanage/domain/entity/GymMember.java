@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,6 +44,9 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
+
+    @Enumerated(EnumType.STRING)
+    private SubscriptionPlan subscriptionPlan;
 
     @ManyToOne
     @JoinColumn(name = "gym_id")
@@ -168,5 +172,13 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public SubscriptionPlan getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
     }
 }
