@@ -21,7 +21,6 @@ public class GymMemberCreateRequestDto {
     @Email(message = "Email must be valid")
     private String email;
     private SubscriptionStatus subscriptionStatus;
-    @NotBlank
     private SubscriptionPlan subscriptionPlan;
     @NotBlank
     @Column(unique = true)
@@ -30,11 +29,12 @@ public class GymMemberCreateRequestDto {
     public GymMemberCreateRequestDto() {
     }
 
-    public GymMemberCreateRequestDto(String firstName, String lastName, String email, SubscriptionStatus subscriptionStatus, String phone) {
+    public GymMemberCreateRequestDto(String firstName, String lastName, String email, SubscriptionStatus subscriptionStatus, SubscriptionPlan subscriptionPlan, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.subscriptionStatus = subscriptionStatus;
+        this.subscriptionPlan = subscriptionPlan;
         this.phone = phone;
     }
 
@@ -68,6 +68,15 @@ public class GymMemberCreateRequestDto {
 
     public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
+    }
+
+    public SubscriptionPlan getSubscriptionPlan() {
+
+        return subscriptionPlan;
+    }
+
+    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
     }
 
     public String getPhone() {

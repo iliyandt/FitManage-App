@@ -55,6 +55,20 @@ public class GymMember extends BaseEntity implements UserDetails {
     public GymMember() {
     }
 
+    public GymMember(String firstName, String lastName, String email, String password, String phone, Set<Role> roles, boolean enabled, LocalDateTime createdAt, SubscriptionStatus subscriptionStatus, SubscriptionPlan subscriptionPlan, Gym gym) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.roles = roles;
+        this.enabled = enabled;
+        this.createdAt = createdAt;
+        this.subscriptionStatus = subscriptionStatus;
+        this.subscriptionPlan = subscriptionPlan;
+        this.gym = gym;
+    }
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();

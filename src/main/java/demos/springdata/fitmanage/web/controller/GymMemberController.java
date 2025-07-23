@@ -9,11 +9,15 @@ import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
+import demos.springdata.fitmanage.service.impl.GymServiceImpl;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +29,7 @@ import java.util.*;
 public class GymMemberController {
     private final GymMemberService gymMemberService;
     private final TableHelper tableHelper;
+    private final static Logger LOGGER = LoggerFactory.getLogger(GymMemberController.class);
 
     public GymMemberController(GymMemberService gymMemberService, TableHelper tableHelper) {
         this.gymMemberService = gymMemberService;
@@ -46,7 +51,7 @@ public class GymMemberController {
 
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
-        SecurityContextHolder.getContext().getAuthentication();
+        LOGGER.info("Received request to create member: {}", requestDto);
         GymMemberResponseDto responseDto = gymMemberService.createAndSaveNewMember(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
