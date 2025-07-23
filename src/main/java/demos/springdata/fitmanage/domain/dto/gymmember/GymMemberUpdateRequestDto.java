@@ -7,18 +7,19 @@ public class GymMemberUpdateRequestDto {
     @Size
     private String firstName;
     private String lastName;
+    private String email;
     private SubscriptionStatus subscriptionStatus;
     private String phone;
 
     public GymMemberUpdateRequestDto() {
     }
 
-    public GymMemberUpdateRequestDto(String firstName, String lastName, SubscriptionStatus subscriptionStatus, String phone) {
+    public GymMemberUpdateRequestDto(String firstName, String lastName, String email, SubscriptionStatus subscriptionStatus, String phone) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.subscriptionStatus = subscriptionStatus;
         this.phone = phone;
-
     }
 
     public String getFirstName() {
@@ -35,6 +36,14 @@ public class GymMemberUpdateRequestDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public SubscriptionStatus getSubscriptionStatus() {

@@ -117,7 +117,8 @@ public class TableHelper {
     );
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
-            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone")
+            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone"),
+            StaffMemberTableDto.class, Set.of("firstName", "lastName", "email", "phone", "staffRoleName")
     );
 
 }
