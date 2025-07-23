@@ -8,16 +8,16 @@ import java.util.List;
 public class StaffMemberRequestListDto {
     @NotEmpty(message = "Staff list must not be empty")
     @Valid
-    private List<StaffMemberRequestDto> staff;
+    private List<StaffMemberCreateRequestDto> staff;
 
     public StaffMemberRequestListDto() {
     }
 
-    public List<StaffMemberRequestDto> getStaff() {
+    public List<StaffMemberCreateRequestDto> getStaff() {
         return staff;
     }
 
-    public void setStaff(List<StaffMemberRequestDto> staff) {
+    public void setStaff(List<StaffMemberCreateRequestDto> staff) {
         this.staff = staff;
     }
 }

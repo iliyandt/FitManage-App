@@ -4,15 +4,24 @@ import demos.springdata.fitmanage.domain.dto.common.ActionConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.ColumnsLayoutConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.PaginationConfigDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import demos.springdata.fitmanage.service.impl.GymServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class TableHelper {
+
+    private final static Logger LOGGER = LoggerFactory.getLogger(TableHelper.class);
+
     public <T> List<Map<String, Object>> buildRows(List<T> data, RowMapper<T> rowMapper) {
         return data.stream()
                 .map(rowMapper::mapRow)
@@ -32,11 +41,14 @@ public class TableHelper {
         Map<String, Boolean> columnVisibility = buildColumnVisibility(dtoClass, true);
         ColumnsLayoutConfigDto columnsLayoutConfig = new ColumnsLayoutConfigDto(columnVisibility);
 
+        Map<String, Boolean> createFields = buildCreateFields(dtoClass);
+
         ConfigDto config = new ConfigDto();
         config.setSortable(true);
         config.setActions(actions);
         config.setPagination(pagination);
         config.setColumnsLayoutConfig(columnsLayoutConfig);
+        config.setCreateFields(createFields);
 
         return config;
     }
@@ -60,15 +72,52 @@ public class TableHelper {
 
     public <T> Map<String, Boolean> buildColumnVisibility(Class<T> dtoClass, boolean defaultVisible) {
         Map<String, Boolean> columnVisibility = new LinkedHashMap<>();
+        Set<String> visibleColumns = customColumnVisibilityMap.get(dtoClass);
+
+        if (visibleColumns == null) {
+            return columnVisibility;
+        }
+
         Field[] fields = dtoClass.getDeclaredFields();
 
         for (Field field : fields) {
             String name = field.getName();
-            columnVisibility.put(name, defaultVisible);
-            //todo: make the visibility custom for every table
+            boolean isContained = visibleColumns.contains(name);
+            columnVisibility.put(name, isContained);
         }
 
         return columnVisibility;
     }
+
+    private <T> Map<String, Boolean> buildCreateFields(Class<T> dtoClass) {
+        Map<String, Boolean> createFields = new LinkedHashMap<>();
+
+        LOGGER.info("Looking up createFields for DTO class: {}", dtoClass.getName());
+        Set<String> allowedFields = customCreateFieldMap.get(dtoClass);
+
+        if (allowedFields == null) {
+            LOGGER.warn("No createFields config found for class: {}", dtoClass.getName());
+            return createFields;
+        }
+
+        Field[] fields = dtoClass.getDeclaredFields();
+        for (Field field : fields) {
+            String fieldName = field.getName();
+            boolean isAllowed = allowedFields.contains(fieldName);
+            createFields.put(fieldName, isAllowed);
+        }
+
+        return createFields;
+    }
+
+
+    private static final Map<Class<?>, Set<String>> customCreateFieldMap = Map.of(
+            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "email"),
+            StaffMemberTableDto.class, Set.of("firstName", "lastName", "username", "email", "roleSelection")
+    );
+
+    private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
+            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone")
+    );
 
 }

@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.team.RoleOptionDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberRequestDto;
+import demos.springdata.fitmanage.domain.dto.team.StaffMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
 import demos.springdata.fitmanage.domain.entity.*;
@@ -63,7 +63,7 @@ public class StaffMemberServiceImpl implements StaffMemberService {
 
     @Override
     @Transactional
-    public List<StaffMemberResponseDto> createStaffMembers(List<StaffMemberRequestDto> requests, String gymEmail) {
+    public List<StaffMemberResponseDto> createStaffMembers(List<StaffMemberCreateRequestDto> requests, String gymEmail) {
         Gym gym = gymRepository.findByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
         return requests.stream()
@@ -106,7 +106,7 @@ public class StaffMemberServiceImpl implements StaffMemberService {
         return new RoleOptionDto(id, name, type, label);
     }
 
-    private StaffMemberResponseDto createSingleStaffMember(StaffMemberRequestDto request, Gym gym) {
+    private StaffMemberResponseDto createSingleStaffMember(StaffMemberCreateRequestDto request, Gym gym) {
         validateStaffMemberUniqueness(request);
 
         StaffRole staffRole = resolveStaffRole(request.getRoleSelection(), gym);
@@ -202,7 +202,7 @@ public class StaffMemberServiceImpl implements StaffMemberService {
     }
 
 
-    private void validateStaffMemberUniqueness(StaffMemberRequestDto request) {
+    private void validateStaffMemberUniqueness(StaffMemberCreateRequestDto request) {
         Map<String, String> errors = new HashMap<>();
 
         if (staffMemberRepository.existsByUsername(request.getUsername())) {

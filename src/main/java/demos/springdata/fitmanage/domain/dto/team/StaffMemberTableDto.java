@@ -7,12 +7,13 @@ public class StaffMemberTableDto {
     private Long id;
     private String firstName;
     private String lastName;
-
+    private String username;
+    private String email;
+    private String phone;
     @DropDown(url = "/v1/staff-members/staff/roles")
     private Long staffRoleId;
-
     private String staffRoleName;
-    private String phone;
+    private String roleSelection;
 
     public StaffMemberTableDto() {
     }
@@ -80,6 +81,30 @@ public class StaffMemberTableDto {
 
     public String getPhone() {
         return phone;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getRoleSelection() {
+        return roleSelection;
+    }
+
+    public void setRoleSelection(String roleSelection) {
+        this.roleSelection = roleSelection;
     }
 }
 
