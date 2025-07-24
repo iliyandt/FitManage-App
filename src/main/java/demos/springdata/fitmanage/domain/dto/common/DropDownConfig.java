@@ -2,9 +2,11 @@ package demos.springdata.fitmanage.domain.dto.common;
 
 public class DropDownConfig {
     private String url;
+    private final boolean fromAnnotation;
 
-    public DropDownConfig(String url) {
+    public DropDownConfig(String url, boolean fromAnnotation) {
         this.url = url;
+        this.fromAnnotation = fromAnnotation;
     }
 
     public String getUrl() {
@@ -13,5 +15,9 @@ public class DropDownConfig {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isFromAnnotation() {
+        return fromAnnotation;
     }
 }

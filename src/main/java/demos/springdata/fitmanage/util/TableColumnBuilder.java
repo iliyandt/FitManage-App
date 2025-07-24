@@ -24,18 +24,22 @@ public class TableColumnBuilder {
     }
 
     private static String resolveDropDownType(Field field, DropDownConfig dropDownConfig) {
+        if (dropDownConfig != null && dropDownConfig.isFromAnnotation()) {
+            return "dropdown";
+        }
+
         if (field.getType().isEnum()) {
             return "enum";
         }
 
-        return (dropDownConfig != null) ? "dropdown" : mapJavaTypeToFrontendType(field.getType());
+        return mapJavaTypeToFrontendType(field.getType());
     }
 
     private static DropDownConfig resolveDropDownConfig(Field field) {
         if (field.isAnnotationPresent(DropDown.class)) {
             DropDown dropDown = field.getAnnotation(DropDown.class);
             if (dropDown != null) {
-                return new DropDownConfig(dropDown.url());
+                return new DropDownConfig(dropDown.url(), true);
             }
         }
 
@@ -43,7 +47,7 @@ public class TableColumnBuilder {
             String capitalizedFieldName = capitalizeFirstLetter(field.getName());
             String url = "/v1/" + capitalizedFieldName
                      + "/values";
-            return new DropDownConfig(url);
+            return new DropDownConfig(url, false);
         }
 
         return null;

@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember;
 
+import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
@@ -10,6 +11,7 @@ public class GymMemberTableDto {
     private String lastName;
     private String email;
     private SubscriptionStatus subscriptionStatus;
+    @DropDown(url = "/v1/SubscriptionPlan/values")
     private SubscriptionPlan subscriptionPlan;
     private String phone;
 
