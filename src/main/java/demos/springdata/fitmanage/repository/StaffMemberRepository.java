@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.repository;
 
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,8 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.superadmin.SuperAdminDto;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
 import demos.springdata.fitmanage.service.SuperAdminService;
 import org.modelmapper.ModelMapper;

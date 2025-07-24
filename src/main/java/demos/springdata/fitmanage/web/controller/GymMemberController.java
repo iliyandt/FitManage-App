@@ -1,15 +1,13 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
-import demos.springdata.fitmanage.service.impl.GymServiceImpl;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -17,8 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.common;
+package demos.springdata.fitmanage.domain.dto.common.response;
 
 public class EnumOption {
     private String title;

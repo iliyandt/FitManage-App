@@ -1,12 +1,14 @@
 package demos.springdata.fitmanage.service.impl;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -20,8 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,14 +36,16 @@ public class GymMemberServiceImpl implements GymMemberService {
     private final GymRepository gymRepository;
     private final RoleService roleService;
     private final ModelMapper modelMapper;
+    private final BCryptPasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymMemberServiceImpl.class);
 
     @Autowired
-    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, GymRepository gymRepository, RoleService roleService, ModelMapper modelMapper) {
+    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, GymRepository gymRepository, RoleService roleService, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
         this.gymMemberRepository = gymMemberRepository;
         this.gymRepository = gymRepository;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -99,13 +105,65 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private GymMember buildGymMember(Gym gym, GymMemberCreateRequestDto requestDto) {
         GymMember member = modelMapper.map(requestDto, GymMember.class);
+
+        LOGGER.info("Initial password for user with email: {} will be created", member.getEmail());
+        member.setPassword(passwordEncoder.encode(generateDefaultPassword()));
         member.setGym(gym);
 
         Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(gymAdminRole);
-        LOGGER.info("Member with email {} will be saved in the database", member.getEmail());
+        initializeSubscription(member, requestDto);
 
         return member;
+    }
+
+    private void initializeSubscription(GymMember member, GymMemberCreateRequestDto requestDto) {
+        LOGGER.info("Checking if subscription plan is chosen..");
+
+        if (member.getSubscriptionPlan() == null) {
+            member.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+            return;
+        }
+
+        SubscriptionPlan plan = member.getSubscriptionPlan();
+
+
+        if (plan.isVisitBased()) {
+            LOGGER.info("Visit-based subscription detected. Initializing visits...");
+
+            Integer allowedVisits = requestDto.getVisitLimit() != null
+                    ? requestDto.getVisitLimit()
+                    : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
+
+            member.setAllowedVisits(allowedVisits)
+                    .setRemainingVisits(allowedVisits)
+                    .setSubscriptionStartDate(LocalDateTime.now())
+                    .setSubscriptionEndDate(null);
+        } else {
+            LOGGER.info("Time-based subscription. Calculating expiry...");
+            LocalDateTime now = LocalDateTime.now();
+            member.setSubscriptionStartDate(now)
+                    .setSubscriptionEndDate(calculateEndDate(now, plan))
+                    .setAllowedVisits(null)
+                    .setRemainingVisits(null);
+        }
+
+        member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+    }
+
+    private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
+        return switch (subscriptionPlan) {
+            case MONTHLY -> start.plusMonths(1);
+            case DAY_PASS -> start.plusDays(1);
+            case WEEKLY_PASS -> start.plusWeeks(1);
+            case BIANNUAL -> start.plusMonths(6);
+            case ANNUAL -> start.plusYears(1);
+            default -> throw new IllegalArgumentException("Unhandled subscription plan: " + subscriptionPlan);
+        };
+    }
+
+    private String generateDefaultPassword() {
+        return "GymMember" + System.currentTimeMillis() + "!";
     }
 
     private Gym getGymByEmail(String gymEmail) {
@@ -151,12 +209,12 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private void updateMemberFields(GymMember member, GymMemberUpdateRequestDto updateRequest) {
         LOGGER.info("Updating member with ID {}", member.getId());
-        member.setFirstName(updateRequest.getFirstName());
-        member.setLastName(updateRequest.getLastName());
-        member.setEmail(updateRequest.getEmail());
-        member.setSubscriptionPlan(updateRequest.getSubscriptionPlan());
-        member.setSubscriptionStatus(updateRequest.getSubscriptionStatus());
-        member.setPhone(updateRequest.getPhone());
+        member.setFirstName(updateRequest.getFirstName())
+                .setLastName(updateRequest.getLastName())
+                .setEmail(updateRequest.getEmail())
+                .setSubscriptionPlan(updateRequest.getSubscriptionPlan())
+                .setSubscriptionStatus(updateRequest.getSubscriptionStatus())
+                .setPhone(updateRequest.getPhone());
     }
 
     private GymMember getGymMemberById(Long memberId) {

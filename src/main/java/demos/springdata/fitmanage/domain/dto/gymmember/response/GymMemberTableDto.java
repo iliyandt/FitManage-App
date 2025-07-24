@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.gymmember;
+package demos.springdata.fitmanage.domain.dto.gymmember.response;
 
 import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;

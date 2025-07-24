@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.team;
+package demos.springdata.fitmanage.domain.dto.team.response;
 
 import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.entity.StaffMember;

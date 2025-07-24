@@ -1,12 +1,11 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.common.ColumnsLayoutConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.EnumOption;
-import demos.springdata.fitmanage.domain.dto.common.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.team.*;
-import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.exception.MultipleValidationException;
+import demos.springdata.fitmanage.domain.dto.team.request.StaffMemberRequestListDto;
+import demos.springdata.fitmanage.domain.dto.team.response.RoleOptionDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.StaffMemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -14,12 +13,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.Errors;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/v1/staff-members")

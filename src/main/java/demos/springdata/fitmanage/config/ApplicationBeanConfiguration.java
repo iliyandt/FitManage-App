@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.config;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
 import demos.springdata.fitmanage.repository.GymRepository;

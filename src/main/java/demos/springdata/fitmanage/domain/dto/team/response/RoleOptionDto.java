@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.team;
+package demos.springdata.fitmanage.domain.dto.team.response;
 
 public class RoleOptionDto {
     private String id;

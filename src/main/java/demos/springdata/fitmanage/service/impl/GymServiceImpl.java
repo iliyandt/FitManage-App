@@ -1,24 +1,18 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymRepository;
-import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.GymService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -30,15 +24,13 @@ import java.util.Optional;
 public class GymServiceImpl implements GymService {
 
     private final GymRepository gymRepository;
-    private final GymMemberService gymMemberService;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(GymServiceImpl.class);
 
     @Autowired
-    public GymServiceImpl(GymRepository gymRepository, ModelMapper modelMapper, GymMemberService gymMemberService) {
+    public GymServiceImpl(GymRepository gymRepository, ModelMapper modelMapper) {
         this.gymRepository = gymRepository;
         this.modelMapper = modelMapper;
-        this.gymMemberService = gymMemberService;
     }
 
     @Transactional

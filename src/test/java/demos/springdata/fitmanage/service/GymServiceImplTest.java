@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 
 public class GymServiceImplTest {
     private GymRepository gymRepository;
-    private GymMemberServiceImpl gymMemberService;
     private ModelMapper modelMapper;
     private GymServiceImpl gymService;
 
@@ -29,7 +28,7 @@ public class GymServiceImplTest {
     void setUp() {
         gymRepository = mock(GymRepository.class);
         modelMapper = new ModelMapper();
-        gymService = new GymServiceImpl(gymRepository, modelMapper, gymMemberService);
+        gymService = new GymServiceImpl(gymRepository, modelMapper);
     }
 
 

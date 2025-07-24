@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
 import demos.springdata.fitmanage.repository.StaffMemberRepository;
 import demos.springdata.fitmanage.service.impl.StaffMemberServiceImpl;

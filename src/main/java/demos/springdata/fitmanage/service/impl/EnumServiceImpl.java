@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.common.EnumOption;
+import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.PredefinedStaffRole;
 import demos.springdata.fitmanage.exception.ApiErrorCode;

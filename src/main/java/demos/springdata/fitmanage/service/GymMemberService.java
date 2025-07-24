@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
 
 import java.util.List;
 

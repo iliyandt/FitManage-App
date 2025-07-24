@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.util;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import demos.springdata.fitmanage.domain.dto.common.ColumnConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.DropDownConfig;
+import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.DropDownConfig;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;

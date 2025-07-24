@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.entity.Role;
@@ -27,6 +27,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,8 @@ public class GymMemberServiceImplTest {
     private RoleService roleService;
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
 
     @InjectMocks
     private GymMemberServiceImpl gymMemberService;
@@ -59,7 +62,6 @@ public class GymMemberServiceImplTest {
         requestDto = new GymMemberCreateRequestDto();
         requestDto.setEmail("test@example.com");
         requestDto.setPhone("123456789");
-
         gymMemberEntity = new GymMember();
         gymMemberEntity.setEmail("test@example.com");
         gymMemberEntity.setPhone("0877202011");
@@ -84,6 +86,7 @@ public class GymMemberServiceImplTest {
 
         GymMember mappedMember = new GymMember();
         mappedMember.setEmail(requestDto.getEmail());
+        mappedMember.setPassword(passwordEncoder.encode("123"));
         mappedMember.setPhone(requestDto.getPhone());
         mappedMember.setRoles(new HashSet<>());
 

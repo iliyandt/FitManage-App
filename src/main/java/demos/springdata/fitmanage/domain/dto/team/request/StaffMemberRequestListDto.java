@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.team;
+package demos.springdata.fitmanage.domain.dto.team.request;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;

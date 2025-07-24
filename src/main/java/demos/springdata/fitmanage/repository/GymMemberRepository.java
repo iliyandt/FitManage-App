@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.repository;
 
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymMember;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,5 @@ public interface GymMemberRepository extends JpaRepository<GymMember, Long> {
     boolean existsByEmail(String email);
     boolean existsByPhone(String phone);
     List<GymMember> findGymMembersByGym(Gym gym);
+    List<GymMember> findBySubscriptionStatus(SubscriptionStatus subscriptionStatus);
 }

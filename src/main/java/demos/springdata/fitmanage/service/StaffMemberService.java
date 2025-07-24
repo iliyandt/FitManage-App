@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.team.RoleOptionDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.team.response.RoleOptionDto;
+import demos.springdata.fitmanage.domain.dto.team.request.StaffMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

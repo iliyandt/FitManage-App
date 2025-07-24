@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 
-import demos.springdata.fitmanage.domain.dto.common.EnumOption;
+import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.service.EnumService;
 import org.springframework.http.ResponseEntity;

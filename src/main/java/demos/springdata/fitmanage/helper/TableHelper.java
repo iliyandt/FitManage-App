@@ -1,12 +1,11 @@
 package demos.springdata.fitmanage.helper;
 
-import demos.springdata.fitmanage.domain.dto.common.ActionConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.ColumnsLayoutConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.ConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.PaginationConfigDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.team.StaffMemberTableDto;
-import demos.springdata.fitmanage.service.impl.GymServiceImpl;
+import demos.springdata.fitmanage.domain.dto.common.config.ActionConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.ColumnsLayoutConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.ConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.PaginationConfigDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -112,7 +111,7 @@ public class TableHelper {
 
 
     private static final Map<Class<?>, Set<String>> customCreateFieldMap = Map.of(
-            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "email", "subscriptionPlan"),
+            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "email", "gender", "employment", "birthDate", "subscriptionPlan"),
             StaffMemberTableDto.class, Set.of("firstName", "lastName", "username", "email", "roleSelection")
     );
 

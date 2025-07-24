@@ -1,21 +1,23 @@
-package demos.springdata.fitmanage.domain.dto.gymmember;
+package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public class GymMemberCreateRequestDto {
+public class GymMemberUpdateRequestDto {
 
     @NotBlank
     @Size(min = 2, max = 15)
+    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
     private String firstName;
     @NotBlank
     @Size(min = 2, max = 20)
+    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
-
     @NotBlank
     @Column(unique = true)
     @Email(message = "Email must be valid")
@@ -24,19 +26,16 @@ public class GymMemberCreateRequestDto {
     private SubscriptionPlan subscriptionPlan;
     @NotBlank
     @Column(unique = true)
+    @Pattern(
+            regexp = "^\\+?[0-9]{7,15}$",
+            message = "Phone number must be 7 to 15 digits and may start with '+'"
+    )
     private String phone;
 
-    public GymMemberCreateRequestDto() {
+    public GymMemberUpdateRequestDto() {
     }
 
-    public GymMemberCreateRequestDto(String firstName, String lastName, String email, SubscriptionStatus subscriptionStatus, SubscriptionPlan subscriptionPlan, String phone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.subscriptionStatus = subscriptionStatus;
-        this.subscriptionPlan = subscriptionPlan;
-        this.phone = phone;
-    }
+
 
     public String getFirstName() {
         return firstName;
@@ -71,7 +70,6 @@ public class GymMemberCreateRequestDto {
     }
 
     public SubscriptionPlan getSubscriptionPlan() {
-
         return subscriptionPlan;
     }
 
@@ -86,4 +84,5 @@ public class GymMemberCreateRequestDto {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 }

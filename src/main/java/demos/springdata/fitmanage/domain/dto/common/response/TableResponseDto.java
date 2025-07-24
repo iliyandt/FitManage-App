@@ -1,4 +1,7 @@
-package demos.springdata.fitmanage.domain.dto.common;
+package demos.springdata.fitmanage.domain.dto.common.response;
+
+import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.ConfigDto;
 
 import java.util.List;
 import java.util.Map;

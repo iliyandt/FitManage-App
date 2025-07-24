@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.common;
+package demos.springdata.fitmanage.domain.dto.common.config;
 
 public class ActionConfigDto {
     private String id;

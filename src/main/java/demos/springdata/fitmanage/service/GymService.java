@@ -1,10 +1,7 @@
 package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymBasicInfoDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.domain.entity.GymMember;
 
 import java.util.List;
 import java.util.Optional;

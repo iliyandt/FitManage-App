@@ -1,26 +1,28 @@
 package demos.springdata.fitmanage.domain.enums;
 
 public enum SubscriptionPlan {
-
+    VISIT_PASS(12),
     MONTHLY,
     DAY_PASS,
     WEEKLY_PASS,
     BIANNUAL,
-    ANNUAL,
+    ANNUAL;
 
-    NO_CONTRACT_MONTHLY,
-    PREPAID,
+    private final Integer defaultVisits;
 
-    STUDENT,
-    SENIOR,
-    CORPORATE,
-    FAMILY,
+    SubscriptionPlan() {
+        this.defaultVisits = null;
+    }
 
-    BASIC,
-    PREMIUM,
-    VIP,
+    SubscriptionPlan(Integer defaultVisits) {
+        this.defaultVisits = defaultVisits;
+    }
 
-    CLASS_PACK,
-    OFF_PEAK,
-    WEEKEND_ONLY
+    public boolean isVisitBased() {
+        return defaultVisits != null;
+    }
+
+    public Integer getDefaultVisits() {
+        return defaultVisits;
+    }
 }

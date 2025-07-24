@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.common.EnumOption;
+import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 
 import java.util.List;
 
