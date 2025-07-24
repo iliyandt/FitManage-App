@@ -22,6 +22,8 @@ public class GymMemberTableDto {
     @DropDown(url = "/v1/SubscriptionPlan/values")
     private SubscriptionPlan subscriptionPlan;
     private String phone;
+    private Integer allowedVisits;
+    private Integer remainingVisits;
 
     public GymMemberTableDto() {
     }
@@ -112,5 +114,21 @@ public class GymMemberTableDto {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Integer getAllowedVisits() {
+        return allowedVisits;
+    }
+
+    public void setAllowedVisits(Integer allowedVisits) {
+        this.allowedVisits = allowedVisits;
+    }
+
+    public Integer getRemainingVisits() {
+        return remainingVisits;
+    }
+
+    public void setRemainingVisits(Integer remainingVisits) {
+        this.remainingVisits = remainingVisits;
     }
 }

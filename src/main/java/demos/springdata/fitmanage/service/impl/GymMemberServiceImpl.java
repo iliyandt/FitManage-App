@@ -212,6 +212,10 @@ public class GymMemberServiceImpl implements GymMemberService {
         member.setFirstName(updateRequest.getFirstName())
                 .setLastName(updateRequest.getLastName())
                 .setEmail(updateRequest.getEmail())
+                .setGender(updateRequest.getGender())
+                .setEmployment(updateRequest.getEmployment())
+                .setAllowedVisits(updateRequest.getVisitLimit())
+                .setBirthDate(updateRequest.getBirthDate())
                 .setSubscriptionPlan(updateRequest.getSubscriptionPlan())
                 .setSubscriptionStatus(updateRequest.getSubscriptionStatus())
                 .setPhone(updateRequest.getPhone());

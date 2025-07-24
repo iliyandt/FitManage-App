@@ -111,8 +111,27 @@ public class TableHelper {
 
 
     private static final Map<Class<?>, Set<String>> customCreateFieldMap = Map.of(
-            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "email", "gender", "employment", "birthDate", "subscriptionPlan", "visitLimit"),
-            StaffMemberTableDto.class, Set.of("firstName", "lastName", "username", "email", "roleSelection")
+            GymMemberTableDto.class, Set.of(
+                    "firstName",
+                    "lastName",
+                    "phone",
+                    "email",
+                    "gender",
+                    "employment",
+                    "birthDate",
+                    "subscriptionPlan",
+                    "visitLimit",
+                    "allowedVisits",
+                    "remainingVisits"
+            ),
+
+            StaffMemberTableDto.class, Set.of(
+                    "firstName",
+                    "lastName",
+                    "username",
+                    "email",
+                    "roleSelection"
+            )
     );
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(

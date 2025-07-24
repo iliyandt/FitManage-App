@@ -1,5 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
+import demos.springdata.fitmanage.domain.enums.Employment;
+import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.Column;
@@ -7,6 +9,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+
+import java.time.LocalDate;
 
 public class GymMemberUpdateRequestDto {
 
@@ -22,6 +26,10 @@ public class GymMemberUpdateRequestDto {
     @Column(unique = true)
     @Email(message = "Email must be valid")
     private String email;
+    private Gender gender;
+    private Employment employment;
+    private LocalDate birthDate;
+    private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
     @NotBlank
@@ -35,54 +43,93 @@ public class GymMemberUpdateRequestDto {
     public GymMemberUpdateRequestDto() {
     }
 
-
-
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public GymMemberUpdateRequestDto setFirstName(String firstName) {
         this.firstName = firstName;
+        return this;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public GymMemberUpdateRequestDto setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public GymMemberUpdateRequestDto setEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public GymMemberUpdateRequestDto setGender(Gender gender) {
+        this.gender = gender;
+        return this;
+    }
+
+    public Employment getEmployment() {
+        return employment;
+    }
+
+    public GymMemberUpdateRequestDto setEmployment(Employment employment) {
+        this.employment = employment;
+        return this;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public GymMemberUpdateRequestDto setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+        return this;
+    }
+
+    public Integer getVisitLimit() {
+        return visitLimit;
+    }
+
+    public GymMemberUpdateRequestDto setVisitLimit(Integer visitLimit) {
+        this.visitLimit = visitLimit;
+        return this;
     }
 
     public SubscriptionStatus getSubscriptionStatus() {
         return subscriptionStatus;
     }
 
-    public void setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+    public GymMemberUpdateRequestDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
+        return this;
     }
 
     public SubscriptionPlan getSubscriptionPlan() {
         return subscriptionPlan;
     }
 
-    public void setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+    public GymMemberUpdateRequestDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
+        return this;
     }
 
     public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public GymMemberUpdateRequestDto setPhone(String phone) {
         this.phone = phone;
+        return this;
     }
-
 }
