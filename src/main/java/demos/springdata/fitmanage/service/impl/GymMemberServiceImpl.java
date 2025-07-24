@@ -153,6 +153,8 @@ public class GymMemberServiceImpl implements GymMemberService {
         LOGGER.info("Updating member with ID {}", member.getId());
         member.setFirstName(updateRequest.getFirstName());
         member.setLastName(updateRequest.getLastName());
+        member.setEmail(updateRequest.getEmail());
+        member.setSubscriptionPlan(updateRequest.getSubscriptionPlan());
         member.setSubscriptionStatus(updateRequest.getSubscriptionStatus());
         member.setPhone(updateRequest.getPhone());
     }
