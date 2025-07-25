@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -28,8 +29,11 @@ public class GymMember extends BaseEntity implements UserDetails {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private Employment employment;
+
     @Column(name = "birth_date")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
+
     @Column(nullable = false, unique = true)
     private String email;
     private String password;

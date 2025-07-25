@@ -154,7 +154,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
         return switch (subscriptionPlan) {
             case MONTHLY -> start.plusMonths(1);
-            case DAY_PASS -> start.plusMinutes(5);
+            case DAY_PASS -> start.plusMinutes(180);
             case WEEKLY_PASS -> start.plusWeeks(1);
             case BIANNUAL -> start.plusMonths(6);
             case ANNUAL -> start.plusYears(1);
