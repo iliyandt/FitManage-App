@@ -31,7 +31,7 @@ public class GymMemberCreateRequestDto {
 
     private Employment employment;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthDate;
 
     private Integer visitLimit;

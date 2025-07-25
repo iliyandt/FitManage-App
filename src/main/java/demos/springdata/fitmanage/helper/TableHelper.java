@@ -120,9 +120,7 @@ public class TableHelper {
                     "employment",
                     "birthDate",
                     "subscriptionPlan",
-                    "visitLimit",
-                    "allowedVisits",
-                    "remainingVisits"
+                    "visitLimit"
             ),
 
             StaffMemberTableDto.class, Set.of(
