@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -28,6 +29,7 @@ public class GymMemberUpdateRequestDto {
     private String email;
     private Gender gender;
     private Employment employment;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDate birthDate;
     private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
