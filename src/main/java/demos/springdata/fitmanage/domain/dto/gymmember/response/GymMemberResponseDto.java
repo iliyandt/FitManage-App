@@ -7,6 +7,7 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 public class GymMemberResponseDto {
@@ -16,7 +17,7 @@ public class GymMemberResponseDto {
     private String email;
     private Gender gender;
     private Employment employment;
-    private LocalDate birthDate;
+    private OffsetDateTime birthDate;
     private Integer visitLimit;
     private LocalDateTime createdAt;
     private String phone;
@@ -78,11 +79,11 @@ public class GymMemberResponseDto {
         this.employment = employment;
     }
 
-    public LocalDate getBirthDate() {
+    public OffsetDateTime getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
     }
 
