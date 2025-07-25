@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class GymMember extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Employment employment;
     @Column(name = "birth_date")
-    private LocalDate birthDate;
+    private OffsetDateTime birthDate;
     @Column(nullable = false, unique = true)
     private String email;
     private String password;
@@ -101,11 +102,11 @@ public class GymMember extends BaseEntity implements UserDetails {
         return this;
     }
 
-    public LocalDate getBirthDate() {
+    public OffsetDateTime getBirthDate() {
         return birthDate;
     }
 
-    public GymMember setBirthDate(LocalDate birthDate) {
+    public GymMember setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }

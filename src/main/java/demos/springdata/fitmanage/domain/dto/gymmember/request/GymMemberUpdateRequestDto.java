@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class GymMemberUpdateRequestDto {
 
@@ -30,8 +31,9 @@ public class GymMemberUpdateRequestDto {
     private String email;
     private Gender gender;
     private Employment employment;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDate birthDate;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
+    private OffsetDateTime birthDate;
+
     private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
@@ -91,11 +93,11 @@ public class GymMemberUpdateRequestDto {
         return this;
     }
 
-    public LocalDate getBirthDate() {
+    public OffsetDateTime getBirthDate() {
         return birthDate;
     }
 
-    public GymMemberUpdateRequestDto setBirthDate(LocalDate birthDate) {
+    public GymMemberUpdateRequestDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }
