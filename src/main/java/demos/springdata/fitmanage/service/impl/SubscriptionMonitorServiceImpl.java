@@ -22,7 +22,7 @@ public class SubscriptionMonitorServiceImpl implements SubscriptionMonitorServic
     }
 
     @Override
-    @Scheduled(cron = "0 0 1 * * *")
+    @Scheduled(cron = "0 /5 * * * *")
     public void deactivateExpiredSubscriptions() {
         List<GymMember> activeMembers = gymMemberRepository.findBySubscriptionStatus(SubscriptionStatus.ACTIVE);
 
