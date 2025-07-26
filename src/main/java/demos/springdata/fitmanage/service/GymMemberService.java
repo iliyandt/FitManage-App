@@ -18,4 +18,5 @@ public interface GymMemberService {
     void removeGymMember(Long memberId);
     List<GymMemberTableDto> getGymMembersByFilter(GymMemberFilterRequestDto gymMemberFilterRequestDto);
     Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId);
+    GymMemberResponseDto checkInMember(String input, Long id);
 }

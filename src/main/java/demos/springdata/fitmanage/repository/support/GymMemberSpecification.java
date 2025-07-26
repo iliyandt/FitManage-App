@@ -84,7 +84,7 @@ public class GymMemberSpecification {
 
     private static Specification<GymMember> phone(String phone) {
         return (root, query, cb) -> phone == null ? null :
-                cb.like(root.get("phone"), "%" + phone + "%");
+                cb.like(root.get("phone"), "%" + phone.toLowerCase() + "%");
     }
 
     private static Specification<GymMember> subscriptionStatus(SubscriptionStatus status) {

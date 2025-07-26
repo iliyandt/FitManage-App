@@ -49,4 +49,11 @@ public class SubscriptionMonitorServiceImpl implements SubscriptionMonitorServic
             }
         }
     }
+
+    @Override
+    public void reduceRemainingVisitsIfPlanIsVisitBased() {
+
+    }
+
+
 }

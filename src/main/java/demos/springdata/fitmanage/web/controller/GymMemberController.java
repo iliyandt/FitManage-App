@@ -66,8 +66,8 @@ public class GymMemberController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<GymMemberResponseDto>> searchMember(@RequestParam String query, @RequestParam Long gymId) {
+    @GetMapping("/{gymId}/search")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> searchMember(@RequestParam String query, @PathVariable Long gymId) {
         Optional<GymMemberResponseDto> member = gymMemberService.findBySmartQuery(query, gymId);
 
         return member.map(gymMemberResponseDto -> ResponseEntity
@@ -75,6 +75,16 @@ public class GymMemberController {
                 .body(ApiResponse.failure("Not found", "MEMBER_NOT_FOUND")));
     }
 
+
+    @PostMapping("/{gymId}/check-in")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> checkInMember(
+            @PathVariable Long gymId,
+            @RequestParam String query) {
+
+        GymMemberResponseDto result = gymMemberService.checkInMember(query, gymId);
+
+        return ResponseEntity.ok(ApiResponse.success(result));
+    }
 
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {

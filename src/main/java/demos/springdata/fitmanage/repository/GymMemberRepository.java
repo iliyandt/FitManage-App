@@ -19,7 +19,7 @@ public interface GymMemberRepository extends JpaRepository<GymMember, Long>, Jpa
     List<GymMember> findGymMembersByGym(Gym gym);
     List<GymMember> findBySubscriptionStatus(SubscriptionStatus subscriptionStatus);
 
-    //Check in variants
+    //Search by
     Optional<GymMember> findByIdAndGym_Id(Long id, Long gymId);
     Optional<GymMember> findByEmailIgnoreCaseAndGym_Id(String email, Long gymId);
     Optional<GymMember> findByPhoneIgnoreCaseAndGym_Id(String phone, Long gymId);

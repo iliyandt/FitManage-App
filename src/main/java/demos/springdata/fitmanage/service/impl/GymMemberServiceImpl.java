@@ -22,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -123,32 +124,55 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     @Override
     public Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId) {
+        return findEntityBySmartQuery(input, gymId)
+                .map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+    }
 
+
+    @Override
+    public GymMemberResponseDto checkInMember(String input, Long gymId) {
+        GymMember member = findEntityBySmartQuery(input, gymId)
+                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+
+        if (member.getSubscriptionStatus() != SubscriptionStatus.ACTIVE) {
+            throw new FitManageAppException("Member does not have an active subscription.", ApiErrorCode.UNAUTHORIZED);
+        }
+
+        if (member.getSubscriptionPlan() == SubscriptionPlan.VISIT_PASS) {
+            if (member.getRemainingVisits() == null || member.getRemainingVisits() <= 0) {
+                throw new FitManageAppException("No remaining visits.", ApiErrorCode.UNAUTHORIZED);
+            }
+            member.setRemainingVisits(member.getRemainingVisits() - 1);
+        }
+
+        gymMemberRepository.save(member);
+        return modelMapper.map(member, GymMemberResponseDto.class);
+    }
+
+
+    private Optional<GymMember> findEntityBySmartQuery(String input, Long gymId) {
         try {
             Long id = Long.parseLong(input);
             Optional<GymMember> byId = gymMemberRepository.findByIdAndGym_Id(id, gymId);
-            if (byId.isPresent()) {
-                return byId.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
-            }
+            if (byId.isPresent()) return byId;
         } catch (NumberFormatException ignored) {}
 
-
         Optional<GymMember> byPhone = gymMemberRepository.findByPhoneIgnoreCaseAndGym_Id(input, gymId);
-        if (byPhone.isPresent()) return byPhone.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+        if (byPhone.isPresent()) return byPhone;
 
         Optional<GymMember> byEmail = gymMemberRepository.findByEmailIgnoreCaseAndGym_Id(input, gymId);
-        if (byEmail.isPresent()) return byEmail.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));;
+        if (byEmail.isPresent()) return byEmail;
 
         String[] parts = input.trim().split("\\s+");
         if (parts.length >= 2) {
             return gymMemberRepository
-                    .findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndGym_Id(parts[0], parts[1], gymId)
-                    .map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+                    .findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndGym_Id(parts[0], parts[1], gymId);
         }
 
         LOGGER.warn("Check-in failed: No match found for input '{}' in gym '{}'", input, gymId);
         return Optional.empty();
     }
+
 
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
         return modelMapper.map(updatedMember, GymMemberResponseDto.class);
