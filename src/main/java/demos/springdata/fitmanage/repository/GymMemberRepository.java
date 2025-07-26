@@ -18,4 +18,11 @@ public interface GymMemberRepository extends JpaRepository<GymMember, Long>, Jpa
     boolean existsByPhoneAndGymEmail(String phone, String gymEmail);
     List<GymMember> findGymMembersByGym(Gym gym);
     List<GymMember> findBySubscriptionStatus(SubscriptionStatus subscriptionStatus);
+
+    //Check in variants
+    Optional<GymMember> findByIdAndGym_Id(Long id, Long gymId);
+    Optional<GymMember> findByEmailIgnoreCaseAndGym_Id(String email, Long gymId);
+    Optional<GymMember> findByPhoneIgnoreCaseAndGym_Id(String phone, Long gymId);
+    Optional<GymMember> findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndGym_Id(String firstName, String lastName, Long gymId);
+
 }

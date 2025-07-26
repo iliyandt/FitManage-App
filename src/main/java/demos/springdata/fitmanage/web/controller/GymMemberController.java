@@ -66,6 +66,15 @@ public class GymMemberController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> searchMember(@RequestParam String query, @RequestParam Long gymId) {
+        Optional<GymMemberResponseDto> member = gymMemberService.findBySmartQuery(query, gymId);
+
+        return member.map(gymMemberResponseDto -> ResponseEntity
+                .ok(ApiResponse.success(gymMemberResponseDto))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.failure("Not found", "MEMBER_NOT_FOUND")));
+    }
+
 
     @PostMapping("/members")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {

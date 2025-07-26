@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
@@ -118,6 +119,35 @@ public class GymMemberServiceImpl implements GymMemberService {
                 .stream()
                 .map(gymMember -> modelMapper.map(gymMember, GymMemberTableDto.class))
                 .toList();
+    }
+
+    @Override
+    public Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId) {
+
+        try {
+            Long id = Long.parseLong(input);
+            Optional<GymMember> byId = gymMemberRepository.findByIdAndGym_Id(id, gymId);
+            if (byId.isPresent()) {
+                return byId.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+            }
+        } catch (NumberFormatException ignored) {}
+
+
+        Optional<GymMember> byPhone = gymMemberRepository.findByPhoneIgnoreCaseAndGym_Id(input, gymId);
+        if (byPhone.isPresent()) return byPhone.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+
+        Optional<GymMember> byEmail = gymMemberRepository.findByEmailIgnoreCaseAndGym_Id(input, gymId);
+        if (byEmail.isPresent()) return byEmail.map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));;
+
+        String[] parts = input.trim().split("\\s+");
+        if (parts.length >= 2) {
+            return gymMemberRepository
+                    .findByFirstNameIgnoreCaseAndLastNameIgnoreCaseAndGym_Id(parts[0], parts[1], gymId)
+                    .map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+        }
+
+        LOGGER.warn("Check-in failed: No match found for input '{}' in gym '{}'", input, gymId);
+        return Optional.empty();
     }
 
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
