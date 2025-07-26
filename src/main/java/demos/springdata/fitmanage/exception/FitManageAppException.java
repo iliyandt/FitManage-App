@@ -4,6 +4,7 @@ public class FitManageAppException extends RuntimeException {
     private final ApiErrorCode errorCode;
 
 
+
     public FitManageAppException(String message, ApiErrorCode errorCode) {
         super(message);
         this.errorCode = errorCode;
@@ -21,5 +22,6 @@ public class FitManageAppException extends RuntimeException {
     public int getStatusCode() {
         return errorCode.getStatusCode();
     }
+
 }
 

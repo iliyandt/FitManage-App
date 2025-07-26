@@ -99,7 +99,7 @@ public class GymMemberServiceImplTest {
         Mockito.when(gymRepository.findByEmail(gymEmail)).thenReturn(Optional.of(gym));
         Mockito.when(modelMapper.map(requestDto, GymMember.class)).thenReturn(mappedMember);
         Mockito.when(roleService.findByName(RoleType.MEMBER)).thenReturn(memberRole);
-        Mockito.when(gymMemberRepository.existsByEmail(requestDto.getEmail())).thenReturn(false);
+        Mockito.when(gymMemberRepository.existsByPhoneAndGymEmail(requestDto.getEmail(), gymEmail)).thenReturn(false);
         Mockito.when(gymMemberRepository.existsByPhone(requestDto.getPhone())).thenReturn(false);
         Mockito.when(gymMemberRepository.save(mappedMember)).thenReturn(savedMember);
         Mockito.when(modelMapper.map(savedMember, GymMemberResponseDto.class)).thenReturn(responseDto);

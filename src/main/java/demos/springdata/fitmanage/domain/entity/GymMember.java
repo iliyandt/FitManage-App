@@ -18,7 +18,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "gym_members")
+@Table(name = "gym_members",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"email", "gym_id"}),
+                @UniqueConstraint(columnNames = {"phone", "gym_id"})
+        })
 public class GymMember extends BaseEntity implements UserDetails {
 
     @Column(nullable = false)
@@ -34,10 +38,10 @@ public class GymMember extends BaseEntity implements UserDetails {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
     private String password;
-    @Column(unique = true)
+    @Column(name = "phone")
     private String phone;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

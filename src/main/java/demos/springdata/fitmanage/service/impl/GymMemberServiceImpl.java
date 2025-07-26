@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
@@ -14,12 +15,14 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
+import demos.springdata.fitmanage.repository.support.GymMemberSpecification;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.RoleService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -55,7 +58,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         Gym gym = getGymByEmail(gymEmail);
 
         GymMember member = buildGymMember(gym, requestDto);
-        validateCredentials(requestDto);
+        validateCredentials(gym, requestDto);
 
         GymMember savedMember = gymMemberRepository.save(member);
         LOGGER.info("Successfully added member with ID {} to gym '{}'", savedMember.getId(), gym.getEmail());
@@ -67,8 +70,10 @@ public class GymMemberServiceImpl implements GymMemberService {
     public List<GymMemberTableDto> getAllGymMembersForTable() {
         String gymEmail = getAuthenticatedGymEmail();
         Gym gym = getGymByEmail(gymEmail);
+
         List<GymMember> members = gymMemberRepository.findGymMembersByGym(gym);
 
+        if (members.isEmpty()) throw new FitManageAppException("You have not added any members yet.", ApiErrorCode.NOT_FOUND);
         return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();
@@ -97,6 +102,22 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         gymMemberRepository.delete(gymMember);
         LOGGER.info("Member with ID {} deleted successfully", memberId);
+    }
+
+    @Override
+    public List<GymMemberTableDto> getGymMembersByFilter(GymMemberFilterRequestDto filter) {
+        LOGGER.info("Search for users with filter: {}", filter);
+        Specification<GymMember> spec = GymMemberSpecification.build(filter);
+
+        List<GymMember> memberList = gymMemberRepository.findAll(spec);
+
+
+        if (memberList.isEmpty()) throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
+
+        return memberList
+                .stream()
+                .map(gymMember -> modelMapper.map(gymMember, GymMemberTableDto.class))
+                .toList();
     }
 
     private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
@@ -181,16 +202,17 @@ public class GymMemberServiceImpl implements GymMemberService {
         return email;
     }
 
-    private void validateCredentials(GymMemberCreateRequestDto requestDto) {
+    private void validateCredentials(Gym gym, GymMemberCreateRequestDto requestDto) {
         Map<String, String> errors = new HashMap<>();
-        if (gymMemberRepository.existsByEmail(requestDto.getEmail())) {
-            LOGGER.warn("Member with email {} already exists", requestDto.getEmail());
-            errors.put("Email", "Email is already registered");
+
+        if (gymMemberRepository.existsByEmailAndGymEmail(requestDto.getEmail(), gym.getEmail())) {
+            LOGGER.warn("Member with email {} already exists", gym.getEmail());
+            errors.put("email", "Email is already registered");
         }
 
-        if (gymMemberRepository.existsByPhone(requestDto.getPhone())) {
-            LOGGER.warn("Member with phone {} already exists", requestDto.getPhone());
-            errors.put("Phone", "Phone used from another member");
+        if (gymMemberRepository.existsByPhoneAndGymEmail(requestDto.getPhone(), gym.getEmail())) {
+            LOGGER.warn("Member with phone {} already exists", gym.getPhone());
+            errors.put("phone", "Phone used from another member");
         }
 
         if (!errors.isEmpty()) {
@@ -203,7 +225,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         boolean phoneExists = gymMemberRepository.existsByPhone(newPhone);
 
         if (isPhoneChanged && phoneExists) {
-            throw new MultipleValidationException(Map.of("Phone", "Phone used by another member"));
+            throw new MultipleValidationException(Map.of("phone", "Phone used by another member"));
         }
     }
 
@@ -223,6 +245,6 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private GymMember getGymMemberById(Long memberId) {
         return gymMemberRepository.findById(memberId)
-                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
     }
 }

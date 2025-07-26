@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.validation;
 
-import demos.springdata.fitmanage.exception.DuplicateEmailException;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.SuperAdminRepository;
@@ -43,7 +43,7 @@ public class UserValidationService {
         }
 
         if (exists) {
-            throw new DuplicateEmailException(errors);
+            throw new MultipleValidationException(errors);
         }
     }
 }
