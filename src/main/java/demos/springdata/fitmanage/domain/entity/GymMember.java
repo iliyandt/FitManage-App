@@ -52,6 +52,7 @@ public class GymMember extends BaseEntity implements UserDetails {
     private Set<Role> roles = new HashSet<>();
     private boolean enabled;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
     @Enumerated(EnumType.STRING)
@@ -60,6 +61,7 @@ public class GymMember extends BaseEntity implements UserDetails {
     private LocalDateTime subscriptionEndDate;
     private Integer allowedVisits;
     private Integer remainingVisits;
+    private LocalDateTime lastCheckInAt;
 
     @ManyToOne
     @JoinColumn(name = "gym_id")
@@ -201,6 +203,15 @@ public class GymMember extends BaseEntity implements UserDetails {
         return this;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public GymMember setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
     public Gym getGym() {
         return gym;
     }
@@ -261,6 +272,15 @@ public class GymMember extends BaseEntity implements UserDetails {
 
     public GymMember setRemainingVisits(Integer remainingVisits) {
         this.remainingVisits = remainingVisits;
+        return this;
+    }
+
+    public LocalDateTime getLastCheckInAt() {
+        return lastCheckInAt;
+    }
+
+    public GymMember setLastCheckInAt(LocalDateTime lastCheckInAt) {
+        this.lastCheckInAt = lastCheckInAt;
         return this;
     }
 }

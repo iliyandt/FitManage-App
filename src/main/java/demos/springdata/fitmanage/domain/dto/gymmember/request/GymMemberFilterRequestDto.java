@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -42,6 +43,7 @@ public class GymMemberFilterRequestDto {
             message = "Phone number must be 7 to 15 digits and may start with '+'"
     )
     private String phone;
+    private Gym gym;
 
     public GymMemberFilterRequestDto() {
     }
@@ -133,6 +135,16 @@ public class GymMemberFilterRequestDto {
 
     public GymMemberFilterRequestDto setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+
+    public Gym getGym() {
+        return gym;
+    }
+
+    public GymMemberFilterRequestDto setGym(Gym gym) {
+        this.gym = gym;
         return this;
     }
 }

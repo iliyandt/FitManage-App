@@ -39,7 +39,7 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
                     LOGGER.info("Gym found with email: {}", email);
                     return (UserDetails) gym;
                 }))
-                .or(() -> gymMemberRepository.findByEmail(email).map(member -> {
+                .or(() -> gymMemberRepository.findByEmailWithGym(email).map(member -> {
                     LOGGER.info("GymMember account found with email: {}", email);
                     return (UserDetails) member;
                 }))

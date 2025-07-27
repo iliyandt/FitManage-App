@@ -1,4 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
+
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
@@ -23,8 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -75,8 +78,8 @@ public class GymMemberServiceImpl implements GymMemberService {
         List<GymMember> members = gymMemberRepository.findGymMembersByGym(gym);
 
         return members.stream()
-                    .map(member -> modelMapper.map(member, GymMemberTableDto.class))
-                    .toList();
+                .map(member -> modelMapper.map(member, GymMemberTableDto.class))
+                .toList();
     }
 
 
@@ -107,18 +110,36 @@ public class GymMemberServiceImpl implements GymMemberService {
     @Override
     public List<GymMemberTableDto> getGymMembersByFilter(GymMemberFilterRequestDto filter) {
         LOGGER.info("Search for users with filter: {}", filter);
-        Specification<GymMember> spec = GymMemberSpecification.build(filter);
+
+        Gym gym = getGymByEmail(getAuthenticatedGymEmail());
+
+        Specification<GymMember> spec = GymMemberSpecification.build(filter)
+                .and((root, query, cb) -> cb.equal(root.get("gym"), gym));
 
         List<GymMember> memberList = gymMemberRepository.findAll(spec);
 
 
-        if (memberList.isEmpty()) throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
+        if (memberList.isEmpty())
+            throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
 
         return memberList
                 .stream()
                 .map(gymMember -> modelMapper.map(gymMember, GymMemberTableDto.class))
                 .toList();
     }
+
+
+// when gym members can log in.
+// private Gym getCurrentAuthenticatedGym() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication == null || !(authentication.getPrincipal() instanceof GymMember currentMember)) {
+//            throw new FitManageAppException("User is not authenticated or has no gym", ApiErrorCode.NOT_FOUND);
+//        }
+//
+//        return currentMember.getGym();
+//    }
+
 
     @Override
     public Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId) {
@@ -129,22 +150,45 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     @Override
     public GymMemberResponseDto checkInMember(String input, Long gymId) {
-        GymMember member = findEntityBySmartQuery(input, gymId)
-                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+        GymMember member = getValidatedMemberForCheckIn(input, gymId);
 
-        if (member.getSubscriptionStatus() != SubscriptionStatus.ACTIVE) {
-            throw new FitManageAppException("Member does not have an active subscription.", ApiErrorCode.UNAUTHORIZED);
-        }
+        handleVisitPass(member);
 
-        if (member.getSubscriptionPlan() == SubscriptionPlan.VISIT_PASS) {
-            if (member.getRemainingVisits() == null || member.getRemainingVisits() <= 0) {
-                throw new FitManageAppException("No remaining visits.", ApiErrorCode.UNAUTHORIZED);
-            }
-            member.setRemainingVisits(member.getRemainingVisits() - 1);
-        }
+        member.setLastCheckInAt(LocalDateTime.now());
 
         gymMemberRepository.save(member);
         return modelMapper.map(member, GymMemberResponseDto.class);
+    }
+
+
+    private void handleVisitPass(GymMember member) {
+        if (member.getSubscriptionPlan() != SubscriptionPlan.VISIT_PASS) return;
+
+        Integer remaining = member.getRemainingVisits();
+        if (remaining == null || remaining <= 0) {
+            deactivateSubscription(member);
+            throw new FitManageAppException("No remaining visits.", ApiErrorCode.UNAUTHORIZED);
+        }
+
+        member.setRemainingVisits(member.getRemainingVisits() - 1);
+    }
+
+    private void deactivateSubscription(GymMember member) {
+        member.setSubscriptionStatus(SubscriptionStatus.INACTIVE)
+                .setSubscriptionPlan(null);
+    }
+
+    private GymMember getValidatedMemberForCheckIn(String input, Long gymId) {
+        return findEntityBySmartQuery(input, gymId)
+                .filter(this::hasActiveSubscription)
+                .orElseThrow(() -> new FitManageAppException(
+                        "Member not found or does not have an active subscription.",
+                        ApiErrorCode.UNAUTHORIZED
+                ));
+    }
+
+    private boolean hasActiveSubscription(GymMember member) {
+        return member.getSubscriptionStatus() == SubscriptionStatus.ACTIVE;
     }
 
 
@@ -153,7 +197,8 @@ public class GymMemberServiceImpl implements GymMemberService {
             Long id = Long.parseLong(input);
             Optional<GymMember> byId = gymMemberRepository.findByIdAndGym_Id(id, gymId);
             if (byId.isPresent()) return byId;
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
 
         Optional<GymMember> byPhone = gymMemberRepository.findByPhoneIgnoreCaseAndGym_Id(input, gymId);
         if (byPhone.isPresent()) return byPhone;
@@ -180,8 +225,9 @@ public class GymMemberServiceImpl implements GymMemberService {
         GymMember member = modelMapper.map(requestDto, GymMember.class);
 
         LOGGER.info("Initial password for user with email: {} will be created", member.getEmail());
-        member.setPassword(passwordEncoder.encode(generateDefaultPassword()));
-        member.setGym(gym);
+        member.setPassword(passwordEncoder.encode(generateDefaultPassword()))
+                .setUpdatedAt(LocalDateTime.now())
+                .setGym(gym);
 
         Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(gymAdminRole);
@@ -292,7 +338,8 @@ public class GymMemberServiceImpl implements GymMemberService {
                 .setBirthDate(updateRequest.getBirthDate())
                 .setSubscriptionPlan(updateRequest.getSubscriptionPlan())
                 .setSubscriptionStatus(updateRequest.getSubscriptionStatus())
-                .setPhone(updateRequest.getPhone());
+                .setPhone(updateRequest.getPhone())
+                .setUpdatedAt(LocalDateTime.now());
     }
 
     private GymMember getGymMemberById(Long memberId) {
