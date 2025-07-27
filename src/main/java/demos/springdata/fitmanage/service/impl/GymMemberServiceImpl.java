@@ -22,7 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,7 +74,6 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         List<GymMember> members = gymMemberRepository.findGymMembersByGym(gym);
 
-        if (members.isEmpty()) throw new FitManageAppException("You have not added any members yet.", ApiErrorCode.NOT_FOUND);
         return members.stream()
                     .map(member -> modelMapper.map(member, GymMemberTableDto.class))
                     .toList();
