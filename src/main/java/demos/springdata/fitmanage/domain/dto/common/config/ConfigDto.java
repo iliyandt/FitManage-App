@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ConfigDto {
-    private boolean sortable;
+    private SortingConfigDto sortable;
     private List<ActionConfigDto> actions;
     private ColumnsLayoutConfigDto columnsLayoutConfig;
     private Map<String, Boolean> createFields;
@@ -13,51 +13,48 @@ public class ConfigDto {
     public ConfigDto() {
     }
 
-    public ConfigDto(boolean sortable, List<ActionConfigDto> actions, ColumnsLayoutConfigDto columnsLayoutConfig, Map<String, Boolean> createFields, PaginationConfigDto pagination) {
-        this.sortable = sortable;
-        this.actions = actions;
-        this.columnsLayoutConfig = columnsLayoutConfig;
-        this.createFields = createFields;
-        this.pagination = pagination;
-    }
-
-    public boolean isSortable() {
+    public SortingConfigDto getSortable() {
         return sortable;
     }
 
-    public void setSortable(boolean sortable) {
+    public ConfigDto setSortable(SortingConfigDto sortable) {
         this.sortable = sortable;
+        return this;
     }
 
     public List<ActionConfigDto> getActions() {
         return actions;
     }
 
-    public void setActions(List<ActionConfigDto> actions) {
+    public ConfigDto setActions(List<ActionConfigDto> actions) {
         this.actions = actions;
+        return this;
     }
 
     public ColumnsLayoutConfigDto getColumnsLayoutConfig() {
         return columnsLayoutConfig;
     }
 
-    public void setColumnsLayoutConfig(ColumnsLayoutConfigDto columnsLayoutConfig) {
+    public ConfigDto setColumnsLayoutConfig(ColumnsLayoutConfigDto columnsLayoutConfig) {
         this.columnsLayoutConfig = columnsLayoutConfig;
+        return this;
     }
 
     public Map<String, Boolean> getCreateFields() {
         return createFields;
     }
 
-    public void setCreateFields(Map<String, Boolean> createFields) {
+    public ConfigDto setCreateFields(Map<String, Boolean> createFields) {
         this.createFields = createFields;
+        return this;
     }
 
     public PaginationConfigDto getPagination() {
         return pagination;
     }
 
-    public void setPagination(PaginationConfigDto pagination) {
+    public ConfigDto setPagination(PaginationConfigDto pagination) {
         this.pagination = pagination;
+        return this;
     }
 }

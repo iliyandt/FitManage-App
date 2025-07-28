@@ -1,9 +1,6 @@
 package demos.springdata.fitmanage.helper;
 
-import demos.springdata.fitmanage.domain.dto.common.config.ActionConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.config.ColumnsLayoutConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.config.ConfigDto;
-import demos.springdata.fitmanage.domain.dto.common.config.PaginationConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.*;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import org.slf4j.Logger;
@@ -39,17 +36,19 @@ public class TableHelper {
 
         Map<String, Boolean> columnVisibility = buildColumnVisibility(dtoClass, true);
         ColumnsLayoutConfigDto columnsLayoutConfig = new ColumnsLayoutConfigDto(columnVisibility);
-
         Map<String, Boolean> createFields = buildCreateFields(dtoClass);
 
-        ConfigDto config = new ConfigDto();
-        config.setSortable(true);
-        config.setActions(actions);
-        config.setPagination(pagination);
-        config.setColumnsLayoutConfig(columnsLayoutConfig);
-        config.setCreateFields(createFields);
+        SortingConfigDto sortingConfig = sortingConfigMap.getOrDefault(
+                dtoClass,
+                new SortingConfigDto().setField("id").setDesc(true)
+        );
 
-        return config;
+        return new ConfigDto()
+                .setSortable(sortingConfig)
+                .setActions(actions)
+                .setPagination(pagination)
+                .setColumnsLayoutConfig(columnsLayoutConfig)
+                .setCreateFields(createFields);
     }
 
     public <T> Map<String, Object> buildRowMap(T dto) {
@@ -137,4 +136,8 @@ public class TableHelper {
             StaffMemberTableDto.class, Set.of("firstName", "lastName", "email", "phone", "staffRoleName")
     );
 
+
+    private static final Map<Class<?>, SortingConfigDto> sortingConfigMap = Map.of(
+            GymMemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
+    );
 }

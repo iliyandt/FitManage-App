@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -128,17 +127,6 @@ public class GymMemberServiceImpl implements GymMemberService {
                 .toList();
     }
 
-
-// when gym members can log in.
-// private Gym getCurrentAuthenticatedGym() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        if (authentication == null || !(authentication.getPrincipal() instanceof GymMember currentMember)) {
-//            throw new FitManageAppException("User is not authenticated or has no gym", ApiErrorCode.NOT_FOUND);
-//        }
-//
-//        return currentMember.getGym();
-//    }
 
 
     @Override
