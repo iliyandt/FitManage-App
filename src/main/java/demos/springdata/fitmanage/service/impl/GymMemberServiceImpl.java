@@ -30,6 +30,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -140,12 +141,17 @@ public class GymMemberServiceImpl implements GymMemberService {
     public GymMemberResponseDto checkInMember(String input, Long gymId) {
         GymMember member = getValidatedMemberForCheckIn(input, gymId);
 
+        if (member.getLastCheckInAt() != null &&
+                member.getLastCheckInAt().toLocalDate().isEqual(LocalDate.now())) {
+            throw new IllegalStateException("Member has already checked in today.");
+        }
+
         handleVisitPass(member);
 
         member.setLastCheckInAt(LocalDateTime.now());
 
         gymMemberRepository.save(member);
-        return modelMapper.map(member, GymMemberResponseDto.class);
+        return mapToResponseDto(member);
     }
 
 
