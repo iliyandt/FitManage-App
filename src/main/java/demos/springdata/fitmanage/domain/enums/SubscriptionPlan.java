@@ -22,6 +22,10 @@ public enum SubscriptionPlan {
         return defaultVisits != null;
     }
 
+    public boolean isTimeBased() {
+        return !isVisitBased();
+    }
+
     public Integer getDefaultVisits() {
         return defaultVisits;
     }

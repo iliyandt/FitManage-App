@@ -7,6 +7,7 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 public class GymMemberTableDto {
@@ -25,6 +26,8 @@ public class GymMemberTableDto {
     private String phone;
     private Integer allowedVisits;
     private Integer remainingVisits;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public GymMemberTableDto() {
     }
@@ -131,5 +134,23 @@ public class GymMemberTableDto {
 
     public void setRemainingVisits(Integer remainingVisits) {
         this.remainingVisits = remainingVisits;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public GymMemberTableDto setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public GymMemberTableDto setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
     }
 }

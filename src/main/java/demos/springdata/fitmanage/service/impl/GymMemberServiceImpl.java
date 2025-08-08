@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -88,7 +87,12 @@ public class GymMemberServiceImpl implements GymMemberService {
         GymMember member = getGymMemberById(memberId);
 
         validateUpdatedPhone(member, updateRequest.getPhone());
+
+        validateSubscriptionChange(member, updateRequest);
+
         updateMemberFields(member, updateRequest);
+
+        recalculateSubscriptionStatus(member);
 
         GymMember updatedMember = gymMemberRepository.save(member);
         LOGGER.info("Member with ID {} updated successfully", memberId);
@@ -141,12 +145,16 @@ public class GymMemberServiceImpl implements GymMemberService {
     public GymMemberResponseDto checkInMember(String input, Long gymId) {
         GymMember member = getValidatedMemberForCheckIn(input, gymId);
 
-        if (member.getLastCheckInAt() != null &&
-                member.getLastCheckInAt().toLocalDate().isEqual(LocalDate.now())) {
+        if (member.getLastCheckInAt() != null && member.getLastCheckInAt().toLocalDate().isEqual(LocalDate.now())) {
             throw new IllegalStateException("Member has already checked in today.");
         }
 
-        handleVisitPass(member);
+        boolean validVisit = handleVisitPass(member);
+
+        if (!validVisit) {
+            gymMemberRepository.save(member);
+            throw new FitManageAppException("No remaining visits.", ApiErrorCode.UNAUTHORIZED);
+        }
 
         member.setLastCheckInAt(LocalDateTime.now());
 
@@ -155,16 +163,62 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
 
-    private void handleVisitPass(GymMember member) {
-        if (member.getSubscriptionPlan() != SubscriptionPlan.VISIT_PASS) return;
+    private void recalculateSubscriptionStatus(GymMember member) {
+        if (member.getSubscriptionPlan() == null) {
+            member.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+            return;
+        }
+
+        if (member.getSubscriptionPlan().isVisitBased()) {
+            Integer remaining = member.getRemainingVisits();
+            if (remaining == null || remaining <= 0) {
+                deactivateSubscription(member);
+            } else {
+                member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+            }
+        }
+
+
+    }
+
+    private void validateSubscriptionChange(GymMember member, GymMemberUpdateRequestDto updateRequest) {
+        SubscriptionPlan currentPlan = member.getSubscriptionPlan();
+        SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();
+
+        if (currentPlan == newPlan) return;
+
+        if (currentPlan != null && currentPlan.isTimeBased()) {
+            if (member.getSubscriptionEndDate() != null && LocalDateTime.now().isBefore(member.getSubscriptionEndDate())) {
+                throw new FitManageAppException(
+                        "Cannot change time-based plan before current period ends.",
+                        ApiErrorCode.UNAUTHORIZED
+                );
+            }
+        }
+
+        if (currentPlan != null && currentPlan.isVisitBased()) {
+            if (member.getRemainingVisits() != null && member.getRemainingVisits() > 0) {
+                throw new FitManageAppException(
+                        "Cannot change visit-based plan until all visits are used.",
+                        ApiErrorCode.UNAUTHORIZED
+                );
+            }
+        }
+    }
+
+
+    private boolean handleVisitPass(GymMember member) {
+        if (member.getSubscriptionPlan() != SubscriptionPlan.VISIT_PASS) return true;
 
         Integer remaining = member.getRemainingVisits();
         if (remaining == null || remaining <= 0) {
             deactivateSubscription(member);
-            throw new FitManageAppException("No remaining visits.", ApiErrorCode.UNAUTHORIZED);
+            return false;
         }
 
         member.setRemainingVisits(member.getRemainingVisits() - 1);
+        recalculateSubscriptionStatus(member);
+        return true;
     }
 
     private void deactivateSubscription(GymMember member) {
