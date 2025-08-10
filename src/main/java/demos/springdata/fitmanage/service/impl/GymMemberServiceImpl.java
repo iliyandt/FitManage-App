@@ -181,6 +181,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         }
 
         member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+        gymMemberRepository.save(member);
         return mapToResponseDto(member);
     }
 
