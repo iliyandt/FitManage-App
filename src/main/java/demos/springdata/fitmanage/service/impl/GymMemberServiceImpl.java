@@ -19,6 +19,7 @@ import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.support.GymMemberSpecification;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.service.RoleService;
+import demos.springdata.fitmanage.service.VisitService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,15 +42,17 @@ public class GymMemberServiceImpl implements GymMemberService {
     private final GymMemberRepository gymMemberRepository;
     private final GymRepository gymRepository;
     private final RoleService roleService;
+    private final VisitService visitService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(GymMemberServiceImpl.class);
 
     @Autowired
-    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, GymRepository gymRepository, RoleService roleService, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
+    public GymMemberServiceImpl(GymMemberRepository gymMemberRepository, GymRepository gymRepository, RoleService roleService, VisitService visitService, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder) {
         this.gymMemberRepository = gymMemberRepository;
         this.gymRepository = gymRepository;
         this.roleService = roleService;
+        this.visitService = visitService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -157,8 +160,9 @@ public class GymMemberServiceImpl implements GymMemberService {
         }
 
         member.setLastCheckInAt(LocalDateTime.now());
-
         gymMemberRepository.save(member);
+        visitService.checkIn(member, gymId);
+
         return mapToResponseDto(member);
     }
 

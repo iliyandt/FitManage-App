@@ -2,8 +2,10 @@ package demos.springdata.fitmanage.config;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
+import demos.springdata.fitmanage.domain.entity.Visit;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import org.modelmapper.ModelMapper;
