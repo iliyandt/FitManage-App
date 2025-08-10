@@ -18,24 +18,22 @@ import java.util.stream.Collectors;
 @Service
 public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
-    private final ModelMapper modelMapper;
 
 
     @Autowired
-    public VisitServiceImpl(VisitRepository visitRepository, ModelMapper modelMapper) {
+    public VisitServiceImpl(VisitRepository visitRepository) {
         this.visitRepository = visitRepository;
-        this.modelMapper = modelMapper;
     }
 
 
     @Override
     @Transactional
-    public VisitDto checkIn(GymMember gymMember, Long gymId) {
+    public void checkIn(GymMember gymMember, Long gymId) {
         Visit visit = new Visit()
                 .setGymMember(gymMember)
                 .setGymId(gymId)
                 .setCheckInAt(LocalDateTime.now());
-        return toDTO(visitRepository.save(visit));
+        toDTO(visitRepository.save(visit));
     }
 
     @Override
@@ -47,8 +45,8 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<VisitDto> getVisitsInPeriod(LocalDateTime start, LocalDateTime end) {
-        return visitRepository.findByCheckInAtBetween(start, end)
+    public List<VisitDto> getVisitsInPeriod(Long id, LocalDateTime start, LocalDateTime end) {
+        return visitRepository.findByGymMemberIdAndCheckInAtBetween(id ,start, end)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());

@@ -117,9 +117,7 @@ public class TableHelper {
                     "email",
                     "gender",
                     "employment",
-                    "birthDate",
-                    "subscriptionPlan",
-                    "visitLimit"
+                    "birthDate"
             ),
 
             StaffMemberTableDto.class, Set.of(

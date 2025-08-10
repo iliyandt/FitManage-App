@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface VisitRepository extends JpaRepository<Visit, Long> {
     List<Visit> findByGymMember_Id(Long memberId);
-    List<Visit> findByCheckInAtBetween(LocalDateTime start, LocalDateTime end);
+    List<Visit> findByGymMemberIdAndCheckInAtBetween(Long id, LocalDateTime checkInAtAfter, LocalDateTime checkInAtBefore);
 }

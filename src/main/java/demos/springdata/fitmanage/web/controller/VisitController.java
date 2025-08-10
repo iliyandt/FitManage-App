@@ -31,11 +31,11 @@ public class VisitController {
         return ResponseEntity.ok(ApiResponse.success(visitsByMember));
     }
 
-    @GetMapping("/period/{start}/{end}")
-    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsInPeriod(@PathVariable String start, @PathVariable String end) {
+    @GetMapping("/period/{id}/{start}/{end}")
+    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsInPeriod(@PathVariable Long id, @PathVariable String start, @PathVariable String end) {
         LocalDateTime startDateTime = LocalDate.parse(start).atStartOfDay();
         LocalDateTime endDateTime = LocalDate.parse(end).atTime(LocalTime.MAX);
-        List<VisitDto> visitsInPeriod = visitService.getVisitsInPeriod(startDateTime, endDateTime);
+        List<VisitDto> visitsInPeriod = visitService.getVisitsInPeriod(id, startDateTime, endDateTime);
 
         return ResponseEntity.ok(ApiResponse.success(visitsInPeriod));
     }

@@ -1,7 +1,5 @@
 package demos.springdata.fitmanage.domain.dto.visit;
 
-import demos.springdata.fitmanage.domain.entity.GymMember;
-
 import java.time.LocalDateTime;
 
 public class VisitDto {
