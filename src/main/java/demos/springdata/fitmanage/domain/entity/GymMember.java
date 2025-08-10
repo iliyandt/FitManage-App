@@ -74,6 +74,8 @@ public class GymMember extends BaseEntity implements UserDetails {
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         this.enabled = true;
+
+        this.subscriptionStatus = SubscriptionStatus.INACTIVE;
     }
 
     public String getFirstName() {

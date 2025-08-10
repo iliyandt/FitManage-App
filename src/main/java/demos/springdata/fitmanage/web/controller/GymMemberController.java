@@ -8,7 +8,6 @@ import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberRespons
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
-import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
