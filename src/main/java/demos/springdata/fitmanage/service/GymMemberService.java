@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
@@ -19,4 +20,5 @@ public interface GymMemberService {
     List<GymMemberTableDto> getGymMembersByFilter(GymMemberFilterRequestDto gymMemberFilterRequestDto);
     Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId);
     GymMemberResponseDto checkInMember(String input, Long id);
+    GymMemberResponseDto initializeSubscription(Long id, GymMemberSubscriptionRequestDto requestDto);
 }

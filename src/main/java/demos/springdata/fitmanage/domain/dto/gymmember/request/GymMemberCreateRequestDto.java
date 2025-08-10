@@ -1,20 +1,13 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonValue;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
-import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
 public class GymMemberCreateRequestDto {
@@ -35,14 +28,10 @@ public class GymMemberCreateRequestDto {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
 
-    private Integer visitLimit;
-
     @NotBlank
     @Column(unique = true)
     @Email(message = "Email must be valid")
     private String email;
-    private SubscriptionStatus subscriptionStatus;
-    private SubscriptionPlan subscriptionPlan;
     @NotBlank
     @Column(unique = true)
     @Pattern(
@@ -99,14 +88,6 @@ public class GymMemberCreateRequestDto {
         return this;
     }
 
-    public Integer getVisitLimit() {
-        return visitLimit;
-    }
-
-    public GymMemberCreateRequestDto setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
-        return this;
-    }
 
     public String getEmail() {
         return email;
@@ -114,24 +95,6 @@ public class GymMemberCreateRequestDto {
 
     public GymMemberCreateRequestDto setEmail(String email) {
         this.email = email;
-        return this;
-    }
-
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
-    }
-
-    public GymMemberCreateRequestDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
-        return this;
-    }
-
-    public SubscriptionPlan getSubscriptionPlan() {
-        return subscriptionPlan;
-    }
-
-    public GymMemberCreateRequestDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
-        this.subscriptionPlan = subscriptionPlan;
         return this;
     }
 

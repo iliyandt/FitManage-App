@@ -4,10 +4,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
 import demos.springdata.fitmanage.service.VisitService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,9 +36,5 @@ public class VisitController {
 
         return ResponseEntity.ok(ApiResponse.success(visitsInPeriod));
     }
-
-
-
-
 
 }

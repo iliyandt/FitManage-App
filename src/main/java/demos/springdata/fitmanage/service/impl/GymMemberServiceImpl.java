@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
@@ -166,6 +167,48 @@ public class GymMemberServiceImpl implements GymMemberService {
         return mapToResponseDto(member);
     }
 
+    @Override
+    public GymMemberResponseDto initializeSubscription(Long memberId, GymMemberSubscriptionRequestDto requestDto) {
+
+        GymMember member = gymMemberRepository.findById(memberId)
+                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+
+        LOGGER.info("Checking if subscription plan is chosen..");
+
+//        if (member.getSubscriptionPlan() == null) {
+//            member.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+//            return mapToResponseDto(member);
+//        }
+
+        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
+
+
+        if (plan.isVisitBased()) {
+            LOGGER.info("Visit-based subscription detected. Initializing visits...");
+
+            Integer allowedVisits = requestDto.getVisitLimit() != null
+                    ? requestDto.getVisitLimit()
+                    : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
+
+            member.setSubscriptionPlan(plan)
+                    .setAllowedVisits(allowedVisits)
+                    .setRemainingVisits(allowedVisits)
+                    .setSubscriptionStartDate(LocalDateTime.now())
+                    .setSubscriptionEndDate(null);
+        } else {
+            LOGGER.info("Time-based subscription. Calculating expiry...");
+            LocalDateTime now = LocalDateTime.now();
+            member.setSubscriptionPlan(plan)
+                    .setSubscriptionStartDate(now)
+                    .setSubscriptionEndDate(calculateEndDate(now, plan))
+                    .setAllowedVisits(null)
+                    .setRemainingVisits(null);
+        }
+
+        member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
+        return mapToResponseDto(member);
+    }
+
 
     private void recalculateSubscriptionStatus(GymMember member) {
         if (member.getSubscriptionPlan() == null) {
@@ -283,44 +326,11 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(gymAdminRole);
-        initializeSubscription(member, requestDto);
 
         return member;
     }
 
-    private void initializeSubscription(GymMember member, GymMemberCreateRequestDto requestDto) {
-        LOGGER.info("Checking if subscription plan is chosen..");
 
-        if (member.getSubscriptionPlan() == null) {
-            member.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
-            return;
-        }
-
-        SubscriptionPlan plan = member.getSubscriptionPlan();
-
-
-        if (plan.isVisitBased()) {
-            LOGGER.info("Visit-based subscription detected. Initializing visits...");
-
-            Integer allowedVisits = requestDto.getVisitLimit() != null
-                    ? requestDto.getVisitLimit()
-                    : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
-
-            member.setAllowedVisits(allowedVisits)
-                    .setRemainingVisits(allowedVisits)
-                    .setSubscriptionStartDate(LocalDateTime.now())
-                    .setSubscriptionEndDate(null);
-        } else {
-            LOGGER.info("Time-based subscription. Calculating expiry...");
-            LocalDateTime now = LocalDateTime.now();
-            member.setSubscriptionStartDate(now)
-                    .setSubscriptionEndDate(calculateEndDate(now, plan))
-                    .setAllowedVisits(null)
-                    .setRemainingVisits(null);
-        }
-
-        member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
-    }
 
     private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
         return switch (subscriptionPlan) {

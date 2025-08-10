@@ -3,10 +3,12 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
@@ -105,6 +107,13 @@ public class GymMemberController {
     public ResponseEntity<ApiResponse<Void>> deleteGymMember(@PathVariable Long memberId) {
         gymMemberService.removeGymMember(memberId);
         return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+    @PatchMapping("/{memberId}/subscription")
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateSubscription(
+            @PathVariable Long memberId,
+            @RequestBody @Valid GymMemberSubscriptionRequestDto dto) {
+        return ResponseEntity.ok(ApiResponse.success(gymMemberService.initializeSubscription(memberId, dto)));
     }
 
 
