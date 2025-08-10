@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
+import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
@@ -7,6 +8,7 @@ public class GymMemberSubscriptionRequestDto {
     private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
+    private Employment employment;
 
 
     public GymMemberSubscriptionRequestDto() {
@@ -37,6 +39,15 @@ public class GymMemberSubscriptionRequestDto {
 
     public GymMemberSubscriptionRequestDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
+        return this;
+    }
+
+    public Employment getEmployment() {
+        return employment;
+    }
+
+    public GymMemberSubscriptionRequestDto setEmployment(Employment employment) {
+        this.employment = employment;
         return this;
     }
 }

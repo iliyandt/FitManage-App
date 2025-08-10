@@ -23,8 +23,6 @@ public class GymMemberCreateRequestDto {
 
     private Gender gender;
 
-    private Employment employment;
-
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
 
@@ -70,14 +68,6 @@ public class GymMemberCreateRequestDto {
         return this;
     }
 
-    public Employment getEmployment() {
-        return employment;
-    }
-
-    public GymMemberCreateRequestDto setEmployment(Employment employment) {
-        this.employment = employment;
-        return this;
-    }
 
     public OffsetDateTime getBirthDate() {
         return birthDate;

@@ -170,44 +170,57 @@ public class GymMemberServiceImpl implements GymMemberService {
     @Override
     public GymMemberResponseDto initializeSubscription(Long memberId, GymMemberSubscriptionRequestDto requestDto) {
 
-        GymMember member = gymMemberRepository.findById(memberId)
-                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+        GymMember member = getGymMemberById(memberId);
 
-        LOGGER.info("Checking if subscription plan is chosen..");
+        validateAndSetSubscriptionPlan(member, requestDto);
 
-//        if (member.getSubscriptionPlan() == null) {
-//            member.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
-//            return mapToResponseDto(member);
-//        }
-
-        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
-
-
-        if (plan.isVisitBased()) {
-            LOGGER.info("Visit-based subscription detected. Initializing visits...");
-
-            Integer allowedVisits = requestDto.getVisitLimit() != null
-                    ? requestDto.getVisitLimit()
-                    : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
-
-            member.setSubscriptionPlan(plan)
-                    .setAllowedVisits(allowedVisits)
-                    .setRemainingVisits(allowedVisits)
-                    .setSubscriptionStartDate(LocalDateTime.now())
-                    .setSubscriptionEndDate(null);
+        if (member.getSubscriptionPlan().isVisitBased()) {
+            initializeVisitBasedSubscription(member, requestDto);
         } else {
-            LOGGER.info("Time-based subscription. Calculating expiry...");
-            LocalDateTime now = LocalDateTime.now();
-            member.setSubscriptionPlan(plan)
-                    .setSubscriptionStartDate(now)
-                    .setSubscriptionEndDate(calculateEndDate(now, plan))
-                    .setAllowedVisits(null)
-                    .setRemainingVisits(null);
+            initializeTimeBasedSubscription(member);
         }
 
         member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
         return mapToResponseDto(member);
     }
+
+
+
+    private void validateAndSetSubscriptionPlan(GymMember member, GymMemberSubscriptionRequestDto requestDto) {
+        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
+
+        if (plan == null) {
+            throw new FitManageAppException("Subscription plan is required", ApiErrorCode.BAD_REQUEST);
+        }
+
+        member.setSubscriptionPlan(plan)
+                .setEmployment(requestDto.getEmployment());
+    }
+
+    private void initializeVisitBasedSubscription(GymMember member, GymMemberSubscriptionRequestDto requestDto) {
+        LOGGER.info("Visit-based subscription detected. Initializing visits...");
+
+        Integer allowedVisits = requestDto.getVisitLimit() != null
+                ? requestDto.getVisitLimit()
+                : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
+
+        member
+                .setAllowedVisits(allowedVisits)
+                .setRemainingVisits(allowedVisits)
+                .setSubscriptionStartDate(LocalDateTime.now())
+                .setSubscriptionEndDate(null);
+    }
+
+    private void initializeTimeBasedSubscription(GymMember member) {
+        LOGGER.info("Time-based subscription. Calculating expiry...");
+        LocalDateTime now = LocalDateTime.now();
+        member
+                .setSubscriptionStartDate(now)
+                .setSubscriptionEndDate(calculateEndDate(now, member.getSubscriptionPlan()))
+                .setAllowedVisits(null)
+                .setRemainingVisits(null);
+    }
+
 
 
     private void recalculateSubscriptionStatus(GymMember member) {
