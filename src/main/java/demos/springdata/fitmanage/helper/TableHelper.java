@@ -116,7 +116,6 @@ public class TableHelper {
                     "phone",
                     "email",
                     "gender",
-                    "employment",
                     "birthDate"
             ),
 
