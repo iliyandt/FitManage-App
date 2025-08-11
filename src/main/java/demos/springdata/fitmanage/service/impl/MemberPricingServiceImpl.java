@@ -57,7 +57,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
         for (SubscriptionPlan plan : SubscriptionPlan.values()) {
             MemberPlanPrice existing = memberPricingRepository
-                    .findByGymIdAndPlanType(gym.getId(), plan)
+                    .findByGymIdAndSubscriptionPlan(gym.getId(), plan)
                     .orElse(null);
 
             MemberPlanPriceDto dto = existing != null
