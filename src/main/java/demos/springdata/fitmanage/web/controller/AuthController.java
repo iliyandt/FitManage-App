@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +29,8 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
     private final CustomUserDetailsService customUserDetailsService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
-    
-    
+
+
     public AuthController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService, CustomUserDetailsService customUserDetailsService) {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
@@ -41,27 +40,14 @@ public class AuthController {
 
     @PostMapping(path = "/register")
     public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
-        try {
-            RegistrationResponseDto response = authenticationService.registerGym(gymDto);
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (AuthenticationException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("Invalid credentials", "AUTH_INVALID"));
-        }
-
+        RegistrationResponseDto response = authenticationService.registerGym(gymDto);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<VerificationResponseDto>> verifyUser(@Valid @RequestBody VerificationRequestDto verificationRequestDto) {
-        try {
-            VerificationResponseDto response = authenticationService.verifyUserRegistration(verificationRequestDto);
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (AuthenticationException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(ApiResponse.failure("Invalid verification code", "CODE_INVALID"));
-        }
+        VerificationResponseDto response = authenticationService.verifyUserRegistration(verificationRequestDto);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/resend")
@@ -72,15 +58,8 @@ public class AuthController {
 
     @PostMapping(path = "/validate_email")
     public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
-        try {
-            GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(gymEmailRequestDto).get();
-            return ResponseEntity.ok(ApiResponse.success(response));
-        } catch (FitManageAppException ex) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.failure("Invalid email", "EMAIL_INVALID"));
-        }
-
+        GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(gymEmailRequestDto).get();
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping(path = "/login")

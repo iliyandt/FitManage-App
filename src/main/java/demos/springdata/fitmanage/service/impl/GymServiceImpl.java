@@ -33,6 +33,11 @@ public class GymServiceImpl implements GymService {
         this.modelMapper = modelMapper;
     }
 
+    @Override
+    public Optional<Gym> findGymEntityByEmail(String email) {
+        return gymRepository.findByEmail(email);
+    }
+
     @Transactional
     @Override
     public List<GymSummaryDto> getAllGyms() {
