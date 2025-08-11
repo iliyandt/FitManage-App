@@ -29,7 +29,7 @@ public class MemberPricingController {
         this.tableHelper = tableHelper;
     }
 
-    @PostMapping("/add")
+    @PostMapping("/plans")
     public ResponseEntity<ApiResponse<List<MemberPlanPriceDto>>> createPlans(@RequestBody List<MemberPlanPriceDto> planDtos) {
         String gymEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         List<MemberPlanPriceDto> savedPlans = pricingService.createPlans(gymEmail, planDtos);
@@ -37,7 +37,7 @@ public class MemberPricingController {
     }
 
 
-    @GetMapping("/plans")
+    @GetMapping("/table")
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
         List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
@@ -48,7 +48,7 @@ public class MemberPricingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PatchMapping("/edit/{planId}")
+    @PatchMapping("/{planId}")
     public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
                                                                          @RequestBody @Valid MemberPlanEditDto dto) {
         MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
