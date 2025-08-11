@@ -14,14 +14,17 @@ public class MemberPlanPrice extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan planType;
 
+    @Column(name = "custom_plan_name")
     private String customPlanName;
 
+    @Column(nullable = false)
     private BigDecimal price;
+    private BigDecimal studentPrice;
+    private BigDecimal seniorPrice;
+    private BigDecimal handicapPrice;
 
+    @Column(nullable = false)
     private String currency;
-
-    private BigDecimal discountPercentage;
-
 
 
     public MemberPlanPrice() {
@@ -67,6 +70,33 @@ public class MemberPlanPrice extends BaseEntity{
         return this;
     }
 
+    public BigDecimal getStudentPrice() {
+        return studentPrice;
+    }
+
+    public MemberPlanPrice setStudentPrice(BigDecimal studentPrice) {
+        this.studentPrice = studentPrice;
+        return this;
+    }
+
+    public BigDecimal getSeniorPrice() {
+        return seniorPrice;
+    }
+
+    public MemberPlanPrice setSeniorPrice(BigDecimal seniorPrice) {
+        this.seniorPrice = seniorPrice;
+        return this;
+    }
+
+    public BigDecimal getHandicapPrice() {
+        return handicapPrice;
+    }
+
+    public MemberPlanPrice setHandicapPrice(BigDecimal handicapPrice) {
+        this.handicapPrice = handicapPrice;
+        return this;
+    }
+
     public String getCurrency() {
         return currency;
     }
@@ -75,15 +105,4 @@ public class MemberPlanPrice extends BaseEntity{
         this.currency = currency;
         return this;
     }
-
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public MemberPlanPrice setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
-        return this;
-    }
-
-
 }

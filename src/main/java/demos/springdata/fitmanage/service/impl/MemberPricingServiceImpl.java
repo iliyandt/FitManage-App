@@ -10,6 +10,7 @@ import demos.springdata.fitmanage.service.GymService;
 import demos.springdata.fitmanage.service.MemberPricingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -47,7 +48,8 @@ public class MemberPricingServiceImpl implements MemberPricingService {
     }
 
     @Override
-    public List<MemberPlanPriceDto> getPlansAndPrices(String gymEmail) {
+    public List<MemberPlanPriceDto> getPlansAndPrices() {
+        String gymEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Gym gym = gymService.findGymEntityByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 

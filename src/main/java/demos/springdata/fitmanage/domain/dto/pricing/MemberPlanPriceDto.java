@@ -1,15 +1,27 @@
 package demos.springdata.fitmanage.domain.dto.pricing;
 
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class MemberPlanPriceDto {
     private SubscriptionPlan planType;
     private String customPlanName;
+
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal price;
+    @DecimalMin(value = "0.0", message = "Price must be positive")
+    private BigDecimal studentPrice;
+    @DecimalMin(value = "0.0", message = "Price must be positive")
+    private BigDecimal seniorPrice;
+    @DecimalMin(value = "0.0", message = "Price must be positive")
+    private BigDecimal handicapPrice;
+    @NotBlank(message = "Currency is required")
     private String currency;
-    private BigDecimal discountPercentage;
 
 
     public MemberPlanPriceDto() {
@@ -43,21 +55,39 @@ public class MemberPlanPriceDto {
         return this;
     }
 
+    public BigDecimal getStudentPrice() {
+        return studentPrice;
+    }
+
+    public MemberPlanPriceDto setStudentPrice(BigDecimal studentPrice) {
+        this.studentPrice = studentPrice;
+        return this;
+    }
+
+    public BigDecimal getSeniorPrice() {
+        return seniorPrice;
+    }
+
+    public MemberPlanPriceDto setSeniorPrice(BigDecimal seniorPrice) {
+        this.seniorPrice = seniorPrice;
+        return this;
+    }
+
+    public BigDecimal getHandicapPrice() {
+        return handicapPrice;
+    }
+
+    public MemberPlanPriceDto setHandicapPrice(BigDecimal handicapPrice) {
+        this.handicapPrice = handicapPrice;
+        return this;
+    }
+
     public String getCurrency() {
         return currency;
     }
 
     public MemberPlanPriceDto setCurrency(String currency) {
         this.currency = currency;
-        return this;
-    }
-
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
-    }
-
-    public MemberPlanPriceDto setDiscountPercentage(BigDecimal discountPercentage) {
-        this.discountPercentage = discountPercentage;
         return this;
     }
 }

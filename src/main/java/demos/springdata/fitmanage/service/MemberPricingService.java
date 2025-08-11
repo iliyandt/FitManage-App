@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MemberPricingService {
     List<MemberPlanPriceDto> createPlans(String gymEmail, List<MemberPlanPriceDto> planDtos);
-    List<MemberPlanPriceDto> getPlansAndPrices(String gymEmail);
+    List<MemberPlanPriceDto> getPlansAndPrices();
 }

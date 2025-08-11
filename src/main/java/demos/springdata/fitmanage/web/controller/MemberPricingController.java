@@ -1,8 +1,12 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
+import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberPricingService;
+import demos.springdata.fitmanage.util.TableColumnBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -16,9 +20,13 @@ import java.util.List;
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class MemberPricingController {
     private final MemberPricingService pricingService;
+    private final MemberPricingService memberPricingService;
+    private final TableHelper tableHelper;
 
-    public MemberPricingController(MemberPricingService pricingService) {
+    public MemberPricingController(MemberPricingService pricingService, MemberPricingService memberPricingService, TableHelper tableHelper) {
         this.pricingService = pricingService;
+        this.memberPricingService = memberPricingService;
+        this.tableHelper = tableHelper;
     }
 
     @PostMapping("/add")
@@ -30,13 +38,14 @@ public class MemberPricingController {
 
 
     @GetMapping("/plans")
-    public ResponseEntity<ApiResponse<List<MemberPlanPriceDto>>> getPlansAndPrices() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String gymEmail = authentication.getName();
+    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
+        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+        TableResponseDto response = new TableResponseDto();
+        response.setConfig(tableHelper.buildTableConfig("/plan-prices", MemberPlanPriceDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(MemberPlanPriceDto.class));
+        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
 
-        List<MemberPlanPriceDto> plans = pricingService.getPlansAndPrices(gymEmail);
-
-        return ResponseEntity.ok(ApiResponse.success(plans));
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
 
