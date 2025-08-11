@@ -14,9 +14,6 @@ public class MemberPlanPrice extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan planType;
 
-    @Column(name = "custom_plan_name")
-    private String customPlanName;
-
     @Column(nullable = false)
     private BigDecimal price;
     private BigDecimal studentPrice;
@@ -30,9 +27,6 @@ public class MemberPlanPrice extends BaseEntity{
     public MemberPlanPrice() {
     }
 
-    public boolean isCustomPlan() {
-        return planType == null && customPlanName != null;
-    }
 
     public Gym getGym() {
         return gym;
@@ -49,15 +43,6 @@ public class MemberPlanPrice extends BaseEntity{
 
     public MemberPlanPrice setPlanType(SubscriptionPlan planType) {
         this.planType = planType;
-        return this;
-    }
-
-    public String getCustomPlanName() {
-        return customPlanName;
-    }
-
-    public MemberPlanPrice setCustomPlanName(String customPlanName) {
-        this.customPlanName = customPlanName;
         return this;
     }
 

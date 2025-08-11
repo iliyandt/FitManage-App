@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 
 public class MemberPlanPriceDto {
     private SubscriptionPlan planType;
-    private String customPlanName;
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", message = "Price must be positive")
@@ -34,15 +33,6 @@ public class MemberPlanPriceDto {
 
     public MemberPlanPriceDto setPlanType(SubscriptionPlan planType) {
         this.planType = planType;
-        return this;
-    }
-
-    public String getCustomPlanName() {
-        return customPlanName;
-    }
-
-    public MemberPlanPriceDto setCustomPlanName(String customPlanName) {
-        this.customPlanName = customPlanName;
         return this;
     }
 

@@ -68,13 +68,6 @@ public class MemberPricingServiceImpl implements MemberPricingService {
             result.add(dto);
         }
 
-
-        List<MemberPlanPrice> customPlans = memberPricingRepository.findByGymIdAndPlanTypeIsNull(gym.getId());
-
-        for (MemberPlanPrice plan : customPlans) {
-            result.add(modelMapper.map(plan, MemberPlanPriceDto.class));
-        }
-
         return result;
     }
 }
