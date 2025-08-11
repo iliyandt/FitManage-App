@@ -64,7 +64,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
                     ? modelMapper.map(existing, MemberPlanPriceDto.class)
                     : new MemberPlanPriceDto();
 
-            dto.setPlanType(plan);
+            dto.setSubscriptionPlan(plan);
             result.add(dto);
         }
 

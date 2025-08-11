@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class MemberPlanPriceDto {
+    private Long id;
     private SubscriptionPlan subscriptionPlan;
-
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal price;
@@ -26,12 +26,20 @@ public class MemberPlanPriceDto {
     public MemberPlanPriceDto() {
     }
 
+    public Long getId() {
+        return id;
+    }
 
-    public SubscriptionPlan getPlanType() {
+    public MemberPlanPriceDto setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public SubscriptionPlan getSubscriptionPlan() {
         return subscriptionPlan;
     }
 
-    public MemberPlanPriceDto setPlanType(SubscriptionPlan subscriptionPlan) {
+    public MemberPlanPriceDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }

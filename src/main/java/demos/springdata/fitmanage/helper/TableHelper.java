@@ -129,6 +129,7 @@ public class TableHelper {
             ),
 
             MemberPlanPriceDto.class, Set.of(
+                    "id",
                     "subscriptionPlan",
                     "price",
                     "studentPrice",
