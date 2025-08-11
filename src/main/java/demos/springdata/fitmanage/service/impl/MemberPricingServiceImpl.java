@@ -1,4 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.MemberPlanPrice;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberPricingServiceImpl implements MemberPricingService {
@@ -76,4 +78,31 @@ public class MemberPricingServiceImpl implements MemberPricingService {
         return result;
 
     }
+
+    @Override
+    public MemberPlanEditDto updatePlanPrices(Long planId, MemberPlanEditDto dto) {
+        String gymEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Gym gym = gymService.findGymEntityByEmail(gymEmail)
+                .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+
+        MemberPlanPrice entity = memberPricingRepository.findById(planId)
+                .orElseThrow(() -> new FitManageAppException("Plan not found", ApiErrorCode.NOT_FOUND));
+
+        if (!entity.getGym().getId().equals(gym.getId())) {
+            throw new FitManageAppException("Unauthorized access to plan", ApiErrorCode.UNAUTHORIZED);
+        }
+
+        entity.setPrice(dto.getPrice());
+        entity.setStudentPrice(dto.getStudentPrice());
+        entity.setSeniorPrice(dto.getSeniorPrice());
+        entity.setHandicapPrice(dto.getHandicapPrice());
+
+        MemberPlanPrice updatedEntity = memberPricingRepository.save(entity);
+
+
+        return modelMapper.map(updatedEntity, MemberPlanEditDto.class);
+    }
+
+
 }

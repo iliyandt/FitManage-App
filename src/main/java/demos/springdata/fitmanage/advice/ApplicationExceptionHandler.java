@@ -25,7 +25,7 @@ public class ApplicationExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(error ->{
             errors.put(error.getField(), error.getDefaultMessage());
         });
-        return ApiResponse.failure(ex.getMessage(), "BAD_REQUEST", errors);
+        return ApiResponse.failure("Validation failed", "BAD_REQUEST", errors);
     }
 
     @ResponseStatus(HttpStatus.OK)

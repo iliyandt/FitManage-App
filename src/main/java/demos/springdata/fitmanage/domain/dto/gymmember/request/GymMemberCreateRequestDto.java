@@ -17,18 +17,18 @@ public class GymMemberCreateRequestDto {
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
 
-    @NotBlank(message = "Choose gender")
+    @NotNull(message = "Choose gender")
     private Gender gender;
 
+    @NotNull(message = "Birth Date is required")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
-    @NotBlank(message = "Set valid birth date")
     @PastOrPresent(message = "Birth Date cannot be in the future")
     private OffsetDateTime birthDate;
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
     private String email;
-    @NotBlank(message = "Email must not be blank")
+    @NotBlank(message = "Phone must not be blank")
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number must be 7 to 15 digits and may start with '+'"

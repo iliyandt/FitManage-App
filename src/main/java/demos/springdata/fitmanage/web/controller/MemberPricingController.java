@@ -2,14 +2,14 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
-import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberPricingService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,6 +46,13 @@ public class MemberPricingController {
         response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PatchMapping("/edit/{planId}")
+    public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
+                                                                         @RequestBody @Valid MemberPlanEditDto dto) {
+        MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
+        return ResponseEntity.ok(ApiResponse.success(updatedDto));
     }
 
 
