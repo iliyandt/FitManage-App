@@ -37,11 +37,11 @@ public class MemberPlanPrice extends BaseEntity{
         return this;
     }
 
-    public SubscriptionPlan getPlanType() {
+    public SubscriptionPlan getSubscriptionPlan() {
         return subscriptionPlan;
     }
 
-    public MemberPlanPrice setPlanType(SubscriptionPlan subscriptionPlan) {
+    public MemberPlanPrice setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }

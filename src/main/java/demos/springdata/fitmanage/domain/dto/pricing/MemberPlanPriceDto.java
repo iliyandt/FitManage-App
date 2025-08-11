@@ -10,7 +10,6 @@ import java.math.BigDecimal;
 public class MemberPlanPriceDto {
     private Long id;
     private SubscriptionPlan subscriptionPlan;
-    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal price;
     @DecimalMin(value = "0.0", message = "Price must be positive")
