@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -53,6 +54,11 @@ public class MemberPricingServiceImpl implements MemberPricingService {
         Gym gym = gymService.findGymEntityByEmail(gymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
 
+        boolean hasPricing = memberPricingRepository.existsByGymId(gym.getId());
+
+        if (!hasPricing) return Collections.emptyList();
+
+
         List<MemberPlanPriceDto> result = new ArrayList<>();
 
         for (SubscriptionPlan plan : SubscriptionPlan.values()) {
@@ -60,14 +66,14 @@ public class MemberPricingServiceImpl implements MemberPricingService {
                     .findByGymIdAndSubscriptionPlan(gym.getId(), plan)
                     .orElse(null);
 
-            MemberPlanPriceDto dto = existing != null
-                    ? modelMapper.map(existing, MemberPlanPriceDto.class)
-                    : new MemberPlanPriceDto();
-
-            dto.setSubscriptionPlan(plan);
-            result.add(dto);
+            if (existing != null) {
+                MemberPlanPriceDto dto = modelMapper.map(existing, MemberPlanPriceDto.class);
+                dto.setSubscriptionPlan(plan);
+                result.add(dto);
+            }
         }
 
         return result;
+
     }
 }
