@@ -1,26 +1,31 @@
 package demos.springdata.fitmanage.domain.dto.pricing;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 
 public class MemberPlanPriceDto {
+
     private Long id;
     private SubscriptionPlan subscriptionPlan;
+
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal price;
+
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal studentPrice;
+
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal seniorPrice;
+
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal handicapPrice;
+
     @NotBlank(message = "Currency is required")
     private String currency;
-
 
     public MemberPlanPriceDto() {
     }
@@ -41,6 +46,11 @@ public class MemberPlanPriceDto {
     public MemberPlanPriceDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
+    }
+
+    @JsonGetter("subscriptionPlanDisplayName")
+    public String getSubscriptionPlanDisplayName() {
+        return subscriptionPlan != null ? subscriptionPlan.getDisplayName() : null;
     }
 
     public BigDecimal getPrice() {
