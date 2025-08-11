@@ -129,8 +129,7 @@ public class TableHelper {
             ),
 
             MemberPlanPriceDto.class, Set.of(
-                    "planType",
-                    "customPlanName",
+                    "subscriptionPlan",
                     "price",
                     "studentPrice",
                     "seniorPrice",
@@ -142,7 +141,7 @@ public class TableHelper {
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
             GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "subscriptionStatus"),
             StaffMemberTableDto.class, Set.of("firstName", "lastName", "email", "phone", "staffRoleName"),
-            MemberPlanPriceDto.class, Set.of("planType", "customPlanName", "price", "currency")
+            MemberPlanPriceDto.class, Set.of("subscriptionPlan", "price", "currency")
     );
 
 

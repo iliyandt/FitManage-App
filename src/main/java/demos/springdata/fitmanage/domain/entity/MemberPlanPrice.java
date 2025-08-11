@@ -12,7 +12,7 @@ public class MemberPlanPrice extends BaseEntity{
     private Gym gym;
 
     @Enumerated(EnumType.STRING)
-    private SubscriptionPlan planType;
+    private SubscriptionPlan subscriptionPlan;
 
     @Column(nullable = false)
     private BigDecimal price;
@@ -38,11 +38,11 @@ public class MemberPlanPrice extends BaseEntity{
     }
 
     public SubscriptionPlan getPlanType() {
-        return planType;
+        return subscriptionPlan;
     }
 
-    public MemberPlanPrice setPlanType(SubscriptionPlan planType) {
-        this.planType = planType;
+    public MemberPlanPrice setPlanType(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
         return this;
     }
 

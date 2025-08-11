@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class MemberPlanPriceDto {
-    private SubscriptionPlan planType;
+    private SubscriptionPlan subscriptionPlan;
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", message = "Price must be positive")
@@ -28,11 +28,11 @@ public class MemberPlanPriceDto {
 
 
     public SubscriptionPlan getPlanType() {
-        return planType;
+        return subscriptionPlan;
     }
 
-    public MemberPlanPriceDto setPlanType(SubscriptionPlan planType) {
-        this.planType = planType;
+    public MemberPlanPriceDto setPlanType(SubscriptionPlan subscriptionPlan) {
+        this.subscriptionPlan = subscriptionPlan;
         return this;
     }
 
