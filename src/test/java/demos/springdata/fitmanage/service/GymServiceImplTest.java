@@ -2,10 +2,7 @@ package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
-import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
-import demos.springdata.fitmanage.service.impl.GymMemberServiceImpl;
 import demos.springdata.fitmanage.service.impl.GymServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

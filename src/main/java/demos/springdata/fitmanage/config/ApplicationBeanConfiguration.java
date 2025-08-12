@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.config;
 
+import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
@@ -69,4 +70,10 @@ public class ApplicationBeanConfiguration {
 
         return authProvider;
     }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
+    }
+
 }

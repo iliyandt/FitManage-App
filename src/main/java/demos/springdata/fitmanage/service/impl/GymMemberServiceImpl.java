@@ -112,6 +112,9 @@ public class GymMemberServiceImpl implements GymMemberService {
         LOGGER.info("Deleting member with ID {}", memberId);
 
         gymMemberRepository.delete(gymMember);
+
+        Gym gym = gymMember.getGym();
+
         LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
 

@@ -9,8 +9,6 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.GymMemberRepository;
 import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.service.impl.GymMemberServiceImpl;
-import demos.springdata.fitmanage.service.RoleService;
-import demos.springdata.fitmanage.service.VisitService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +45,7 @@ class GymMemberServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        gym = new Gym();
+        gym = new Gym(gym.getId());
         gym.setEmail("gym@example.com");
         gym.setUsername("gymuser");
         SecurityContextHolder.getContext().setAuthentication(

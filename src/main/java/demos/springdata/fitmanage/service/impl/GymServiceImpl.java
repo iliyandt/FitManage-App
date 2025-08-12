@@ -33,6 +33,9 @@ public class GymServiceImpl implements GymService {
         this.modelMapper = modelMapper;
     }
 
+
+
+
     @Override
     public Optional<Gym> findGymEntityByEmail(String email) {
         return gymRepository.findByEmail(email);
@@ -51,8 +54,15 @@ public class GymServiceImpl implements GymService {
     @Override
     public Optional<GymSummaryDto> getGymByEmail(String email) {
         LOGGER.info("Fetching gym with email: {}", email);
-        return this.gymRepository.findByEmail(email)
-                .map(gym -> this.modelMapper.map(gym, GymSummaryDto.class));
+        Gym gym = gymRepository
+                .findByEmailWithMembers(email).orElseThrow(() -> new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND));
+
+        GymSummaryDto dto = modelMapper.map(gym, GymSummaryDto.class);
+
+        int membersCount = gym.getGymMembers().size();
+        dto.setMembersCount(membersCount);
+
+        return Optional.of(dto);
     }
 
 
@@ -76,11 +86,8 @@ public class GymServiceImpl implements GymService {
 
 
 
-    private static void updateGymDetails(GymBasicInfoDto dto, Gym gym) {
-        gym.setEmail(dto.getEmail());
-        gym.setPhone(dto.getPhone());
-        gym.setAddress(dto.getAddress());
-        gym.setCity(dto.getCity());
+    private void updateGymDetails(GymBasicInfoDto gymDto, Gym gym) {
+        modelMapper.map(gymDto, gym);
     }
 
     private void updateUsernameIfChanged(Gym gym, String username, Map<String, String> errors) {

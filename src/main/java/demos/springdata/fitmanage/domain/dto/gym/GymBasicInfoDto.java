@@ -6,8 +6,12 @@ import jakarta.validation.constraints.Size;
 
 public class GymBasicInfoDto {
 
-    @NotBlank(message = "Username is required")
+    @NotBlank(message = "Name is required")
     @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
+    private String gymName;
+
+    @NotBlank(message = "Username is required")
+    @Size(min = 2, max = 60, message = "Username must be between 2 and 60 characters")
     private String username;
 
     @NotBlank(message = "Email is required")
@@ -27,12 +31,22 @@ public class GymBasicInfoDto {
 
     public GymBasicInfoDto() {}
 
-    public GymBasicInfoDto(String username, String email, String phone, String address, String city) {
+    public GymBasicInfoDto(String gymName, String username, String email, String phone, String address, String city) {
+        this.gymName = gymName;
         this.username = username;
         this.email = email;
         this.phone = phone;
         this.address = address;
         this.city = city;
+    }
+
+    public String getGymName() {
+        return gymName;
+    }
+
+    public GymBasicInfoDto setGymName(String gymName) {
+        this.gymName = gymName;
+        return this;
     }
 
     public String getUsername() {

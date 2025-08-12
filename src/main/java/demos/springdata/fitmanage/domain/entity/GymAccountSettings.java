@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import demos.springdata.fitmanage.domain.converter.JsonMapConverter;
+import demos.springdata.fitmanage.domain.converter.MapToJsonConverter;
 import jakarta.persistence.*;
 
 import java.util.HashMap;
@@ -13,8 +13,8 @@ public class GymAccountSettings extends BaseEntity {
     @JoinColumn(name = "gym_id", nullable = false, unique = true)
     private Gym gym;
 
-    @Convert(converter = JsonMapConverter.class)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = MapToJsonConverter.class)
     private Map<String, Object> settings = new HashMap<>();
 
     public GymAccountSettings() {

@@ -2,9 +2,11 @@ package demos.springdata.fitmanage.domain.dto.gym;
 
 public class GymSummaryDto {
     private Long id;
+    private String gymName;
     private String username;
     private String email;
     private String city;
+    private String address;
     private String phone;
     private int membersCount;
     private boolean isSubscriptionActive;
@@ -13,10 +15,12 @@ public class GymSummaryDto {
     public GymSummaryDto() {
     }
 
-    public GymSummaryDto(Long id, String username, String city, String email, String phone, int membersCount, boolean isSubscriptionActive) {
+    public GymSummaryDto(Long id, String gymName, String username, String city, String address, String email, String phone, int membersCount, boolean isSubscriptionActive) {
         this.id = id;
+        this.gymName = gymName;
         this.username = username;
         this.city = city;
+        this.address = address;
         this.email = email;
         this.phone = phone;
         this.membersCount = membersCount;
@@ -29,6 +33,15 @@ public class GymSummaryDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getGymName() {
+        return gymName;
+    }
+
+    public GymSummaryDto setGymName(String gymName) {
+        this.gymName = gymName;
+        return this;
     }
 
     public String getUsername() {
@@ -45,6 +58,15 @@ public class GymSummaryDto {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public GymSummaryDto setAddress(String address) {
+        this.address = address;
+        return this;
     }
 
     public String getEmail() {

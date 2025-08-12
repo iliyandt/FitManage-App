@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 @Table(name = "gyms")
 @JsonPropertyOrder({ "id", "username", "email", "password"})
 public class Gym extends BaseEntity implements UserDetails {
+
+    @Column
+    private String gymName;
     @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false, unique = true)
@@ -47,21 +50,20 @@ public class Gym extends BaseEntity implements UserDetails {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "members_count")
-    private int membersCount;
-
     @OneToMany(mappedBy = "gym")
     private List<GymMember> gymMembers;
 
+
     public Gym() {
+    }
+
+    public Gym(Long gymId) {
+        this.setId(gymId);
     }
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        if (this.membersCount <= 0) {
-            this.membersCount = 0;
-        }
     }
 
 
@@ -74,6 +76,15 @@ public class Gym extends BaseEntity implements UserDetails {
     @JsonProperty("username")
     public String getActualUsername() {
         return this.username;
+    }
+
+    public String getGymName() {
+        return gymName;
+    }
+
+    public Gym setGymName(String gymName) {
+        this.gymName = gymName;
+        return this;
     }
 
     public void setUsername(String username) {
@@ -145,13 +156,6 @@ public class Gym extends BaseEntity implements UserDetails {
         this.createdAt = createdAt;
     }
 
-    public int getMembersCount() {
-        return membersCount;
-    }
-
-    public void setMembersCount(int membersCount) {
-        this.membersCount = membersCount;
-    }
 
     public List<GymMember> getGymMembers() {
         return gymMembers;
