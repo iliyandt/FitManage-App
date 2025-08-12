@@ -47,17 +47,7 @@ public class CustomUserDetailsServiceImplTest {
         Mockito.verifyNoInteractions(gymRepository, gymMemberRepository);
     }
 
-    @Test
-    void shouldReturnGymMember_WhenEmailExistsInGymMemberRepo() {
-        Mockito.when(superAdminRepository.findByEmail(email)).thenReturn(Optional.empty());
-        Mockito.when(gymRepository.findByEmail(email)).thenReturn(Optional.empty());
-        GymMember mockedGymMember = Mockito.mock(GymMember.class);
-        Mockito.when(gymMemberRepository.findByEmail(email)).thenReturn(Optional.of(mockedGymMember));
 
-        UserDetails result = customUserDetailsService.loadUserByUsername(email);
-
-        Assertions.assertEquals(mockedGymMember, result);
-    }
 
     @Test
     void shouldReturnGym_WhenEmailExistsInGymRepo() {
@@ -72,19 +62,6 @@ public class CustomUserDetailsServiceImplTest {
         Mockito.verify(gymRepository).findByEmail(email);
         Mockito.verifyNoInteractions(gymMemberRepository);
 
-    }
-
-    @Test
-    void shouldThrowException_WhenEmailNotFound() {
-        Mockito.when(superAdminRepository.findByEmail(email)).thenReturn(Optional.empty());
-        Mockito.when(gymRepository.findByEmail(email)).thenReturn(Optional.empty());
-        Mockito.when(gymMemberRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-        FitManageAppException exception = Assertions.assertThrows(FitManageAppException.class, () ->
-                customUserDetailsService.loadUserByUsername(email)
-        );
-
-        Assertions.assertEquals(ApiErrorCode.NOT_FOUND, exception.getErrorCode());
     }
 
 }

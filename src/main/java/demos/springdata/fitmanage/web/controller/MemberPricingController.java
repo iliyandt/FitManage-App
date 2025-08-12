@@ -41,14 +41,14 @@ public class MemberPricingController {
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
         List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/plan-prices", MemberPlanPriceDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/plans", MemberPlanPriceDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(MemberPlanPriceDto.class));
         response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PatchMapping("/{planId}")
+    @PatchMapping("/plans/{planId}")
     public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
                                                                          @RequestBody @Valid MemberPlanEditDto dto) {
         MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
