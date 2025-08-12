@@ -129,12 +129,10 @@ public class TableHelper {
             ),
 
             MemberPlanPriceDto.class, Set.of(
-                    "subscriptionPlan",
                     "price",
                     "studentPrice",
                     "seniorPrice",
-                    "handicapPrice",
-                    "currency"
+                    "handicapPrice"
             )
     );
 
