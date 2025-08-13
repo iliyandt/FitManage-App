@@ -30,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,6 +61,7 @@ public class GymMemberServiceImpl implements GymMemberService {
 
 
     @Override
+    @Transactional
     public GymMemberResponseDto createAndSaveNewMember(GymMemberCreateRequestDto requestDto) {
         String gymEmail = getAuthenticatedGymEmail();
         Gym gym = getGymByEmail(gymEmail);
@@ -70,7 +72,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         GymMember savedMember = gymMemberRepository.save(member);
         LOGGER.info("Successfully added member with ID {} to gym '{}'", savedMember.getId(), gym.getEmail());
 
-        return modelMapper.map(savedMember, GymMemberResponseDto.class);
+        return mapToDto(savedMember, GymMemberResponseDto.class);
     }
 
     @Override
@@ -101,7 +103,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         GymMember updatedMember = gymMemberRepository.save(member);
         LOGGER.info("Member with ID {} updated successfully", memberId);
 
-        return mapToResponseDto(updatedMember);
+        return mapToDto(updatedMember, GymMemberResponseDto.class);
     }
 
 
@@ -112,8 +114,6 @@ public class GymMemberServiceImpl implements GymMemberService {
         LOGGER.info("Deleting member with ID {}", memberId);
 
         gymMemberRepository.delete(gymMember);
-
-        Gym gym = gymMember.getGym();
 
         LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
@@ -135,7 +135,7 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         return memberList
                 .stream()
-                .map(gymMember -> modelMapper.map(gymMember, GymMemberTableDto.class))
+                .map(gymMember -> mapToDto(gymMember, GymMemberTableDto.class))
                 .toList();
     }
 
@@ -144,7 +144,7 @@ public class GymMemberServiceImpl implements GymMemberService {
     @Override
     public Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId) {
         return findEntityBySmartQuery(input, gymId)
-                .map(gymMember -> modelMapper.map(gymMember, GymMemberResponseDto.class));
+                .map(member -> mapToDto(member, GymMemberResponseDto.class));
     }
 
 
@@ -167,7 +167,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         gymMemberRepository.save(member);
         visitService.checkIn(member, gymId);
 
-        return mapToResponseDto(member);
+        return mapToDto(member, GymMemberResponseDto.class);
     }
 
     @Override
@@ -185,7 +185,7 @@ public class GymMemberServiceImpl implements GymMemberService {
 
         member.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
         gymMemberRepository.save(member);
-        return mapToResponseDto(member);
+        return mapToDto(member, GymMemberResponseDto.class);
     }
 
 
@@ -329,17 +329,25 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
 
-    private GymMemberResponseDto mapToResponseDto(GymMember updatedMember) {
-        return modelMapper.map(updatedMember, GymMemberResponseDto.class);
+    private <T> T mapToDto(Object source, Class<T> targetClass) {
+        return modelMapper.map(source, targetClass);
     }
 
     private GymMember buildGymMember(Gym gym, GymMemberCreateRequestDto requestDto) {
-        GymMember member = modelMapper.map(requestDto, GymMember.class);
+        GymMember member = new GymMember();
+
+        member.setFirstName(requestDto.getFirstName())
+                .setLastName(requestDto.getLastName())
+                .setGender(requestDto.getGender())
+                .setBirthDate(requestDto.getBirthDate())
+                .setEmail(requestDto.getEmail())
+                .setPhone(requestDto.getPhone())
+                .setGym(gym);
+
 
         LOGGER.info("Initial password for user with email: {} will be created", member.getEmail());
         member.setPassword(passwordEncoder.encode(generateDefaultPassword()))
-                .setUpdatedAt(LocalDateTime.now())
-                .setGym(gym);
+                .setUpdatedAt(LocalDateTime.now());
 
         Role gymAdminRole = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(gymAdminRole);
@@ -408,17 +416,8 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private void updateMemberFields(GymMember member, GymMemberUpdateRequestDto updateRequest) {
         LOGGER.info("Updating member with ID {}", member.getId());
-        member.setFirstName(updateRequest.getFirstName())
-                .setLastName(updateRequest.getLastName())
-                .setEmail(updateRequest.getEmail())
-                .setGender(updateRequest.getGender())
-                .setEmployment(updateRequest.getEmployment())
-                .setAllowedVisits(updateRequest.getVisitLimit())
-                .setBirthDate(updateRequest.getBirthDate())
-                .setSubscriptionPlan(updateRequest.getSubscriptionPlan())
-                .setSubscriptionStatus(updateRequest.getSubscriptionStatus())
-                .setPhone(updateRequest.getPhone())
-                .setUpdatedAt(LocalDateTime.now());
+        mapToDto(member, GymMemberUpdateRequestDto.class);
+        member.setEmployment(updateRequest.getEmployment());
     }
 
     private GymMember getGymMemberById(Long memberId) {
