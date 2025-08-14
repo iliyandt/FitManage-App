@@ -73,7 +73,7 @@ public class VisitServiceImpl implements VisitService {
                 start.format(formatter),
                 end.format(formatter));
 
-        List<VisitDto> visits = visitRepository.findByGymMemberIdAndCheckInAtBetween(memberId, start, end)
+        List<VisitDto> visits = visitRepository.findVisitsBetweenDates(memberId, start, end)
                 .stream()
                 .map(this::toDTO)
                 .toList();
@@ -90,7 +90,7 @@ public class VisitServiceImpl implements VisitService {
 
     private VisitDto toDTO(Visit visit) {
         return new VisitDto()
-                .setGymMemberId(visit.getGymMember().getId())
+                .setMemberId(visit.getGymMember().getId())
                 .setGymId(visit.getGymId())
                 .setCheckInAt(visit.getCheckInAt());
     }

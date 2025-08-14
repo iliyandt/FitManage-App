@@ -96,7 +96,7 @@ public class GymMemberController {
                 .body(ApiResponse.success(responseDto));
     }
 
-    @PutMapping("/{memberId}")
+    @PatchMapping("/{memberId}")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateGymMember(@PathVariable Long memberId, @Valid @RequestBody GymMemberUpdateRequestDto memberUpdateRequestDto) {
         GymMemberResponseDto updatedGymMember = gymMemberService.updateMemberDetails(memberId, memberUpdateRequestDto);
         return ResponseEntity.ok(ApiResponse.success(updatedGymMember));

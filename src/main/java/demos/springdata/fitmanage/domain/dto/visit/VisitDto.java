@@ -3,19 +3,19 @@ package demos.springdata.fitmanage.domain.dto.visit;
 import java.time.LocalDateTime;
 
 public class VisitDto {
-    private Long gymMemberId;
+    private Long memberId;
     private Long gymId;
     private LocalDateTime checkInAt;
 
     public VisitDto() {
     }
 
-    public Long getGymMemberId() {
-        return gymMemberId;
+    public Long getMemberId() {
+        return memberId;
     }
 
-    public VisitDto setGymMemberId(Long gymMemberId) {
-        this.gymMemberId = gymMemberId;
+    public VisitDto setMemberId(Long memberId) {
+        this.memberId = memberId;
         return this;
     }
 

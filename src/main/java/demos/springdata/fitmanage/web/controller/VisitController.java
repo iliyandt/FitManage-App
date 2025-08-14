@@ -31,7 +31,7 @@ public class VisitController {
     @GetMapping("/period/{id}/{start}/{end}")
     public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsInPeriod(@PathVariable Long id, @PathVariable String start, @PathVariable String end) {
         LocalDateTime startDateTime = LocalDate.parse(start).atStartOfDay();
-        LocalDateTime endDateTime = LocalDate.parse(end).atTime(LocalTime.MAX);
+        LocalDateTime endDateTime = LocalDate.parse(end).plusDays(1).atStartOfDay();
         List<VisitDto> visitsInPeriod = visitService.getVisitsInPeriod(id, startDateTime, endDateTime);
 
         return ResponseEntity.ok(ApiResponse.success(visitsInPeriod));
