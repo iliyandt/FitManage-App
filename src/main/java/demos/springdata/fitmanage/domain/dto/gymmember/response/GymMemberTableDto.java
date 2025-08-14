@@ -21,7 +21,7 @@ public class GymMemberTableDto {
     private OffsetDateTime birthDate;
     private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
-    @DropDown(url = "/gym-members/subscription_plans/customized_fields")
+    @DropDown(url = "gym-members/subscription_plans/customized_fields")
     private SubscriptionPlan subscriptionPlan;
     private String phone;
     private Integer allowedVisits;
