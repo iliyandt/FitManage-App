@@ -44,20 +44,26 @@ public class TableColumnBuilder {
             }
         }
 
-        if (field.getType().isEnum()) {
-            String capitalizedFieldName = capitalizeFirstLetter(field.getName());
-            String url = "/v1/" + capitalizedFieldName
-                     + "/values";
-            return new DropDownConfig(url, false);
-        }
+//        if (field.getType().isEnum()) {
+//            String capitalizedFieldName = capitalizeFirstLetter(field.getName());
+//            String url = "/v1/";
+//
+//            if (capitalizedFieldName.equals("SubscriptionPlan")) {
+//                url += "plans/allSubscriptionPlans";
+//            } else {
+//                url += capitalizedFieldName
+//                        + "/values";
+//            }
+//            return new DropDownConfig(url, false);
+//        }
 
         return null;
     }
 
-    private static String capitalizeFirstLetter(String input) {
-        if (input == null || input.isEmpty()) return input;
-        return Character.toUpperCase(input.charAt(0)) + input.substring(1);
-    }
+//    private static String capitalizeFirstLetter(String input) {
+//        if (input == null || input.isEmpty()) return input;
+//        return Character.toUpperCase(input.charAt(0)) + input.substring(1);
+//    }
 
 
     private static String mapJavaTypeToFrontendType(Class<?> type) {

@@ -1,9 +1,12 @@
 package demos.springdata.fitmanage.domain.dto.pricing;
+import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 
 public class MemberPlanPriceDto {
 
     private Long id;
+
+    @DropDown(url = "/v1/plans/subscription_plans/all")
     private SubscriptionPlan subscriptionPlan;
 
     public MemberPlanPriceDto() {

@@ -48,6 +48,12 @@ public class MemberPricingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/v1/plans/subscription_plans/all")
+    public ResponseEntity<ApiResponse<List<MemberPlanPriceDto>>> getAllSubscriptionPlans() {
+        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+        return ResponseEntity.ok(ApiResponse.success(planPriceDtoList));
+    }
+
     @PatchMapping("/plans/{planId}")
     public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
                                                                          @RequestBody @Valid MemberPlanEditDto dto) {
