@@ -8,9 +8,6 @@ import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberRespons
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
-import demos.springdata.fitmanage.domain.enums.Employment;
-import demos.springdata.fitmanage.domain.enums.Gender;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -39,31 +36,16 @@ public class GymMemberController {
 
 
     @GetMapping("/table")
-    public ResponseEntity<ApiResponse<TableResponseDto>> getAllGymMembers(@RequestParam(required = false) String firstName,
-                                                                          @RequestParam(required = false) String lastName,
-                                                                          @RequestParam(required = false) Gender gender,
-                                                                          @RequestParam(required = false) Employment employment,
-                                                                          @RequestParam(required = false) SubscriptionStatus subscriptionStatus,
-                                                                          @RequestParam(required = false) String email) {
+    public ResponseEntity<ApiResponse<TableResponseDto>> getAllGymMembers(
+            @ModelAttribute @Valid GymMemberFilterRequestDto filter) {
 
-        GymMemberFilterRequestDto filter = new GymMemberFilterRequestDto()
-                .setFirstName(firstName)
-                .setLastName(lastName)
-                .setGender(gender)
-                .setEmployment(employment)
-                .setSubscriptionStatus(subscriptionStatus)
-                .setEmail(email);
-
+        LOGGER.debug("Fetching gym members with filter: {}", filter);
 
         List<GymMemberTableDto> members = (!isFilterEmpty(filter))
                 ? gymMemberService.getGymMembersByFilter(filter)
                 : gymMemberService.getAllGymMembersForTable();
 
-        TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/gym-members", GymMemberTableDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(GymMemberTableDto.class));
-        response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
-
+        TableResponseDto response = buildTableResponse(members);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -115,6 +97,13 @@ public class GymMemberController {
         return ResponseEntity.ok(ApiResponse.success(gymMemberService.initializeSubscription(memberId, dto)));
     }
 
+    private TableResponseDto buildTableResponse(List<GymMemberTableDto> members) {
+        TableResponseDto response = new TableResponseDto();
+        response.setConfig(tableHelper.buildTableConfig("/gym-members", GymMemberTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(GymMemberTableDto.class));
+        response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
+        return response;
+    }
 
     private boolean isFilterEmpty(GymMemberFilterRequestDto filter) {
         return filter.getFirstName() == null &&

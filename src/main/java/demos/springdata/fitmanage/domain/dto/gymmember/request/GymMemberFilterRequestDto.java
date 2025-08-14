@@ -43,7 +43,7 @@ public class GymMemberFilterRequestDto {
             message = "Phone number must be 7 to 15 digits and may start with '+'"
     )
     private String phone;
-    private Gym gym;
+    //private Gym gym;
 
     public GymMemberFilterRequestDto() {
     }
@@ -139,12 +139,12 @@ public class GymMemberFilterRequestDto {
     }
 
 
-    public Gym getGym() {
-        return gym;
-    }
-
-    public GymMemberFilterRequestDto setGym(Gym gym) {
-        this.gym = gym;
-        return this;
-    }
+//    public Gym getGym() {
+//        return gym;
+//    }
+//
+//    public GymMemberFilterRequestDto setGym(Gym gym) {
+//        this.gym = gym;
+//        return this;
+//    }
 }
