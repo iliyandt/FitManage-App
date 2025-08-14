@@ -17,7 +17,7 @@ import java.util.List;
 public class SubscriptionMonitorServiceImpl implements SubscriptionMonitorService {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(SubscriptionMonitorServiceImpl.class);
-    private GymMemberRepository gymMemberRepository;
+    private final GymMemberRepository gymMemberRepository;
 
     @Autowired
     public SubscriptionMonitorServiceImpl(GymMemberRepository gymMemberRepository) {

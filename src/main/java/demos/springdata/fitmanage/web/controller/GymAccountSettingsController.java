@@ -48,6 +48,8 @@ public class GymAccountSettingsController {
         return ResponseEntity.ok(ApiResponse.success(updatedSettings));
     }
 
+
+
     private String getCurrentGymEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }

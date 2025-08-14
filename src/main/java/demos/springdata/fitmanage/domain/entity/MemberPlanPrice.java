@@ -14,15 +14,10 @@ public class MemberPlanPrice extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan subscriptionPlan;
 
-    @Column(nullable = false)
     private BigDecimal price;
     private BigDecimal studentPrice;
     private BigDecimal seniorPrice;
     private BigDecimal handicapPrice;
-
-    @Column(nullable = false)
-    private String currency;
-
 
     public MemberPlanPrice() {
     }
@@ -79,15 +74,6 @@ public class MemberPlanPrice extends BaseEntity{
 
     public MemberPlanPrice setHandicapPrice(BigDecimal handicapPrice) {
         this.handicapPrice = handicapPrice;
-        return this;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public MemberPlanPrice setCurrency(String currency) {
-        this.currency = currency;
         return this;
     }
 }

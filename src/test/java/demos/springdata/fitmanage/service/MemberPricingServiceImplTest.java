@@ -64,27 +64,22 @@ class MemberPricingServiceImplTest {
     @Test
     void createPlans_savesEachPlanAndReturnsMappedDtos() {
         List<MemberPlanPriceDto> inputDtos = List.of(
-                new MemberPlanPriceDto().setSubscriptionPlan(SubscriptionPlan.MONTHLY).setPrice(BigDecimal.TEN).setCurrency("EUR"),
-                new MemberPlanPriceDto().setSubscriptionPlan(SubscriptionPlan.ANNUAL).setPrice(BigDecimal.ONE).setCurrency("EUR")
+                new MemberPlanPriceDto().setSubscriptionPlan(SubscriptionPlan.MONTHLY),
+                new MemberPlanPriceDto().setSubscriptionPlan(SubscriptionPlan.ANNUAL)
         );
 
         when(gymService.findGymEntityByEmail("gym@example.com")).thenReturn(Optional.of(gym));
 
         for (MemberPlanPriceDto dto : inputDtos) {
             MemberPlanPrice entity = new MemberPlanPrice()
-                    .setSubscriptionPlan(dto.getSubscriptionPlan())
-                    .setPrice(dto.getPrice())
-                    .setCurrency(dto.getCurrency());
+                    .setSubscriptionPlan(dto.getSubscriptionPlan());
             MemberPlanPrice saved = new MemberPlanPrice()
-                    .setSubscriptionPlan(dto.getSubscriptionPlan())
-                    .setPrice(dto.getPrice())
-                    .setCurrency(dto.getCurrency());
+                    .setSubscriptionPlan(dto.getSubscriptionPlan());
             when(modelMapper.map(dto, MemberPlanPrice.class)).thenReturn(entity);
             when(memberPricingRepository.save(entity)).thenReturn(saved);
             MemberPlanPriceDto mappedBack = new MemberPlanPriceDto()
-                    .setSubscriptionPlan(dto.getSubscriptionPlan())
-                    .setPrice(dto.getPrice())
-                    .setCurrency(dto.getCurrency());
+                    .setSubscriptionPlan(dto.getSubscriptionPlan());
+
             when(modelMapper.map(saved, MemberPlanPriceDto.class)).thenReturn(mappedBack);
         }
 
@@ -100,8 +95,8 @@ class MemberPricingServiceImplTest {
         when(gymService.findGymEntityByEmail("gym@example.com")).thenReturn(Optional.of(gym));
         when(memberPricingRepository.existsByGymId(42L)).thenReturn(true);
 
-        MemberPlanPrice monthly = new MemberPlanPrice().setSubscriptionPlan(SubscriptionPlan.MONTHLY).setCurrency("EUR");
-        MemberPlanPrice annual = new MemberPlanPrice().setSubscriptionPlan(SubscriptionPlan.ANNUAL).setCurrency("EUR");
+        MemberPlanPrice monthly = new MemberPlanPrice().setSubscriptionPlan(SubscriptionPlan.MONTHLY);
+        MemberPlanPrice annual = new MemberPlanPrice().setSubscriptionPlan(SubscriptionPlan.ANNUAL);
 
         when(memberPricingRepository.findByGymIdAndSubscriptionPlan(42L, SubscriptionPlan.MONTHLY))
                 .thenReturn(Optional.of(monthly));

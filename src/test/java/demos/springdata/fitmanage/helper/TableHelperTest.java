@@ -39,28 +39,27 @@ class TableHelperTest {
     void buildTableConfig_containsExpectedCreateFieldsAndVisibility_forMemberPlanPriceDto() {
         ConfigDto config = helper.buildTableConfig("/plan-prices", MemberPlanPriceDto.class);
 
-        // Verify createFields include the specified allowed ones
+
         Map<String, Boolean> createFields = config.getCreateFields();
         assertNotNull(createFields);
-        // Expected allowed fields from TableHelper.customCreateFieldMap
+
         List<String> expectedAllowed = List.of("subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice", "currency");
         for (String key : expectedAllowed) {
             assertTrue(createFields.containsKey(key), "createFields should contain key: " + key);
             assertTrue(createFields.get(key), "createFields for key should be true: " + key);
         }
 
-        // Verify column visibility map present (content depends on declared fields)
+
         ColumnsLayoutConfigDto columnsLayout = config.getColumnsLayoutConfig();
         assertNotNull(columnsLayout);
         Map<String, Boolean> visibility = columnsLayout.getColumnVisibility();
         assertNotNull(visibility);
-        // At least these keys from TableHelper.customColumnVisibilityMap must be present and true
+
         assertEquals(Boolean.TRUE, visibility.get("id"));
         assertEquals(Boolean.TRUE, visibility.get("subscriptionPlan"));
         assertEquals(Boolean.TRUE, visibility.get("price"));
         assertEquals(Boolean.TRUE, visibility.get("currency"));
 
-        // Sorting config default for MemberPlanPriceDto falls back to id desc
         SortingConfigDto sorting = config.getSortable();
         assertNotNull(sorting);
         assertEquals("id", sorting.getField());
@@ -70,9 +69,7 @@ class TableHelperTest {
     @Test
     void buildRows_mapsUsingProvidedMapper() {
         MemberPlanPriceDto dto = new MemberPlanPriceDto()
-                .setId(10L)
-                .setPrice(BigDecimal.TEN)
-                .setCurrency("EUR");
+                .setId(10L);
 
         List<Map<String, Object>> rows = helper.buildRows(List.of(dto), helper::buildRowMap);
         assertEquals(1, rows.size());

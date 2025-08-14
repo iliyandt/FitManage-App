@@ -37,6 +37,7 @@ public class StaffMemberServiceImpl implements StaffMemberService {
     private final PredefinedStaffRoleRepository predefinedStaffRoleRepository;
     private final ModelMapper modelMapper;
     private final RoleService roleService;
+    //todo: add LOGGER
 
     @Autowired
     public StaffMemberServiceImpl(GymRepository gymRepository, StaffRoleRepository staffRoleRepository, StaffMemberRepository staffMemberRepository, BCryptPasswordEncoder passwordEncoder, PredefinedStaffRoleRepository predefinedStaffRoleRepository, ModelMapper modelMapper, RoleService roleService) {
