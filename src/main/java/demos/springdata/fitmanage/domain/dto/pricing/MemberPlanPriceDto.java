@@ -6,7 +6,7 @@ public class MemberPlanPriceDto {
 
     private Long id;
 
-    @DropDown(url = "/v1/subscription_plans/customized_fields")
+
     private SubscriptionPlan subscriptionPlan;
 
     public MemberPlanPriceDto() {

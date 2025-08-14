@@ -49,15 +49,6 @@ public class MemberPricingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/subscription_plans/customized_fields")
-    public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
-        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
-        List<EnumOption> enumOptions = planPriceDtoList.stream()
-                .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
-                .toList();
-        return ResponseEntity.ok(ApiResponse.success(enumOptions));
-    }
-
     @PatchMapping("/plans/{planId}")
     public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
                                                                          @RequestBody @Valid MemberPlanEditDto dto) {

@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
@@ -8,8 +9,10 @@ import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberRespons
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.GymMemberService;
+import demos.springdata.fitmanage.service.MemberPricingService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -26,11 +29,13 @@ import java.util.*;
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class GymMemberController {
     private final GymMemberService gymMemberService;
+    private final MemberPricingService memberPricingService;
     private final TableHelper tableHelper;
     private final static Logger LOGGER = LoggerFactory.getLogger(GymMemberController.class);
 
-    public GymMemberController(GymMemberService gymMemberService, TableHelper tableHelper) {
+    public GymMemberController(GymMemberService gymMemberService, MemberPricingService memberPricingService, TableHelper tableHelper) {
         this.gymMemberService = gymMemberService;
+        this.memberPricingService = memberPricingService;
         this.tableHelper = tableHelper;
     }
 
@@ -95,6 +100,15 @@ public class GymMemberController {
             @PathVariable Long memberId,
             @RequestBody @Valid GymMemberSubscriptionRequestDto dto) {
         return ResponseEntity.ok(ApiResponse.success(gymMemberService.initializeSubscription(memberId, dto)));
+    }
+
+    @GetMapping("/subscription_plans/customized_fields")
+    public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
+        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+        List<EnumOption> enumOptions = planPriceDtoList.stream()
+                .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(enumOptions));
     }
 
     private TableResponseDto buildTableResponse(List<GymMemberTableDto> members) {
