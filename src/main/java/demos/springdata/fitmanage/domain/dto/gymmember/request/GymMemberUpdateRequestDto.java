@@ -17,16 +17,15 @@ import java.time.OffsetDateTime;
 
 public class GymMemberUpdateRequestDto {
 
-    @NotBlank
+
     @Size(min = 2, max = 15)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
     private String firstName;
-    @NotBlank
+
     @Size(min = 2, max = 20)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
-    @NotBlank
-    @Column(unique = true)
+
     @Email(message = "Email must be valid")
     private String email;
     private Gender gender;
@@ -37,8 +36,7 @@ public class GymMemberUpdateRequestDto {
     private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
-    @NotBlank
-    @Column(unique = true)
+
     @Pattern(
             regexp = "^\\+?[0-9]{7,15}$",
             message = "Phone number must be 7 to 15 digits and may start with '+'"

@@ -24,6 +24,7 @@ import demos.springdata.fitmanage.service.VisitService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
@@ -32,12 +33,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class GymMemberServiceImpl implements GymMemberService {
@@ -140,7 +139,6 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
 
-
     @Override
     public Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId) {
         return findEntityBySmartQuery(input, gymId)
@@ -189,7 +187,6 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
 
-
     private void validateAndSetSubscriptionPlan(GymMember member, GymMemberSubscriptionRequestDto requestDto) {
         SubscriptionPlan plan = requestDto.getSubscriptionPlan();
 
@@ -224,7 +221,6 @@ public class GymMemberServiceImpl implements GymMemberService {
                 .setAllowedVisits(null)
                 .setRemainingVisits(null);
     }
-
 
 
     private void recalculateSubscriptionStatus(GymMember member) {
@@ -356,7 +352,6 @@ public class GymMemberServiceImpl implements GymMemberService {
     }
 
 
-
     private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
         return switch (subscriptionPlan) {
             case MONTHLY -> start.plusMonths(1);
@@ -416,9 +411,33 @@ public class GymMemberServiceImpl implements GymMemberService {
 
     private void updateMemberFields(GymMember member, GymMemberUpdateRequestDto updateRequest) {
         LOGGER.info("Updating member with ID {}", member.getId());
-        mapToDto(member, GymMemberUpdateRequestDto.class);
+        copyNonNullProperties(updateRequest, member);
         member.setEmployment(updateRequest.getEmployment());
     }
+
+    private void copyNonNullProperties(GymMemberUpdateRequestDto updateRequest, GymMember member) {
+        BeanUtils.copyProperties(updateRequest, member, getNullPropertyNames(updateRequest));
+    }
+
+    private String[] getNullPropertyNames(GymMemberUpdateRequestDto updateRequest) {
+        PropertyDescriptor[] pds = BeanUtils.getPropertyDescriptors(updateRequest.getClass());
+        Set<String> nullProperties = new HashSet<>();
+
+        try {
+            for (PropertyDescriptor pd : pds) {
+                if (pd.getReadMethod() != null) {
+                    Object value = pd.getReadMethod().invoke(updateRequest);
+                    if (value == null) {
+                        nullProperties.add(pd.getName());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to inspect properties for null values", e);
+        }
+        return nullProperties.toArray(new String[0]);
+    }
+
 
     private GymMember getGymMemberById(Long memberId) {
         return gymMemberRepository.findById(memberId)
