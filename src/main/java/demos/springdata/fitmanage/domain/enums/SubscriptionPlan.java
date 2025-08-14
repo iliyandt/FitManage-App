@@ -1,14 +1,16 @@
 package demos.springdata.fitmanage.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SubscriptionPlan {
-    VISIT_PASS(12, "Visit Pass"),
-    MONTHLY(null, "Monthly"),
-    DAY_PASS(null, "Day Pass"),
-    WEEKLY_PASS(null, "Weekly Pass"),
-    BIANNUAL(null, "Biannual"),
-    ANNUAL(null, "Annual");
+    VISIT_PASS(12, "visit pass"),
+    MONTHLY(null, "monthly"),
+    DAY_PASS(null, "day pass"),
+    WEEKLY_PASS(null, "weekly pass"),
+    BIANNUAL(null, "biannual"),
+    ANNUAL(null, "annual");
+    
     private final Integer defaultVisits;
     private final String displayName;
 
@@ -31,6 +33,11 @@ public enum SubscriptionPlan {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    @JsonCreator
+    public static SubscriptionPlan fromString(String value) {
+        return SubscriptionPlan.valueOf(value.toUpperCase());
     }
 
     @JsonValue

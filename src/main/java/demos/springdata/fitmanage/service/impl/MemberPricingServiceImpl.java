@@ -91,11 +91,6 @@ public class MemberPricingServiceImpl implements MemberPricingService {
             throw new FitManageAppException("Unauthorized access to plan", ApiErrorCode.UNAUTHORIZED);
         }
 
-//        entity.setPrice(dto.getPrice());
-//        entity.setStudentPrice(dto.getStudentPrice());
-//        entity.setSeniorPrice(dto.getSeniorPrice());
-//        entity.setHandicapPrice(dto.getHandicapPrice());
-
         modelMapper.map(dto, entity);
 
         MemberPlanPrice updatedEntity = memberPricingRepository.save(entity);
