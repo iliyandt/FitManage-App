@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
@@ -48,10 +49,13 @@ public class MemberPricingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/v1/plans/subscription_plans/all")
-    public ResponseEntity<ApiResponse<List<MemberPlanPriceDto>>> getAllSubscriptionPlans() {
+    @GetMapping("/subscription_plans/customized_fields")
+    public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
         List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
-        return ResponseEntity.ok(ApiResponse.success(planPriceDtoList));
+        List<EnumOption> enumOptions = planPriceDtoList.stream()
+                .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
+                .toList();
+        return ResponseEntity.ok(ApiResponse.success(enumOptions));
     }
 
     @PatchMapping("/plans/{planId}")
