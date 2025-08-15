@@ -10,5 +10,5 @@ import java.util.List;
 public interface VisitService {
     public void checkIn(GymMember gymMember, Long gymId);
     public List<VisitDto> getVisitsByMember(Long memberId);
-    public List<VisitTableResponse> getVisitsInPeriod(Long id, LocalDateTime start, LocalDateTime end);
+    public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end);
 }

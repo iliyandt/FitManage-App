@@ -66,24 +66,24 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public List<VisitTableResponse> getVisitsInPeriod(Long memberId, LocalDateTime start, LocalDateTime end) {
+    public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        LOGGER.info("Fetching visits: memberId={}, start={}, end={}",
-                memberId,
+        LOGGER.info("Fetching visits: gymId={}, start={}, end={}",
+                gymId,
                 start.format(formatter),
                 end.format(formatter));
 
-        List<VisitTableResponse> visits = visitRepository.findVisitsBetweenDates(memberId, start, end)
+        List<VisitTableResponse> visits = visitRepository.findVisitsBetweenDates(gymId, start, end)
                 .stream()
                 .map(this::manualMapDto)
                 .toList();
 
 
-        LOGGER.info("Found {} visits for memberId={} in period {} to {}",
+        LOGGER.info("Found {} visits for gymId={} in period {} to {}",
                 visits.size(),
-                memberId,
+                gymId,
                 start.format(formatter),
                 end.format(formatter));
 

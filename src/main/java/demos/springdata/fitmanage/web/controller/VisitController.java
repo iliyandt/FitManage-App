@@ -47,7 +47,7 @@ public class VisitController {
 
     private TableResponseDto buildTableResponse(List<VisitTableResponse> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/gym-members", VisitTableResponse.class));
+        response.setConfig(tableHelper.buildTableConfig("/visits", VisitTableResponse.class));
         response.setColumns(TableColumnBuilder.buildColumns(VisitTableResponse.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;
