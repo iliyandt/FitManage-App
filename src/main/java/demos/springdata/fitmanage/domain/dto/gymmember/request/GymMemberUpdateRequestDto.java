@@ -32,8 +32,6 @@ public class GymMemberUpdateRequestDto {
     private Employment employment;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
-
-    private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
 
@@ -97,15 +95,6 @@ public class GymMemberUpdateRequestDto {
 
     public GymMemberUpdateRequestDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
-        return this;
-    }
-
-    public Integer getVisitLimit() {
-        return visitLimit;
-    }
-
-    public GymMemberUpdateRequestDto setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
         return this;
     }
 

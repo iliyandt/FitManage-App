@@ -413,6 +413,7 @@ public class GymMemberServiceImpl implements GymMemberService {
         LOGGER.info("Updating member with ID {}", member.getId());
         copyNonNullProperties(updateRequest, member);
         member.setEmployment(updateRequest.getEmployment());
+        member.setUpdatedAt(LocalDateTime.now());
     }
 
     private void copyNonNullProperties(GymMemberUpdateRequestDto updateRequest, GymMember member) {

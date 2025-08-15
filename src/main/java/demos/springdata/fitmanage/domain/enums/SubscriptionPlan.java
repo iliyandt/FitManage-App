@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum SubscriptionPlan {
-    VISIT_PASS(12, "visit pass"),
-    MONTHLY(null, "monthly"),
-    DAY_PASS(null, "day pass"),
-    WEEKLY_PASS(null, "weekly pass"),
-    BIANNUAL(null, "biannual"),
-    ANNUAL(null, "annual");
+    VISIT_PASS(12, "Flexible Visit Plan"),
+    MONTHLY(null, "Monthly Subscription"),
+    DAY_PASS(null, "Single Visit"),
+    WEEKLY_PASS(null, "Weekly Subscription"),
+    BIANNUAL(null, "Biannual Subscription"),
+    ANNUAL(null, "Annual Subscription");
     
     private final Integer defaultVisits;
     private final String displayName;
