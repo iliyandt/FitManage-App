@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberPricingService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -40,7 +41,7 @@ public class MemberPricingController {
 
     @GetMapping("/table")
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
-        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+        List<MemberPlansTableDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
         response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlanPriceDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(MemberPlanPriceDto.class));
@@ -54,6 +55,13 @@ public class MemberPricingController {
                                                                          @RequestBody @Valid MemberPlanEditDto dto) {
         MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
         return ResponseEntity.ok(ApiResponse.success(updatedDto));
+    }
+
+    @DeleteMapping("/plans/{planId}")
+    public ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable Long planId) {
+        memberPricingService.deletePlan(planId);
+        //todo: add response dto for delete
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
 

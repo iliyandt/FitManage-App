@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.MemberPlanPrice;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MemberPricingServiceImpl implements MemberPricingService {
@@ -44,7 +46,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
         List<MemberPlanPriceDto> savedDtos = planDtos.stream()
                 .map(dto -> toEntity(dto, gym))
                 .map(memberPricingRepository::save)
-                .map(this::toDto)
+                .map(entity -> toDto(entity, MemberPlanPriceDto.class))
                 .toList();
 
         LOGGER.info("Successfully created {} plans for gym '{}'", savedDtos.size(), gymEmail);
@@ -53,7 +55,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
 
     @Override
-    public List<MemberPlanPriceDto> getPlansAndPrices() {
+    public List<MemberPlansTableDto> getPlansAndPrices() {
         Gym gym = getAuthenticatedGymOrThrow();
         LOGGER.info("Fetching plans and prices for gym: {}", gym.getEmail());
 
@@ -62,12 +64,12 @@ public class MemberPricingServiceImpl implements MemberPricingService {
             return Collections.emptyList();
         }
 
-        List<MemberPlanPriceDto> result = new ArrayList<>();
+        List<MemberPlansTableDto> result = new ArrayList<>();
 
         for (SubscriptionPlan plan : SubscriptionPlan.values()) {
             memberPricingRepository.findByGymIdAndSubscriptionPlan(gym.getId(), plan)
                     .ifPresent(entity -> {
-                        MemberPlanPriceDto dto = toDto(entity);
+                        MemberPlansTableDto dto = toDto(entity, MemberPlansTableDto.class);
                         dto.setSubscriptionPlan(plan);
                         result.add(dto);
                     });
@@ -75,6 +77,13 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
         LOGGER.debug("Returning {} plans for gym '{}'", result.size(), gym.getEmail());
         return result;
+    }
+
+    @Override
+    public List<MemberPlanPriceDto> getPlansAndPricesAsPriceDto() {
+        return getPlansAndPrices().stream()
+                .map(dto -> toDto(dto, MemberPlanPriceDto.class))
+                .toList();
     }
 
     @Override
@@ -99,6 +108,17 @@ public class MemberPricingServiceImpl implements MemberPricingService {
         return modelMapper.map(updatedEntity, MemberPlanEditDto.class);
     }
 
+    @Override
+    public void deletePlan(Long planId) {
+        MemberPlanPrice currentPlan = memberPricingRepository.findById(planId)
+                .orElseThrow(() -> new FitManageAppException(String.format("No plan with ID: %d", planId), ApiErrorCode.NOT_FOUND));
+
+        LOGGER.info("Deleting plan with ID {}", planId);
+
+        memberPricingRepository.delete(currentPlan);
+
+        LOGGER.info("Plan with ID {} deleted successfully", planId);
+    }
 
 
     private Gym getGymOrThrow(String gymEmail) {
@@ -109,8 +129,8 @@ public class MemberPricingServiceImpl implements MemberPricingService {
                 });
     }
 
-    private MemberPlanPriceDto toDto(MemberPlanPrice entity) {
-        return modelMapper.map(entity, MemberPlanPriceDto.class);
+    private <T, U> U toDto(T entity, Class<U> dtoClass) {
+        return modelMapper.map(entity, dtoClass);
     }
 
     private MemberPlanPrice toEntity(MemberPlanPriceDto dto, Gym gym) {

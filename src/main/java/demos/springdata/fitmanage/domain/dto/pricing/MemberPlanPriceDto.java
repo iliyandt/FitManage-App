@@ -5,8 +5,6 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 public class MemberPlanPriceDto {
 
     private Long id;
-
-
     private SubscriptionPlan subscriptionPlan;
 
     public MemberPlanPriceDto() {

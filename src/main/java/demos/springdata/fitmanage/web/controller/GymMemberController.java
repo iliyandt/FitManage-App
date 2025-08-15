@@ -92,6 +92,7 @@ public class GymMemberController {
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ApiResponse<Void>> deleteGymMember(@PathVariable Long memberId) {
         gymMemberService.removeGymMember(memberId);
+        //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));
     }
 
@@ -104,7 +105,7 @@ public class GymMemberController {
 
     @GetMapping("/subscription_plans/customized_fields")
     public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
-        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPricesAsPriceDto();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
                 .toList();

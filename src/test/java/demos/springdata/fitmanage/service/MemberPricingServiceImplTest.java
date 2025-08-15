@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.MemberPlanPrice;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -115,7 +116,7 @@ class MemberPricingServiceImplTest {
         when(modelMapper.map(eq(annual), eq(MemberPlanPriceDto.class)))
                 .thenReturn(new MemberPlanPriceDto().setSubscriptionPlan(SubscriptionPlan.ANNUAL));
 
-        List<MemberPlanPriceDto> result = service.getPlansAndPrices();
+        List<MemberPlansTableDto> result = service.getPlansAndPrices();
         assertEquals(2, result.size());
         assertTrue(result.stream().anyMatch(d -> d.getSubscriptionPlan() == SubscriptionPlan.MONTHLY));
         assertTrue(result.stream().anyMatch(d -> d.getSubscriptionPlan() == SubscriptionPlan.ANNUAL));
