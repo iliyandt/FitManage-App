@@ -19,7 +19,6 @@ public class GymMemberTableDto {
     private Gender gender;
     private Employment employment;
     private OffsetDateTime birthDate;
-    private Integer visitLimit;
     private SubscriptionStatus subscriptionStatus;
     @DropDown(url = "gym-members/subscription_plans/customized_fields")
     private SubscriptionPlan subscriptionPlan;
@@ -86,14 +85,6 @@ public class GymMemberTableDto {
 
     public void setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
-    }
-
-    public Integer getVisitLimit() {
-        return visitLimit;
-    }
-
-    public void setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
     }
 
     public SubscriptionStatus getSubscriptionStatus() {
