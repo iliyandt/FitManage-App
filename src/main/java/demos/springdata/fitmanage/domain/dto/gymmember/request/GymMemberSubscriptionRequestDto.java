@@ -4,7 +4,7 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 public class GymMemberSubscriptionRequestDto {
-    private Integer visitLimit;
+    private Integer allowedVisits;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
     private Employment employment;
@@ -14,12 +14,12 @@ public class GymMemberSubscriptionRequestDto {
     }
 
 
-    public Integer getVisitLimit() {
-        return visitLimit;
+    public Integer getAllowedVisits() {
+        return allowedVisits;
     }
 
-    public GymMemberSubscriptionRequestDto setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
+    public GymMemberSubscriptionRequestDto setAllowedVisits(Integer allowedVisits) {
+        this.allowedVisits = allowedVisits;
         return this;
     }
 

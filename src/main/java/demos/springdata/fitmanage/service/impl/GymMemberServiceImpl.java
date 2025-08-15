@@ -201,8 +201,8 @@ public class GymMemberServiceImpl implements GymMemberService {
     private void initializeVisitBasedSubscription(GymMember member, GymMemberSubscriptionRequestDto requestDto) {
         LOGGER.info("Visit-based subscription detected. Initializing visits...");
 
-        Integer allowedVisits = requestDto.getVisitLimit() != null
-                ? requestDto.getVisitLimit()
+        Integer allowedVisits = requestDto.getAllowedVisits() != null
+                ? requestDto.getAllowedVisits()
                 : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
 
         member

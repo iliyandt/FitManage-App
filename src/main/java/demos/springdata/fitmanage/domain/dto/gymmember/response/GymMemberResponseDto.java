@@ -17,7 +17,6 @@ public class GymMemberResponseDto {
     private Gender gender;
     private Employment employment;
     private OffsetDateTime birthDate;
-    private Integer visitLimit;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String phone;
@@ -92,15 +91,6 @@ public class GymMemberResponseDto {
 
     public GymMemberResponseDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
-        return this;
-    }
-
-    public Integer getVisitLimit() {
-        return visitLimit;
-    }
-
-    public GymMemberResponseDto setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
         return this;
     }
 
