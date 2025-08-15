@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
+import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import demos.springdata.fitmanage.domain.entity.GymMember;
 import demos.springdata.fitmanage.domain.entity.Visit;
 import demos.springdata.fitmanage.repository.VisitRepository;
@@ -64,7 +65,8 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<VisitDto> getVisitsInPeriod(Long memberId, LocalDateTime start, LocalDateTime end) {
+    @Transactional
+    public List<VisitTableResponse> getVisitsInPeriod(Long memberId, LocalDateTime start, LocalDateTime end) {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -73,9 +75,9 @@ public class VisitServiceImpl implements VisitService {
                 start.format(formatter),
                 end.format(formatter));
 
-        List<VisitDto> visits = visitRepository.findVisitsBetweenDates(memberId, start, end)
+        List<VisitTableResponse> visits = visitRepository.findVisitsBetweenDates(memberId, start, end)
                 .stream()
-                .map(this::toDTO)
+                .map(this::manualMapDto)
                 .toList();
 
 
@@ -86,6 +88,22 @@ public class VisitServiceImpl implements VisitService {
                 end.format(formatter));
 
         return visits;
+    }
+
+
+
+    private VisitTableResponse manualMapDto(Visit visit) {
+
+        GymMember member = visit.getGymMember();
+
+        VisitTableResponse dto = new VisitTableResponse();
+        dto.setId(visit.getId())
+                .setFirstName(member.getFirstName())
+                .setLastName(member.getLastName())
+                .setPhone(member.getPhone())
+                .setSubscriptionPlan(member.getSubscriptionPlan());
+
+        return dto;
     }
 
     private VisitDto toDTO(Visit visit) {
