@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.DropDownConfig;
 
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -65,7 +66,8 @@ public class TableColumnBuilder {
         } else if (type == Integer.class || type == int.class ||
                 type == Long.class || type == long.class ||
                 type == Double.class || type == double.class ||
-                type == Float.class || type == float.class) {
+                type == Float.class || type == float.class ||
+                type == BigDecimal.class) {
             return "number";
         } else if (type == Boolean.class || type == boolean.class) {
             return "boolean";
