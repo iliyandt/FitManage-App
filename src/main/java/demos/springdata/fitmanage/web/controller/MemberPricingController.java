@@ -43,8 +43,8 @@ public class MemberPricingController {
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
         List<MemberPlansTableDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlanPriceDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(MemberPlanPriceDto.class));
+        response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlansTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(MemberPlansTableDto.class));
         response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
 
         return ResponseEntity.ok(ApiResponse.success(response));
