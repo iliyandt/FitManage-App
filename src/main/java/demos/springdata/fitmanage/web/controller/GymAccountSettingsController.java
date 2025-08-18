@@ -3,8 +3,8 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.accountsettings.AccountSettingsDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.service.GymAccountSettingsService;
-import demos.springdata.fitmanage.service.GymService;
+import demos.springdata.fitmanage.service.UserAccountSettingsService;
+import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,31 +18,31 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/gym/account-settings")
 public class GymAccountSettingsController {
-    private final GymAccountSettingsService gymAccountSettingsService;
-    private final GymService gymService;
+    private final UserAccountSettingsService userAccountSettingsService;
+    private final TenantService tenantService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
-    public GymAccountSettingsController(GymAccountSettingsService gymAccountSettingsService, GymService gymService) {
-        this.gymAccountSettingsService = gymAccountSettingsService;
-        this.gymService = gymService;
+    public GymAccountSettingsController(UserAccountSettingsService userAccountSettingsService, TenantService tenantService) {
+        this.userAccountSettingsService = userAccountSettingsService;
+        this.tenantService = tenantService;
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentGymSettings() {
 
         String currentGymEmail = getCurrentGymEmail();
-        Optional<GymSummaryDto> gym = gymService.getGymByEmail(currentGymEmail);
-        AccountSettingsDto gymSettings = gymAccountSettingsService.getGymSettings(gym.get().getId());
+        Optional<GymSummaryDto> gym = tenantService.getGymByEmail(currentGymEmail);
+        AccountSettingsDto gymSettings = userAccountSettingsService.getUserSettings(gym.get().getId());
         return ResponseEntity.ok(ApiResponse.success(gymSettings));
     }
 
     @PutMapping("update/me")
     public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
         String currentGymEmail = getCurrentGymEmail();
-        Optional<GymSummaryDto> gym = gymService.getGymByEmail(currentGymEmail);
+        Optional<GymSummaryDto> gym = tenantService.getGymByEmail(currentGymEmail);
 
 
-        AccountSettingsDto updatedSettings = gymAccountSettingsService.updateGymSettings(gym.get().getId(), newSettings);
+        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(gym.get().getId(), newSettings);
 
         LOGGER.info("Updated settings: " + updatedSettings);
         return ResponseEntity.ok(ApiResponse.success(updatedSettings));

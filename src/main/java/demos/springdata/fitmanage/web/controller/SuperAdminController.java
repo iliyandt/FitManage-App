@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.service.GymService;
+import demos.springdata.fitmanage.service.TenantService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,17 +17,17 @@ import java.util.List;
 @RequestMapping("/api/v1/super-admin")
 @PreAuthorize("hasAuthority('ROLE_SUPER_ADMIN')")
 public class SuperAdminController {
-    private final GymService gymService;
+    private final TenantService tenantService;
     private static final Logger LOGGER = LoggerFactory.getLogger(SuperAdminController.class);
 
-    public SuperAdminController(GymService gymService) {
-        this.gymService = gymService;
+    public SuperAdminController(TenantService tenantService) {
+        this.tenantService = tenantService;
     }
 
     @GetMapping("/all")
     public ResponseEntity<@Valid List<GymSummaryDto>> getAllGyms() {
         LOGGER.info("Information about all registered gyms requested");
-        List<GymSummaryDto> allGyms = gymService.getAllGyms();
+        List<GymSummaryDto> allGyms = tenantService.getAllGyms();
         LOGGER.info("Information loaded successfully");
         return ResponseEntity.ok(allGyms);
     }

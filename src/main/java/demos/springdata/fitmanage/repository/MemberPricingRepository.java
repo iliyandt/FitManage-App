@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface MemberPricingRepository extends JpaRepository<MemberPlanPrice, Long> {
-    Optional<MemberPlanPrice> findByGymIdAndSubscriptionPlan(Long gymId, SubscriptionPlan subscriptionPlan);
-    boolean existsByGymId(Long id);
+
 }

@@ -8,11 +8,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
@@ -49,7 +51,7 @@ public class User extends BaseEntity implements UserDetails {
     private String phone;
     private String address;
     private String city;
-    private boolean enabled = true;
+    private boolean enabled;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -74,6 +76,8 @@ public class User extends BaseEntity implements UserDetails {
 
     public User() {
     }
+
+
 
     public User setUsername(String username) {
         this.username = username;
@@ -220,7 +224,9 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override

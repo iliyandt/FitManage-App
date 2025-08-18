@@ -11,7 +11,7 @@ import java.util.Map;
 public class GymAccountSettings extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "gym_id", nullable = false, unique = true)
-    private Gym gym;
+    private User user;
 
     @Column(columnDefinition = "TEXT")
     @Convert(converter = MapToJsonConverter.class)
@@ -20,12 +20,12 @@ public class GymAccountSettings extends BaseEntity {
     public GymAccountSettings() {
     }
 
-    public Gym getGym() {
-        return gym;
+    public User getUser() {
+        return user;
     }
 
-    public GymAccountSettings setGym(Gym gym) {
-        this.gym = gym;
+    public GymAccountSettings setUser(User user) {
+        this.user = user;
         return this;
     }
 

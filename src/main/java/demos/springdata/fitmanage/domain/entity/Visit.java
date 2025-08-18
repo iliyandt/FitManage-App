@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Entity
 public class Visit extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private GymMember gymMember;
+    @JoinColumn(name = "membership_id", nullable = false)
+    private Membership membership;
 
     @Column(name = "gym_id", nullable = false)
-    private Long gymId;
+    private Long userId;
 
     @Column(name = "check_in_at", nullable = false)
     private LocalDateTime checkInAt;
@@ -22,21 +22,21 @@ public class Visit extends BaseEntity {
         this.checkInAt = LocalDateTime.now();
     }
 
-    public GymMember getGymMember() {
-        return gymMember;
+    public Membership getMembership() {
+        return membership;
     }
 
-    public Visit setGymMember(GymMember gymMember) {
-        this.gymMember = gymMember;
+    public Visit setMembership(Membership membership) {
+        this.membership = membership;
         return this;
     }
 
-    public Long getGymId() {
-        return gymId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public Visit setGymId(Long gymId) {
-        this.gymId = gymId;
+    public Visit setUserId(Long userId) {
+        this.userId = userId;
         return this;
     }
 

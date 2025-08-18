@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.team.response;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import demos.springdata.fitmanage.domain.entity.StaffMember;
 
 public class StaffMemberTableDto {
     private Long id;
@@ -16,16 +15,6 @@ public class StaffMemberTableDto {
     private String roleSelection;
 
     public StaffMemberTableDto() {
-    }
-
-    public static StaffMemberTableDto from(StaffMember s) {
-        return new StaffMemberTableDto()
-                .setId(s.getId())
-                .setFirstName(s.getFirstName())
-                .setLastName(s.getLastName())
-                .setPhone(s.getPhone())
-                .setStaffRoleId(s.getStaffRole().getId())
-                .setStaffRoleName(s.getStaffRole().getName());
     }
 
     public StaffMemberTableDto setId(Long id) {

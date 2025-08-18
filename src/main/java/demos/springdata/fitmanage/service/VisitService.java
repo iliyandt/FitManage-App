@@ -1,14 +1,12 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
-import demos.springdata.fitmanage.domain.entity.GymMember;
+import demos.springdata.fitmanage.domain.entity.Membership;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface VisitService {
-    public void checkIn(GymMember gymMember, Long gymId);
-    public List<VisitDto> getVisitsByMember(Long memberId);
+    public void checkIn(Membership membership, Long gymId);
     public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end);
 }

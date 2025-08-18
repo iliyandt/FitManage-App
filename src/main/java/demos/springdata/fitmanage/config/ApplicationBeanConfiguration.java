@@ -2,12 +2,10 @@ package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
-import demos.springdata.fitmanage.domain.entity.StaffMember;
-import demos.springdata.fitmanage.domain.entity.StaffProfile;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
+import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,14 +38,6 @@ public class ApplicationBeanConfiguration {
                 .addMappings(mapper -> mapper.map(User::getUsername, GymSummaryDto::setUsername));
     }
 
-//    private void configureStaffMemberMapper(ModelMapper modelMapper) {
-//        modelMapper.typeMap(StaffProfile.class, StaffMemberResponseDto.class)
-//                .addMappings(mapper -> {
-//                    mapper.map(src -> src.getStaffRole().getName(), StaffMemberResponseDto::setRoleName);
-//                    mapper.map(src -> src.getGym().getActualUsername(), StaffMemberResponseDto::setGymName);
-//                });
-//    }
-
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -61,12 +51,10 @@ public class ApplicationBeanConfiguration {
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider(CustomUserDetailsService customUserDetailsService) {
+    AuthenticationProvider authenticationProvider(CustomUserDetailsServiceImpl customUserDetailsService) {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
         authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(bCryptPasswordEncoder());
-
         return authProvider;
     }
 

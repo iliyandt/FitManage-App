@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
@@ -26,14 +29,9 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         LOGGER.info("Attempting to load user details for email: {}", email);
 
-        return userRepository.findByEmail(email).<UserDetails>map(user -> {
-                    LOGGER.info("SuperAdmin found with email: {}", email);
-                    return user;
-                })
-                .orElseThrow(() -> {
-                    LOGGER.warn("No user found with email: {}", email);
-                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
-                });
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+
+        return user;
     }
 
 

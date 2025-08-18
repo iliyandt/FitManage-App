@@ -2,7 +2,9 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
-import demos.springdata.fitmanage.domain.entity.GymMember;
+
+import demos.springdata.fitmanage.domain.entity.Membership;
+
 import demos.springdata.fitmanage.domain.entity.Visit;
 import demos.springdata.fitmanage.repository.VisitRepository;
 import demos.springdata.fitmanage.service.VisitService;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 
 @Service
@@ -32,84 +34,56 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public void checkIn(GymMember gymMember, Long gymId) {
+    public void checkIn(Membership membership, Long userId) {
 
         LOGGER.info("Check-in at gymId={} for memberId={} ({} {})",
-                gymId,
-                gymMember.getId(),
-                gymMember.getFirstName(),
-                gymMember.getLastName());
+                userId,
+                membership.getId(),
+                membership.getFirstName(),
+                membership.getLastName());
 
         Visit visit = new Visit()
-                .setGymMember(gymMember)
-                .setGymId(gymId)
+                .setMembership(membership)
+                .setUserId(userId)
                 .setCheckInAt(LocalDateTime.now());
 
         Visit savedVisit = visitRepository.save(visit);
         LOGGER.info("Check-in successful: memberId={}, gymId={}, time={}",
-                savedVisit.getGymMember().getId(),
-                savedVisit.getGymId(),
+                savedVisit.getMembership().getId(),
+                savedVisit.getUserId(),
                 savedVisit.getCheckInAt());
         toDTO(savedVisit);
     }
 
-    @Override
-    public List<VisitDto> getVisitsByMember(Long memberId) {
-        LOGGER.info("Fetching visits: memberId={}", memberId);
-        List<VisitDto> visits = visitRepository.findByGymMember_Id(memberId)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
-        LOGGER.info("Found {} visits for memberId={}", visits.size(), memberId);
-        return visits;
-    }
+
 
     @Override
     @Transactional
     public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        LOGGER.info("Fetching visits: gymId={}, start={}, end={}",
-                gymId,
-                start.format(formatter),
-                end.format(formatter));
-
-        List<VisitTableResponse> visits = visitRepository.findVisitsBetweenDates(gymId, start, end)
-                .stream()
-                .map(this::manualMapDto)
-                .toList();
-
-
-        LOGGER.info("Found {} visits for gymId={} in period {} to {}",
-                visits.size(),
-                gymId,
-                start.format(formatter),
-                end.format(formatter));
-
-        return visits;
+        return List.of();
     }
 
 
 
     private VisitTableResponse manualMapDto(Visit visit) {
 
-        GymMember member = visit.getGymMember();
+        Membership membership = visit.getMembership();
 
         VisitTableResponse dto = new VisitTableResponse();
         dto.setId(visit.getId())
-                .setFirstName(member.getFirstName())
-                .setLastName(member.getLastName())
-                .setPhone(member.getPhone())
-                .setSubscriptionPlan(member.getSubscriptionPlan());
+                .setFirstName(membership.getFirstName())
+                .setLastName(membership.getLastName())
+                .setPhone(membership.getUser().getPhone())
+                .setSubscriptionPlan(membership.getSubscriptionPlan());
 
         return dto;
     }
 
     private VisitDto toDTO(Visit visit) {
         return new VisitDto()
-                .setMemberId(visit.getGymMember().getId())
-                .setGymId(visit.getGymId())
+                .setMemberId(visit.getMembership().getId())
+                .setGymId(visit.getUserId())
                 .setCheckInAt(visit.getCheckInAt());
     }
 }

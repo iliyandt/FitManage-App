@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "member_plan_prices")
 public class MemberPlanPrice extends BaseEntity{
     @ManyToOne(optional = false)
-    private Gym gym;
+    private User user;
 
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan subscriptionPlan;
@@ -23,12 +23,12 @@ public class MemberPlanPrice extends BaseEntity{
     }
 
 
-    public Gym getGym() {
-        return gym;
+    public User getUser() {
+        return user;
     }
 
-    public MemberPlanPrice setGym(Gym gym) {
-        this.gym = gym;
+    public MemberPlanPrice setUser(User user) {
+        this.user = user;
         return this;
     }
 

@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.gymmember.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;

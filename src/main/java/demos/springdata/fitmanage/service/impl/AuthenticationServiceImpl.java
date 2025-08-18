@@ -15,14 +15,12 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
-import demos.springdata.fitmanage.repository.GymRepository;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.EmailService;
 import demos.springdata.fitmanage.service.RoleService;
-import demos.springdata.fitmanage.validation.UserValidationService;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -40,7 +38,6 @@ import java.util.*;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
-    private final GymRepository gymRepository;
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final ModelMapper modelMapper;
@@ -53,8 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Autowired
-    public AuthenticationServiceImpl(GymRepository gymRepository, UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, UserValidationService userValidationService, TenantRepository tenantRepository) {
-        this.gymRepository = gymRepository;
+    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -62,22 +58,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.customUserDetailsService = customUserDetailsService;
-
         this.tenantRepository = tenantRepository;
     }
 
     @Override
-    public RegistrationResponseDto registerGym(RegistrationRequestDto gymRegistrationDto, TenantDto tenantDto) {
-        LOGGER.info("Registration attempt for email: {}", gymRegistrationDto.getEmail());
-        Map<String, String> errors = new HashMap<>();
-        validateCredentials(gymRegistrationDto, errors);
+    public RegistrationResponseDto registerGym(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
+        LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
+        validateCredentials(registrationRequest);
 
         Tenant tenant = new Tenant()
-                .setName(tenantDto.getName()).setSubscriptionValidUntil(null);
+                .setName(tenantDto.getName())
+                .setSubscriptionValidUntil(null);
 
         tenantRepository.save(tenant);
 
-        User user = initializeNewUser(gymRegistrationDto);
+        User user = initializeNewUser(registrationRequest);
+        user.setTenant(tenant);
 
         userRepository.save(user);
         LOGGER.info("Registration successful for user: {}", user.getEmail());
@@ -91,17 +87,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public Optional<GymEmailResponseDto> checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
-        Map<String, String> errors = new HashMap<>();
-        Optional<User> user = this.userRepository.findByEmail(userEmailRequestDto.getEmail());
-        if (user.isPresent()) {
-            return user.map(g -> modelMapper.map(g, GymEmailResponseDto.class));
-        } else {
-            LOGGER.warn("Account with email: {} does not exists", userEmailRequestDto.getEmail());
-            errors.put("account", "Account with this email does not exist");
-            throw new MultipleValidationException(errors);
-        }
+    public GymEmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
+        return this.userRepository.findByEmail(userEmailRequestDto.getEmail())
+                .map(user -> modelMapper.map(user, GymEmailResponseDto.class))
+                .orElseThrow(() -> {
+                    LOGGER.warn("Account with email: {} does not exists", userEmailRequestDto.getEmail());
+                    return new FitManageAppException(String.format("Account with email: %s does not exists.", userEmailRequestDto.getEmail()), ApiErrorCode.NOT_FOUND);
+                });
     }
+
 
     @Override
     public UserDetails authenticateUser(LoginRequestDto loginRequestDto) {
@@ -116,43 +110,33 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto) {
-        Map<String, String> errors = new HashMap<>();
         LOGGER.info("Verification attempt for user: {}", verificationRequestDto.getEmail());
 
         User user = getUserByEmailOrElseThrow(verificationRequestDto.getEmail());
-
-        validateVerificationCode(user, verificationRequestDto.getVerificationCode(), errors);
-
-
+        validateVerificationCode(user, verificationRequestDto.getVerificationCode());
         enableUserAccount(user);
 
         LOGGER.info("User successfully verified: {}", user.getEmail());
+
         return new VerificationResponseDto("Account verified successfully", true);
     }
 
 
-
-
     @Override
     public VerificationResponseDto resendUserVerificationCode(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-
-            if (user.isEnabled()) {
-                throw new FitManageAppException("Account is already verified", ApiErrorCode.OK);
-            }
-
-            LOGGER.info("Resending verification code to: {}", email);
-
-            user.setVerificationCode(generateVerificationCode());
-            user.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
-            sendVerificationEmail(user);
-            userRepository.save(user);
-        } else {
-            throw new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
+        if (user.isEnabled()) {
+            throw new FitManageAppException("Account is already verified", ApiErrorCode.OK);
         }
+        LOGGER.info("Resending verification code to: {}", email);
+
+        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
+        sendVerificationEmail(user);
+        userRepository.save(user);
+
 
         return new VerificationResponseDto("New verification code successfully delivered", true);
     }
@@ -165,20 +149,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
     }
 
-    private void validateVerificationCode(User user, String code, Map<String, String> errors) {
+    private void validateVerificationCode(User user, String code) {
+        Map<String, String> errors = new HashMap<>();
         if (user.getVerificationCodeExpiresAt() == null) {
-            LOGGER.warn("Account {} is already verified", user.getUsername());
-            errors.put("account", "Account is already verified");
-            throw new MultipleValidationException(errors);
+            LOGGER.warn("Account with email {} is already verified", user.getUsername());
+            throw new FitManageAppException("Account is already verified", ApiErrorCode.CONFLICT);
         }
 
         if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-            LOGGER.warn("Verification failed: verificationCode expired for user {}", user.getEmail());
+            LOGGER.warn("VerificationCode expired for user {}", user.getUsername());
             errors.put("verificationCode", "Verification code expired");
         }
 
         if (!user.getVerificationCode().equals(code)) {
-            LOGGER.warn("Verification failed: Invalid code for user {}", user.getEmail());
+            LOGGER.warn("Invalid verification code for user {}", user.getEmail());
             errors.put("verificationCode", "Invalid verification code");
         }
 
@@ -229,12 +213,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-        user.setEnabled(false);
         sendVerificationEmail(user);
         return user;
     }
 
-    private void validateCredentials(RegistrationRequestDto gymRegistrationDto, Map<String, String> errors) {
+    private void validateCredentials(RegistrationRequestDto gymRegistrationDto) {
+        Map<String, String> errors = new HashMap<>();
         if (userRepository.findByUsername(gymRegistrationDto.getUsername()).isPresent()) {
             LOGGER.warn("Username {} already exists", gymRegistrationDto.getUsername());
             errors.put("username", "Gym with this username already exists");
@@ -276,7 +260,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
             LOGGER.error("Failed to send verification email to: {}", user.getEmail(), e);
-            // Handle email sending exception
             e.printStackTrace();
         }
     }
@@ -292,7 +275,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(encryptedPassword);
     }
 
-    private <T> User mapUser(T dto) {
+    private User mapUser(RegistrationRequestDto dto) {
         return modelMapper.map(dto, User.class);
     }
 }

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface GymAccountSettingsRepository extends JpaRepository<GymAccountSettings, Long> {
-    Optional<GymAccountSettings> findByGymId(Long gymId);
+    Optional<GymAccountSettings> findByUserId(Long id);
 }

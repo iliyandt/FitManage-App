@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.repository;
 
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.domain.entity.User;

@@ -4,7 +4,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.gym.*;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.service.GymService;
+import demos.springdata.fitmanage.service.TenantService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,20 +19,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "/api/v1/gym")
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
-public class GymController {
-    private final GymService gymService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(GymController.class);
+public class UserController {
+    private final TenantService tenantService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 
-    public GymController(GymService gymService) {
-        this.gymService = gymService;
+    public UserController(TenantService tenantService) {
+        this.tenantService = tenantService;
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<GymSummaryDto>> authenticatedGym() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentGymEmail = authentication.getName();
-        GymSummaryDto currentGym = gymService.getGymByEmail(currentGymEmail)
+        GymSummaryDto currentGym = tenantService.getGymByEmail(currentGymEmail)
                 .orElseThrow(() -> new FitManageAppException("Gym not found for authenticated user", ApiErrorCode.NOT_FOUND));
         ;
         return ResponseEntity.ok(ApiResponse.success(currentGym));
@@ -42,7 +42,7 @@ public class GymController {
     @PostMapping("/basic-info")
     public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        gymService.updateGymBasicInfo(email, dto);
+        tenantService.updateTenantBasicInfo(email, dto);
         return ResponseEntity.ok(ApiResponse.success("Basic info updated successfully"));
     }
 

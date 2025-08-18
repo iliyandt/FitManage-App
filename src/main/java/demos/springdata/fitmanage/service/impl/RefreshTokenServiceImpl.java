@@ -1,16 +1,12 @@
 package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
-import demos.springdata.fitmanage.domain.dto.superadmin.SuperAdminDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
-import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
-import demos.springdata.fitmanage.service.GymService;
+import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.service.RefreshTokenService;
-import demos.springdata.fitmanage.service.SuperAdminService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +22,7 @@ import java.util.UUID;
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
-    private final GymService gymService;
+    private final TenantService tenantService;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
@@ -35,16 +31,16 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymService gymService, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, TenantService tenantService, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.gymService = gymService;
+        this.tenantService = tenantService;
         this.modelMapper = modelMapper;
     }
 
     @Override
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);
-        Optional<GymSummaryDto> gymDtoOpt = gymService.getGymByEmail(email);
+        Optional<GymSummaryDto> gymDtoOpt = tenantService.getGymByEmail(email);
 
         if (gymDtoOpt.isPresent()) {
             User user = modelMapper.map(gymDtoOpt.get(), User.class);

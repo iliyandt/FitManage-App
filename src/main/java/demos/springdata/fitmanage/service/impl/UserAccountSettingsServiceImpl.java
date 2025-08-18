@@ -1,10 +1,10 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.accountsettings.AccountSettingsDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.GymAccountSettings;
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.repository.GymAccountSettingsRepository;
-import demos.springdata.fitmanage.service.GymAccountSettingsService;
+import demos.springdata.fitmanage.service.UserAccountSettingsService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,35 +15,35 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 @Service
-public class GymAccountSettingsServiceImpl implements GymAccountSettingsService {
+public class UserAccountSettingsServiceImpl implements UserAccountSettingsService {
 
     private final GymAccountSettingsRepository gymAccountSettingsRepository;
     private final ModelMapper modelMapper;
-    private static final Logger LOGGER = LoggerFactory.getLogger(GymAccountSettingsServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
 
     @Autowired
-    public GymAccountSettingsServiceImpl(GymAccountSettingsRepository gymAccountSettingsRepository, ModelMapper modelMapper) {
+    public UserAccountSettingsServiceImpl(GymAccountSettingsRepository gymAccountSettingsRepository, ModelMapper modelMapper) {
         this.gymAccountSettingsRepository = gymAccountSettingsRepository;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
-    public AccountSettingsDto getGymSettings(Long gymId) {
-        LOGGER.info("Fetching account settings for gym ID {}", gymId);
-        return gymAccountSettingsRepository.findByGymId(gymId)
+    public AccountSettingsDto getUserSettings(Long id) {
+        LOGGER.info("Fetching account settings for gym ID {}", id);
+        return gymAccountSettingsRepository.findByUserId(id)
                 .map(settings -> modelMapper.map(settings, AccountSettingsDto.class))
                 .orElse(new AccountSettingsDto());
     }
 
     @Override
     @Transactional
-    public AccountSettingsDto updateGymSettings(Long gymId, Map<String, Object> newSettings) {
-        LOGGER.info("Updating account settings for gym ID {}", gymId);
-        GymAccountSettings settings = gymAccountSettingsRepository.findByGymId(gymId)
+    public AccountSettingsDto updateUserSettings(Long id, Map<String, Object> newSettings) {
+        LOGGER.info("Updating account settings for gym ID {}", id);
+        GymAccountSettings settings = gymAccountSettingsRepository.findByUserId(id)
                 .orElseGet(() -> {
                     GymAccountSettings gymAccountSettings = new GymAccountSettings();
-                    gymAccountSettings.setGym(new Gym(gymId));
+                    gymAccountSettings.setUser(new User());
                     return gymAccountSettings;
                 });
         settings.getSettings().putAll(newSettings);

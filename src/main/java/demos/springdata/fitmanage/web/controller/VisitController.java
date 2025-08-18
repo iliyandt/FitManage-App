@@ -29,9 +29,7 @@ public class VisitController {
 
     @GetMapping("/member/{gymMemberId}")
     public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable Long gymMemberId) {
-        List<VisitDto> visitsByMember = visitService.getVisitsByMember(gymMemberId);
-
-        return ResponseEntity.ok(ApiResponse.success(visitsByMember));
+        return null;
     }
 
     @GetMapping("/period/{id}/{start}/{end}")

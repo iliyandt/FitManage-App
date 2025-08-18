@@ -22,15 +22,6 @@ public class StaffProfile extends BaseEntity {
     @Column(nullable = false)
     private String lastName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "staff_role_id", nullable = false)
-    private StaffRole staffRole;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "gym_id", nullable = false)
-    private Gym gym;
-
-
     public StaffProfile() {
     }
 
@@ -70,21 +61,4 @@ public class StaffProfile extends BaseEntity {
         return this;
     }
 
-    public StaffRole getStaffRole() {
-        return staffRole;
-    }
-
-    public StaffProfile setStaffRole(StaffRole staffRole) {
-        this.staffRole = staffRole;
-        return this;
-    }
-
-    public Gym getGym() {
-        return gym;
-    }
-
-    public StaffProfile setGym(Gym gym) {
-        this.gym = gym;
-        return this;
-    }
 }

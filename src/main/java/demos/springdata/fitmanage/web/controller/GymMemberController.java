@@ -2,7 +2,6 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
@@ -10,8 +9,9 @@ import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDt
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.user.UserCreateRequestDto;
 import demos.springdata.fitmanage.helper.TableHelper;
-import demos.springdata.fitmanage.service.GymMemberService;
+import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.service.MemberPricingService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
@@ -28,13 +28,13 @@ import java.util.*;
 @RequestMapping(path = "/api/v1/gym-members")
 @PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
 public class GymMemberController {
-    private final GymMemberService gymMemberService;
+    private final UserService userService;
     private final MemberPricingService memberPricingService;
     private final TableHelper tableHelper;
     private final static Logger LOGGER = LoggerFactory.getLogger(GymMemberController.class);
 
-    public GymMemberController(GymMemberService gymMemberService, MemberPricingService memberPricingService, TableHelper tableHelper) {
-        this.gymMemberService = gymMemberService;
+    public GymMemberController(UserService userService, MemberPricingService memberPricingService, TableHelper tableHelper) {
+        this.userService = userService;
         this.memberPricingService = memberPricingService;
         this.tableHelper = tableHelper;
     }
@@ -47,8 +47,8 @@ public class GymMemberController {
         LOGGER.debug("Fetching gym members with filter: {}", filter);
 
         List<GymMemberTableDto> members = (!isFilterEmpty(filter))
-                ? gymMemberService.getGymMembersByFilter(filter)
-                : gymMemberService.getAllGymMembersForTable();
+                ? userService.getGymMembersByFilter(filter)
+                : userService.getAllGymMembersForTable();
 
         TableResponseDto response = buildTableResponse(members);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -56,7 +56,7 @@ public class GymMemberController {
 
     @GetMapping("/{gymId}/search")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> searchMember(@RequestParam String query, @PathVariable Long gymId) {
-        Optional<GymMemberResponseDto> member = gymMemberService.findBySmartQuery(query, gymId);
+        Optional<GymMemberResponseDto> member = userService.findBySmartQuery(query, gymId);
 
         return member.map(gymMemberResponseDto -> ResponseEntity
                 .ok(ApiResponse.success(gymMemberResponseDto))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -69,15 +69,15 @@ public class GymMemberController {
             @PathVariable Long gymId,
             @RequestParam String query) {
 
-        GymMemberResponseDto result = gymMemberService.checkInMember(query, gymId);
+        GymMemberResponseDto result = userService.checkInMember(query, gymId);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/members")
-    public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody GymMemberCreateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<GymMemberResponseDto>> addGymMembers(@Valid @RequestBody UserCreateRequestDto requestDto) {
         LOGGER.info("Received request to create member: {}", requestDto);
-        GymMemberResponseDto responseDto = gymMemberService.createAndSaveNewMember(requestDto);
+        GymMemberResponseDto responseDto = userService.createAndSaveNewMember(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
@@ -85,13 +85,13 @@ public class GymMemberController {
 
     @PatchMapping("/{memberId}")
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateGymMember(@PathVariable Long memberId, @Valid @RequestBody GymMemberUpdateRequestDto memberUpdateRequestDto) {
-        GymMemberResponseDto updatedGymMember = gymMemberService.updateMemberDetails(memberId, memberUpdateRequestDto);
+        GymMemberResponseDto updatedGymMember = userService.updateMemberDetails(memberId, memberUpdateRequestDto);
         return ResponseEntity.ok(ApiResponse.success(updatedGymMember));
     }
 
     @DeleteMapping("/{memberId}")
     public ResponseEntity<ApiResponse<Void>> deleteGymMember(@PathVariable Long memberId) {
-        gymMemberService.removeGymMember(memberId);
+        userService.removeGymMember(memberId);
         //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));
     }
@@ -100,7 +100,7 @@ public class GymMemberController {
     public ResponseEntity<ApiResponse<GymMemberResponseDto>> updateSubscription(
             @PathVariable Long memberId,
             @RequestBody @Valid GymMemberSubscriptionRequestDto dto) {
-        return ResponseEntity.ok(ApiResponse.success(gymMemberService.initializeSubscription(memberId, dto)));
+        return ResponseEntity.ok(ApiResponse.success(userService.initializeSubscription(memberId, dto)));
     }
 
     @GetMapping("/subscription_plans/customized_fields")
