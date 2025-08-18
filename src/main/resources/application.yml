@@ -19,23 +19,41 @@ spring:
     group:
       railway: railway,secrets
 
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${JDBC_DATABASE_URL:}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD:}
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: ${JDBC_DATABASE_URL:}
+#    username: ${JDBC_DATABASE_USERNAME}
+#    password: ${JDBC_DATABASE_PASSWORD:}
+#    hikari:
+#      connection-timeout: 30000
+#      maximum-pool-size: 5
+#
+#  jpa:
+#    database-platform: ${SPRING_JPA_DATABASE-PLATFORM:}
+#    hibernate:
+#      ddl-auto: update
+#    open-in-view: false
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+  spring:
+    datasource:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/fitmanage?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      username: root
+      password: Iliyan1998
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 5
 
   jpa:
-    database-platform: ${SPRING_JPA_DATABASE-PLATFORM:}
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
   application:

@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.superadmin.SuperAdminDto;
 import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
@@ -26,7 +27,6 @@ import java.util.UUID;
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final GymService gymService;
-    private final SuperAdminService superAdminService;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
@@ -35,10 +35,9 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymService gymService, SuperAdminService superAdminService, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, GymService gymService, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.gymService = gymService;
-        this.superAdminService = superAdminService;
         this.modelMapper = modelMapper;
     }
 
@@ -46,15 +45,14 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);
         Optional<GymSummaryDto> gymDtoOpt = gymService.getGymByEmail(email);
-        Optional<SuperAdminDto> adminDtoOpt = superAdminService.getByEmail(email);
 
         if (gymDtoOpt.isPresent()) {
-            Gym gym = modelMapper.map(gymDtoOpt.get(), Gym.class);
+            User user = modelMapper.map(gymDtoOpt.get(), User.class);
 
-            refreshTokenRepository.findByGym(gym).ifPresent(refreshTokenRepository::delete);
+            refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
 
             RefreshToken refreshToken = RefreshToken.builder()
-                    .gym(gym)
+                    .user(user)
                     .token(UUID.randomUUID().toString())
                     .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
                     .build();
@@ -63,18 +61,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
             return saved;
 
-        } else if (adminDtoOpt.isPresent()) {
-            SuperAdminUser superAdmin = modelMapper.map(adminDtoOpt.get(), SuperAdminUser.class);
-
-            refreshTokenRepository.findBySuperAdminUser(superAdmin).ifPresent(refreshTokenRepository::delete);
-
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .superAdminUser(superAdmin)
-                    .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
-                    .build();
-
-            return refreshTokenRepository.save(refreshToken);
         } else {
             LOGGER.warn("No gym or super admin found for email: {}", email);
             throw new FitManageAppException("User not found with email: " + email, ApiErrorCode.NOT_FOUND);
@@ -92,7 +78,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
             refreshTokenRepository.flush();
-            LOGGER.info("Deleting expired refresh token for gym ID: {}", token.getGym());
+            LOGGER.info("Deleting expired refresh token for gym ID: {}", token.getUser());
             throw new FitManageAppException("Token is expired. Please make new sign in request", ApiErrorCode.CONFLICT);
         }
 

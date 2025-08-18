@@ -54,59 +54,59 @@ public class MemberPricingServiceImpl implements MemberPricingService {
     }
 
 
-    @Override
-    public List<MemberPlansTableDto> getPlansAndPrices() {
-        Gym gym = getAuthenticatedGymOrThrow();
-        LOGGER.info("Fetching plans and prices for gym: {}", gym.getEmail());
-
-        if (!memberPricingRepository.existsByGymId(gym.getId())) {
-            LOGGER.warn("No pricing plans found for gym: {}", gym.getEmail());
-            return Collections.emptyList();
-        }
-
-        List<MemberPlansTableDto> result = new ArrayList<>();
-
-        for (SubscriptionPlan plan : SubscriptionPlan.values()) {
-            memberPricingRepository.findByGymIdAndSubscriptionPlan(gym.getId(), plan)
-                    .ifPresent(entity -> {
-                        MemberPlansTableDto dto = toDto(entity, MemberPlansTableDto.class);
-                        dto.setSubscriptionPlan(plan);
-                        result.add(dto);
-                    });
-        }
-
-        LOGGER.debug("Returning {} plans for gym '{}'", result.size(), gym.getEmail());
-        return result;
-    }
-
-    @Override
-    public List<MemberPlanPriceDto> getPlansAndPricesAsPriceDto() {
-        return getPlansAndPrices().stream()
-                .map(dto -> toDto(dto, MemberPlanPriceDto.class))
-                .toList();
-    }
-
-    @Override
-    public MemberPlanEditDto updatePlanPrices(Long planId, MemberPlanEditDto dto) {
-        Gym gym = getAuthenticatedGymOrThrow();
-        LOGGER.info("Updating plan ID {} for gym '{}'", planId, gym.getEmail());
-
-
-        MemberPlanPrice entity = memberPricingRepository.findById(planId)
-                .orElseThrow(() -> new FitManageAppException("Plan not found", ApiErrorCode.NOT_FOUND));
-
-        if (!entity.getGym().getId().equals(gym.getId())) {
-            LOGGER.error("Unauthorized attempt to update plan ID {} by gym '{}'", planId, gym.getEmail());
-            throw new FitManageAppException("Unauthorized access to plan", ApiErrorCode.UNAUTHORIZED);
-        }
-
-        modelMapper.map(dto, entity);
-
-        MemberPlanPrice updatedEntity = memberPricingRepository.save(entity);
-
-        LOGGER.info("Successfully updated plan ID {} for gym '{}'", planId, gym.getEmail());
-        return modelMapper.map(updatedEntity, MemberPlanEditDto.class);
-    }
+//    @Override
+//    public List<MemberPlansTableDto> getPlansAndPrices() {
+//        Gym gym = getAuthenticatedGymOrThrow();
+//        LOGGER.info("Fetching plans and prices for gym: {}", gym.getEmail());
+//
+//        if (!memberPricingRepository.existsByGymId(gym.getId())) {
+//            LOGGER.warn("No pricing plans found for gym: {}", gym.getEmail());
+//            return Collections.emptyList();
+//        }
+//
+//        List<MemberPlansTableDto> result = new ArrayList<>();
+//
+//        for (SubscriptionPlan plan : SubscriptionPlan.values()) {
+//            memberPricingRepository.findByGymIdAndSubscriptionPlan(gym.getId(), plan)
+//                    .ifPresent(entity -> {
+//                        MemberPlansTableDto dto = toDto(entity, MemberPlansTableDto.class);
+//                        dto.setSubscriptionPlan(plan);
+//                        result.add(dto);
+//                    });
+//        }
+//
+//        LOGGER.debug("Returning {} plans for gym '{}'", result.size(), gym.getEmail());
+//        return result;
+//    }
+//
+//    @Override
+//    public List<MemberPlanPriceDto> getPlansAndPricesAsPriceDto() {
+//        return getPlansAndPrices().stream()
+//                .map(dto -> toDto(dto, MemberPlanPriceDto.class))
+//                .toList();
+//    }
+//
+//    @Override
+//    public MemberPlanEditDto updatePlanPrices(Long planId, MemberPlanEditDto dto) {
+//        Gym gym = getAuthenticatedGymOrThrow();
+//        LOGGER.info("Updating plan ID {} for gym '{}'", planId, gym.getEmail());
+//
+//
+//        MemberPlanPrice entity = memberPricingRepository.findById(planId)
+//                .orElseThrow(() -> new FitManageAppException("Plan not found", ApiErrorCode.NOT_FOUND));
+//
+//        if (!entity.getGym().getId().equals(gym.getId())) {
+//            LOGGER.error("Unauthorized attempt to update plan ID {} by gym '{}'", planId, gym.getEmail());
+//            throw new FitManageAppException("Unauthorized access to plan", ApiErrorCode.UNAUTHORIZED);
+//        }
+//
+//        modelMapper.map(dto, entity);
+//
+//        MemberPlanPrice updatedEntity = memberPricingRepository.save(entity);
+//
+//        LOGGER.info("Successfully updated plan ID {} for gym '{}'", planId, gym.getEmail());
+//        return modelMapper.map(updatedEntity, MemberPlanEditDto.class);
+//    }
 
     @Override
     public void deletePlan(Long planId) {

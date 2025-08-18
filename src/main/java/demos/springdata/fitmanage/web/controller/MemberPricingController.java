@@ -39,23 +39,23 @@ public class MemberPricingController {
     }
 
 
-    @GetMapping("/table")
-    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
-        List<MemberPlansTableDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
-        TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlansTableDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(MemberPlansTableDto.class));
-        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
-
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @PatchMapping("/plans/{planId}")
-    public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
-                                                                         @RequestBody @Valid MemberPlanEditDto dto) {
-        MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
-        return ResponseEntity.ok(ApiResponse.success(updatedDto));
-    }
+//    @GetMapping("/table")
+//    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
+//        List<MemberPlansTableDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
+//        TableResponseDto response = new TableResponseDto();
+//        response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlansTableDto.class));
+//        response.setColumns(TableColumnBuilder.buildColumns(MemberPlansTableDto.class));
+//        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
+//
+//        return ResponseEntity.ok(ApiResponse.success(response));
+//    }
+//
+//    @PatchMapping("/plans/{planId}")
+//    public ResponseEntity<ApiResponse<MemberPlanEditDto>> editPlanPrices(@PathVariable Long planId,
+//                                                                         @RequestBody @Valid MemberPlanEditDto dto) {
+//        MemberPlanEditDto updatedDto = memberPricingService.updatePlanPrices(planId, dto);
+//        return ResponseEntity.ok(ApiResponse.success(updatedDto));
+//    }
 
     @DeleteMapping("/plans/{planId}")
     public ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable Long planId) {

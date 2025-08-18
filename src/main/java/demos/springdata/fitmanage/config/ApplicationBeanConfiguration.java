@@ -3,11 +3,10 @@ package demos.springdata.fitmanage.config;
 import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
 import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
-import demos.springdata.fitmanage.domain.entity.Gym;
 import demos.springdata.fitmanage.domain.entity.StaffMember;
-import demos.springdata.fitmanage.domain.entity.Visit;
-import demos.springdata.fitmanage.repository.GymRepository;
+import demos.springdata.fitmanage.domain.entity.StaffProfile;
+import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -20,34 +19,34 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 public class ApplicationBeanConfiguration {
-    private final GymRepository gymRepository;
+    private final UserRepository userRepository;
 
 
-    public ApplicationBeanConfiguration(GymRepository gymRepository) {
-        this.gymRepository = gymRepository;
+    public ApplicationBeanConfiguration(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
 
-        configureGymMapper(modelMapper);
-        configureStaffMemberMapper(modelMapper);
+        configureUserMapper(modelMapper);
+//        configureStaffMemberMapper(modelMapper);
         return modelMapper;
     }
 
-    private void configureGymMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(Gym.class, GymSummaryDto.class)
-                .addMappings(mapper -> mapper.map(Gym::getActualUsername, GymSummaryDto::setUsername));
+    private void configureUserMapper(ModelMapper modelMapper) {
+        modelMapper.typeMap(User.class, GymSummaryDto.class)
+                .addMappings(mapper -> mapper.map(User::getUsername, GymSummaryDto::setUsername));
     }
 
-    private void configureStaffMemberMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(StaffMember.class, StaffMemberResponseDto.class)
-                .addMappings(mapper -> {
-                    mapper.map(src -> src.getStaffRole().getName(), StaffMemberResponseDto::setRoleName);
-                    mapper.map(src -> src.getGym().getActualUsername(), StaffMemberResponseDto::setGymName);
-                });
-    }
+//    private void configureStaffMemberMapper(ModelMapper modelMapper) {
+//        modelMapper.typeMap(StaffProfile.class, StaffMemberResponseDto.class)
+//                .addMappings(mapper -> {
+//                    mapper.map(src -> src.getStaffRole().getName(), StaffMemberResponseDto::setRoleName);
+//                    mapper.map(src -> src.getGym().getActualUsername(), StaffMemberResponseDto::setGymName);
+//                });
+//    }
 
 
     @Bean

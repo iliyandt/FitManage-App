@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -39,8 +40,8 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestDto gymDto) {
-        RegistrationResponseDto response = authenticationService.registerGym(gymDto);
+    public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestDto userDto, TenantDto tenantDto) {
+        RegistrationResponseDto response = authenticationService.registerGym(userDto, tenantDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -57,8 +58,8 @@ public class AuthController {
 
 
     @PostMapping(path = "/validate_email")
-    public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody GymEmailRequestDto gymEmailRequestDto) {
-        GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(gymEmailRequestDto).get();
+    public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
+        GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(userEmailRequestDto).get();
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -82,9 +83,9 @@ public class AuthController {
     public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
         return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
                 .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getGym)
-                .map(gym -> {
-                    String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(gym.getEmail()));
+                .map(RefreshToken::getUser)
+                .map(user -> {
+                    String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(user.getEmail()));
                     return LoginResponse.builder()
                             .accessToken(accessToken)
                             .refreshToken(refreshTokenRequestDto.getToken())

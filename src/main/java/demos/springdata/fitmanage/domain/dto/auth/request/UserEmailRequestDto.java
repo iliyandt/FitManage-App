@@ -3,15 +3,15 @@ package demos.springdata.fitmanage.domain.dto.auth.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class GymEmailRequestDto {
+public class UserEmailRequestDto {
     @NotNull
     @NotBlank(message = "Please enter valid email")
     private String email;
 
-    public GymEmailRequestDto() {
+    public UserEmailRequestDto() {
     }
 
-    public GymEmailRequestDto(String email) {
+    public UserEmailRequestDto(String email) {
         this.email = email;
     }
 
