@@ -26,7 +26,6 @@ public class Membership extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private Employment employment;
-
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus;
     @Enumerated(EnumType.STRING)

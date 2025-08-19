@@ -19,18 +19,14 @@ public class RefreshToken extends BaseEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "super_admin_id", referencedColumnName = "id")
-    private SuperAdminUser superAdminUser;
 
     public RefreshToken() {
     }
 
-    public RefreshToken(String token, Instant expiryDate, User user, SuperAdminUser superAdminUser) {
+    public RefreshToken(String token, Instant expiryDate, User user) {
         this.token = token;
         this.expiryDate = expiryDate;
         this.user = user;
-        this.superAdminUser = superAdminUser;
     }
 
     public String getToken() {
@@ -57,15 +53,6 @@ public class RefreshToken extends BaseEntity {
 
     public RefreshToken setUser(User user) {
         this.user = user;
-        return this;
-    }
-
-    public SuperAdminUser getSuperAdminUser() {
-        return superAdminUser;
-    }
-
-    public RefreshToken setSuperAdminUser(SuperAdminUser superAdminUser) {
-        this.superAdminUser = superAdminUser;
         return this;
     }
 }

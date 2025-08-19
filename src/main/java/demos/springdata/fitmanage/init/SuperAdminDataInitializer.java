@@ -1,10 +1,8 @@
 package demos.springdata.fitmanage.init;
-
 import demos.springdata.fitmanage.domain.entity.Role;
-import demos.springdata.fitmanage.domain.entity.SuperAdminUser;
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.SuperAdminRepository;
+import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,51 +11,50 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Component
-@Order(3)
+@Order(2)
 public class SuperAdminDataInitializer implements ApplicationRunner {
-    private final SuperAdminRepository superAdminRepository;
+    private final UserRepository userRepository;
     private final RoleService roleService;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${SUPERADMIN_EMAIL}")
-    private String superAdminEmail;
+    private String email;
 
     @Value("${SUPERADMIN_USERNAME}")
-    private String superAdminUsername;
+    private String username;
 
     @Value("${SUPERADMIN_PASSWORD}")
-    private String superAdminPassword;
+    private String password;
 
     @Autowired
-    public SuperAdminDataInitializer(SuperAdminRepository superAdminRepository, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
-        this.superAdminRepository = superAdminRepository;
+    public SuperAdminDataInitializer(UserRepository userRepository, RoleService roleService, BCryptPasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
-    //todo: should it be transactional, add logger
+    @Transactional
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        if (superAdminRepository.count() == 0) {
-            Role superAdminRole;
-            try {
-                superAdminRole = roleService.findByName(RoleType.SUPER_ADMIN);
-            } catch (FitManageAppException e) {
-                superAdminRole = new Role();
-                superAdminRole.setName(RoleType.SUPER_ADMIN);
-                superAdminRole = roleService.save(superAdminRole);
-            }
+    public void run(ApplicationArguments args) {
+        if (!userRepository.existsByRoles_Name(RoleType.SYSTEM_ADMIN)) {
+            Role role = roleService.findByName(RoleType.SYSTEM_ADMIN);
+            User admin = new User();
 
-            SuperAdminUser superAdmin = new SuperAdminUser();
-            superAdmin.setEmail(superAdminEmail);
-            superAdmin.setUsername(superAdminUsername);
-            superAdmin.setPassword(passwordEncoder.encode(superAdminPassword));
-            superAdmin.setEnabled(true);
-            superAdmin.getRoles().add(superAdminRole);
+            admin
+                    .setEmail(email)
+                    .setUsername(username)
+                    .setPassword(passwordEncoder.encode(password))
+                    .setVerificationCode(null)
+                    .setVerificationCodeExpiresAt(null)
+                    .setEnabled(true)
+                    .getRoles().add(role);
 
-            superAdminRepository.save(superAdmin);
+            userRepository.save(admin);
         }
     }
 }

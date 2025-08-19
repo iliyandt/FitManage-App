@@ -30,7 +30,6 @@ public class EmailServiceImpl implements EmailService {
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(text, true);
-
         try {
             emailSender.send(message);
             LOGGER.info("Verification email successfully sent to: {}", to);

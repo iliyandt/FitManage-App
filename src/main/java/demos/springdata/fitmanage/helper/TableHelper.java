@@ -1,10 +1,9 @@
 package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.config.*;
-import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
-import demos.springdata.fitmanage.domain.dto.team.response.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.team.response.StaffMemberTableDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +112,7 @@ public class TableHelper {
 
 
     private static final Map<Class<?>, Set<String>> customCreateFieldMap = Map.of(
-            GymMemberTableDto.class, Set.of(
+            MemberTableDto.class, Set.of(
                     "firstName",
                     "lastName",
                     "phone",
@@ -130,7 +129,7 @@ public class TableHelper {
                     "roleSelection"
             ),
 
-            MemberPlansTableDto.class, Set.of(
+            MemberPlanTableDto.class, Set.of(
                     "price",
                     "studentPrice",
                     "seniorPrice",
@@ -139,14 +138,14 @@ public class TableHelper {
     );
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
-            GymMemberTableDto.class, Set.of("firstName", "lastName", "phone", "subscriptionStatus"),
+            MemberTableDto.class, Set.of("firstName", "lastName", "phone", "subscriptionStatus"),
             StaffMemberTableDto.class, Set.of("firstName", "lastName", "email", "phone", "staffRoleName"),
-            MemberPlansTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
+            MemberPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
             VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone")
     );
 
 
     private static final Map<Class<?>, SortingConfigDto> sortingConfigMap = Map.of(
-            GymMemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
+            MemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
     );
 }

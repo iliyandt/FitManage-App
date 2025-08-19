@@ -1,15 +1,9 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberPricingService;
-import demos.springdata.fitmanage.util.TableColumnBuilder;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/pricing")
-@PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
+@PreAuthorize("hasAuthority('FACILITY_ADMIN')")
 public class MemberPricingController {
     private final MemberPricingService pricingService;
     private final MemberPricingService memberPricingService;

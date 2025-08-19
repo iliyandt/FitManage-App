@@ -1,22 +1,15 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.response.GymMemberTableDto;
-import demos.springdata.fitmanage.domain.dto.gymmember.request.GymMemberUpdateRequestDto;
-import demos.springdata.fitmanage.domain.dto.user.UserCreateRequestDto;
-
-import java.util.List;
-import java.util.Optional;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.entity.User;
 
 public interface UserService {
-    GymMemberResponseDto createAndSaveNewMember(UserCreateRequestDto requestDto);
-    List<GymMemberTableDto> getAllGymMembersForTable();
-    GymMemberResponseDto updateMemberDetails(Long memberId, GymMemberUpdateRequestDto memberUpdateRequestDto);
-    void removeGymMember(Long memberId);
-    List<GymMemberTableDto> getGymMembersByFilter(GymMemberFilterRequestDto gymMemberFilterRequestDto);
-    Optional<GymMemberResponseDto> findBySmartQuery(String input, Long gymId);
-    GymMemberResponseDto checkInMember(String input, Long id);
-    GymMemberResponseDto initializeSubscription(Long id, GymMemberSubscriptionRequestDto requestDto);
+    TenantResponseDto getUserSummaryByEmail(String email);
+    void updateUserProfile(String email, UserUpdateDto dto);
+    boolean existsByEmailAndTenant(String email, Long tenantId);
+    boolean existsByPhoneAndTenant(String phone, Long tenantId);
+    User save(User user);
+    void delete(User user);
+    User getByIdAndTenantId(Long memberId, Long tenantId);
 }

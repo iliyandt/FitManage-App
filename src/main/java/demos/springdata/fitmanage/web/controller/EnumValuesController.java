@@ -1,6 +1,4 @@
 package demos.springdata.fitmanage.web.controller;
-
-
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.service.EnumService;
@@ -14,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1")
-@PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
+@PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
 public class EnumValuesController {
 
     private final EnumService enumService;

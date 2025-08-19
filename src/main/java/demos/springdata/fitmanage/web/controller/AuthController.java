@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
@@ -58,8 +58,8 @@ public class AuthController {
 
 
     @PostMapping(path = "/validate_email")
-    public ResponseEntity<ApiResponse<GymEmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
-        GymEmailResponseDto response = authenticationService.checkIfEmailIsAvailable(userEmailRequestDto);
+    public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
+        EmailResponseDto response = authenticationService.checkIfEmailIsAvailable(userEmailRequestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

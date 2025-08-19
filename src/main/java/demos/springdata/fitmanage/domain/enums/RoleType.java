@@ -2,8 +2,9 @@ package demos.springdata.fitmanage.domain.enums;
 
 
 public enum RoleType {
-    SUPER_ADMIN,
-    GYM_ADMIN,
-    MEMBER,
-    STAFF_MEMBER
+    SYSTEM_ADMIN,
+    FACILITY_ADMIN,
+    FACILITY_MEMBER,
+    FACILITY_STAFF
 }
+

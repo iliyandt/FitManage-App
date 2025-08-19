@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanEditDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlansTableDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
 import demos.springdata.fitmanage.domain.entity.MemberPlanPrice;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -42,8 +42,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
 
     @Override
-    public List<MemberPlansTableDto> getPlansAndPrices() {
-
+    public List<MemberPlanTableDto> getPlansAndPrices() {
         return List.of();
     }
 
@@ -74,7 +73,7 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
 
     private Tenant getTenantOrThrow(String gymEmail) {
-        return tenantService.findGymEntityByEmail(gymEmail)
+        return tenantService.getTenantByEmail(gymEmail)
                 .orElseThrow(() -> {
                     LOGGER.error("Gym not found with email: {}", gymEmail);
                     return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);

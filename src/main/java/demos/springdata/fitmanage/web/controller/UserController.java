@@ -1,49 +1,41 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.gym.*;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.service.TenantService;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.service.UserService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-
-
 @RestController
-@RequestMapping(path = "/api/v1/gym")
-@PreAuthorize("hasAuthority('ROLE_GYM_ADMIN')")
+@RequestMapping(path = "/api/v1/user")
+@PreAuthorize("hasAnyAuthority('SYSTEM_ADMIN','FACILITY_ADMIN', 'FACILITY_MEMBER', 'FACILITY_STAFF')")
 public class UserController {
-    private final TenantService tenantService;
+    private final UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
 
 
-    public UserController(TenantService tenantService) {
-        this.tenantService = tenantService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<GymSummaryDto>> authenticatedGym() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentGymEmail = authentication.getName();
-        GymSummaryDto currentGym = tenantService.getGymByEmail(currentGymEmail)
-                .orElseThrow(() -> new FitManageAppException("Gym not found for authenticated user", ApiErrorCode.NOT_FOUND));
-        ;
-        return ResponseEntity.ok(ApiResponse.success(currentGym));
+    public ResponseEntity<ApiResponse<TenantResponseDto>> authenticatedUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        TenantResponseDto user = userService.getUserSummaryByEmail(email);
+        return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-
-    @PostMapping("/basic-info")
-    public ResponseEntity<ApiResponse<String>> saveBasicInfo(@Valid @RequestBody GymBasicInfoDto dto) {
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        tenantService.updateTenantBasicInfo(email, dto);
-        return ResponseEntity.ok(ApiResponse.success("Basic info updated successfully"));
+        userService.updateUserProfile(email, dto);
+        return ResponseEntity.ok(ApiResponse.success("User details updated successfully."));
     }
 
 

@@ -1,12 +1,13 @@
 package demos.springdata.fitmanage.service.impl;
-import demos.springdata.fitmanage.domain.dto.gym.GymSummaryDto;
+
+import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
-import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.service.RefreshTokenService;
+import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,45 +23,41 @@ import java.util.UUID;
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
-    private final TenantService tenantService;
+    private final UserService userService;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
+
 
     @Value("${security.jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
 
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, TenantService tenantService, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UserService userService, ModelMapper modelMapper) {
         this.refreshTokenRepository = refreshTokenRepository;
-        this.tenantService = tenantService;
+        this.userService = userService;
         this.modelMapper = modelMapper;
     }
 
+    //TODO: Create a dto for the specific case here
     @Override
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);
-        Optional<GymSummaryDto> gymDtoOpt = tenantService.getGymByEmail(email);
+        TenantResponseDto tenantResponseDto = userService.getUserSummaryByEmail(email);
 
-        if (gymDtoOpt.isPresent()) {
-            User user = modelMapper.map(gymDtoOpt.get(), User.class);
+        User user = modelMapper.map(tenantResponseDto, User.class);
 
-            refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                    .user(user)
-                    .token(UUID.randomUUID().toString())
-                    .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
-                    .build();
-            RefreshToken saved = refreshTokenRepository.save(refreshToken);
-            LOGGER.info("New refresh token created with token value: {}", saved.getToken());
+        RefreshToken refreshToken = RefreshToken.builder()
+                .user(user)
+                .token(UUID.randomUUID().toString())
+                .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
+                .build();
+        RefreshToken saved = refreshTokenRepository.save(refreshToken);
+        LOGGER.info("New refresh token created");
 
-            return saved;
-
-        } else {
-            LOGGER.warn("No gym or super admin found for email: {}", email);
-            throw new FitManageAppException("User not found with email: " + email, ApiErrorCode.NOT_FOUND);
-        }
+        return saved;
     }
 
     @Override
@@ -70,7 +67,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken verifyExpiration(RefreshToken token) {
-        LOGGER.info("Verifying refresh token expiration for token: {}", token.getToken());
+        LOGGER.info("Verifying refresh token expiration.");
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
             refreshTokenRepository.flush();

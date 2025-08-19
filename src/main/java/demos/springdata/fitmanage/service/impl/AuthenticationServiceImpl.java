@@ -4,7 +4,7 @@ import demos.springdata.fitmanage.domain.dto.auth.request.UserEmailRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
 import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.response.GymEmailResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
@@ -87,9 +87,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Override
-    public GymEmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
+    public EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
         return this.userRepository.findByEmail(userEmailRequestDto.getEmail())
-                .map(user -> modelMapper.map(user, GymEmailResponseDto.class))
+                .map(user -> modelMapper.map(user, EmailResponseDto.class))
                 .orElseThrow(() -> {
                     LOGGER.warn("Account with email: {} does not exists", userEmailRequestDto.getEmail());
                     return new FitManageAppException(String.format("Account with email: %s does not exists.", userEmailRequestDto.getEmail()), ApiErrorCode.NOT_FOUND);
@@ -208,7 +208,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         encryptUserPassword(user);
         user.setCreatedAt(LocalDateTime.now());
 
-        Role gymAdminRole = roleService.findByName(RoleType.GYM_ADMIN);
+        Role gymAdminRole = roleService.findByName(RoleType.FACILITY_ADMIN);
         user.getRoles().add(gymAdminRole);
 
         user.setVerificationCode(generateVerificationCode());
@@ -239,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private void sendVerificationEmail(User user) { //TODO: Update with company logo
+    private void sendVerificationEmail(User user) { //TODO: htmlMessage code extract, Update with company logo
         String subject = "Account Verification";
         String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
         String htmlMessage = "<html>"
