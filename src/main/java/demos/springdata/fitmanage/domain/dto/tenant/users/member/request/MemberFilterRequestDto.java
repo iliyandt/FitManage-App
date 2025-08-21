@@ -13,12 +13,11 @@ import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
 public class MemberFilterRequestDto {
+    private Long id;
     @Size(min = 2, max = 15)
-    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
     private String firstName;
 
     @Size(min = 2, max = 20)
-    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
 
     private Gender gender;
@@ -27,8 +26,6 @@ public class MemberFilterRequestDto {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
-
-    private Integer visitLimit;
 
     @Column(unique = true)
     @Email(message = "Email must be valid")
@@ -42,9 +39,17 @@ public class MemberFilterRequestDto {
             message = "Phone number must be 7 to 15 digits and may start with '+'"
     )
     private String phone;
-    //private Gym gym;
 
     public MemberFilterRequestDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public MemberFilterRequestDto setId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public String getFirstName() {
@@ -92,15 +97,6 @@ public class MemberFilterRequestDto {
         return this;
     }
 
-    public Integer getVisitLimit() {
-        return visitLimit;
-    }
-
-    public MemberFilterRequestDto setVisitLimit(Integer visitLimit) {
-        this.visitLimit = visitLimit;
-        return this;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -136,14 +132,4 @@ public class MemberFilterRequestDto {
         this.phone = phone;
         return this;
     }
-
-
-//    public Gym getGym() {
-//        return gym;
-//    }
-//
-//    public GymMemberFilterRequestDto setGym(Gym gym) {
-//        this.gym = gym;
-//        return this;
-//    }
 }

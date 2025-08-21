@@ -5,10 +5,8 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 public class MemberSubscriptionRequestDto {
     private Integer allowedVisits;
-    private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
     private Employment employment;
-
 
     public MemberSubscriptionRequestDto() {
     }
@@ -20,15 +18,6 @@ public class MemberSubscriptionRequestDto {
 
     public MemberSubscriptionRequestDto setAllowedVisits(Integer allowedVisits) {
         this.allowedVisits = allowedVisits;
-        return this;
-    }
-
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
-    }
-
-    public MemberSubscriptionRequestDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
         return this;
     }
 

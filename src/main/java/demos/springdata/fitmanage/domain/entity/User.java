@@ -19,6 +19,11 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
+    @Column(nullable = true)
+    private String firstName;
+
+    @Column(nullable = true)
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String username;
@@ -78,7 +83,23 @@ public class User extends BaseEntity implements UserDetails {
     public User() {
     }
 
+    public String getFirstName() {
+        return firstName;
+    }
 
+    public User setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public User setLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
+    }
 
     public User setUsername(String username) {
         this.username = username;

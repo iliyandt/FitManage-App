@@ -17,18 +17,14 @@ public class MemberUpdateRequestDto {
     @Size(min = 2, max = 15)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
     private String firstName;
-
-    @Size(min = 2, max = 20)
+    @Size(min = 2, max = 30)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
-
     @Email(message = "Email must be valid")
     private String email;
-    private Gender gender;
     private Employment employment;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
-    private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
 
     @Pattern(
@@ -67,15 +63,6 @@ public class MemberUpdateRequestDto {
         return this;
     }
 
-    public Gender getGender() {
-        return gender;
-    }
-
-    public MemberUpdateRequestDto setGender(Gender gender) {
-        this.gender = gender;
-        return this;
-    }
-
     public Employment getEmployment() {
         return employment;
     }
@@ -91,15 +78,6 @@ public class MemberUpdateRequestDto {
 
     public MemberUpdateRequestDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
-        return this;
-    }
-
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
-    }
-
-    public MemberUpdateRequestDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
         return this;
     }
 

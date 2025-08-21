@@ -16,5 +16,5 @@ public interface MemberService {
     MemberResponseDto checkInMember(Long tenantId, String input);
     List<MemberTableDto> getAllMembersForTable();
     List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto memberFilterRequestDto);
-    Optional<MemberResponseDto> getMemberById(String input, Long gymId);
+    MemberResponseDto findMember(MemberFilterRequestDto filter);
 }

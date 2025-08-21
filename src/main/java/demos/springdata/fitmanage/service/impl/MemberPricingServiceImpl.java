@@ -23,14 +23,12 @@ import java.util.List;
 @Service
 public class MemberPricingServiceImpl implements MemberPricingService {
 
-    private final TenantService tenantService;
     private final MemberPricingRepository memberPricingRepository;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(MemberPricingServiceImpl.class);
 
     @Autowired
-    public MemberPricingServiceImpl(TenantService tenantService, MemberPricingRepository memberPricingRepository, ModelMapper modelMapper) {
-        this.tenantService = tenantService;
+    public MemberPricingServiceImpl(MemberPricingRepository memberPricingRepository, ModelMapper modelMapper) {
         this.memberPricingRepository = memberPricingRepository;
         this.modelMapper = modelMapper;
     }
@@ -49,13 +47,12 @@ public class MemberPricingServiceImpl implements MemberPricingService {
     @Override
     public List<MemberPlanPriceDto> getPlansAndPricesAsPriceDto() {
         return getPlansAndPrices().stream()
-                .map(dto -> toDto(dto, MemberPlanPriceDto.class))
+                .map(dto -> modelMapper.map(dto, MemberPlanPriceDto.class))
                 .toList();
     }
 
     @Override
     public MemberPlanEditDto updatePlanPrices(Long planId, MemberPlanEditDto dto) {
-
         return dto;
     }
 
@@ -70,30 +67,4 @@ public class MemberPricingServiceImpl implements MemberPricingService {
 
         LOGGER.info("Plan with ID {} deleted successfully", planId);
     }
-
-
-    private Tenant getTenantOrThrow(String gymEmail) {
-        return tenantService.getTenantByEmail(gymEmail)
-                .orElseThrow(() -> {
-                    LOGGER.error("Gym not found with email: {}", gymEmail);
-                    return new FitManageAppException("Gym not found", ApiErrorCode.NOT_FOUND);
-                });
-    }
-
-    private <T, U> U toDto(T entity, Class<U> dtoClass) {
-        return modelMapper.map(entity, dtoClass);
-    }
-
-    private MemberPlanPrice toEntity(MemberPlanPriceDto dto, User user) {
-        MemberPlanPrice entity = modelMapper.map(dto, MemberPlanPrice.class);
-        entity.setUser(user);
-        return entity;
-    }
-
-    private String getAuthenticatedGymEmail() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
-
-
 }

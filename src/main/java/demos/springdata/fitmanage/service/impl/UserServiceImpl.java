@@ -17,18 +17,19 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final TenantRepository tenantRepository;
-    private final MembershipRepository membershipRepository;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -36,14 +37,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     public UserServiceImpl
             (UserRepository userRepository,
-             TenantRepository tenantRepository,
-             ModelMapper modelMapper,
-             MembershipRepository membershipRepository
+             ModelMapper modelMapper
             ) {
         this.userRepository = userRepository;
-        this.tenantRepository = tenantRepository;
         this.modelMapper = modelMapper;
-        this.membershipRepository = membershipRepository;
     }
 
 
@@ -99,11 +96,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
         return userRepository.findByIdAndTenantId(memberId, tenantId)
-                .orElseThrow(() -> new FitManageAppException("Gym member not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new FitManageAppException("Мember not found", ApiErrorCode.NOT_FOUND));
     }
 
+    @Override
+    public List<User> findMembersByFilter(Specification<User> spec) {
+        return userRepository.findAll(spec);
+    }
 
-    private User getUserOrElseThrow(String email) {
+    @Override
+    public Optional<User> findFirstMemberByFilter(Specification<User> spec) {
+        return userRepository.findOne(spec);
+    }
+
+    @Override
+    public User findMemberById(Long memberId) {
+        return userRepository.findById(memberId)
+                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    public User getUserOrElseThrow(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     LOGGER.warn("User with email {} not found", email);
@@ -126,131 +139,4 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("User details for user with email: {} updated.", user.getEmail());
         return user;
     }
-
-
-
-
-    private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
-        LOGGER.info("Visit-based subscription detected. Initializing visits...");
-
-        Integer allowedVisits = requestDto.getAllowedVisits() != null
-                ? requestDto.getAllowedVisits()
-                : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
-
-        membership
-                .setAllowedVisits(allowedVisits)
-                .setRemainingVisits(allowedVisits)
-                .setSubscriptionStartDate(LocalDateTime.now())
-                .setSubscriptionEndDate(null);
-    }
-
-    private void initializeTimeBasedSubscription(Membership membership) {
-        LOGGER.info("Time-based subscription. Calculating expiry...");
-        LocalDateTime now = LocalDateTime.now();
-        membership
-                .setSubscriptionStartDate(now)
-                .setSubscriptionEndDate(calculateEndDate(now, membership.getSubscriptionPlan()))
-                .setAllowedVisits(null)
-                .setRemainingVisits(null);
-    }
-
-
-    private void recalculateSubscriptionStatus(Membership membership) {
-        if (membership.getSubscriptionPlan() == null) {
-            membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
-            return;
-        }
-
-        if (membership.getSubscriptionPlan().isVisitBased()) {
-            Integer remaining = membership.getRemainingVisits();
-            if (remaining == null || remaining <= 0) {
-                deactivateSubscription(membership);
-            } else {
-                membership.setSubscriptionStatus(SubscriptionStatus.ACTIVE);
-            }
-        }
-
-
-    }
-
-    private void validateSubscriptionChange(Membership membership, MemberUpdateRequestDto updateRequest) {
-        SubscriptionPlan currentPlan = membership.getSubscriptionPlan();
-        SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();
-
-        if (currentPlan == newPlan) return;
-
-        if (currentPlan != null && currentPlan.isTimeBased()) {
-            if (membership.getSubscriptionEndDate() != null && LocalDateTime.now().isBefore(membership.getSubscriptionEndDate())) {
-                throw new FitManageAppException(
-                        "Cannot change time-based plan before current period ends.",
-                        ApiErrorCode.UNAUTHORIZED
-                );
-            }
-        }
-
-        if (currentPlan != null && currentPlan.isVisitBased()) {
-            if (membership.getRemainingVisits() != null && membership.getRemainingVisits() > 0) {
-                throw new FitManageAppException(
-                        "Cannot change visit-based plan until all visits are used.",
-                        ApiErrorCode.UNAUTHORIZED
-                );
-            }
-        }
-    }
-
-
-    private boolean handleVisitPass(Membership membership) {
-        if (membership.getSubscriptionPlan() != SubscriptionPlan.VISIT_PASS) return true;
-
-        Integer remaining = membership.getRemainingVisits();
-        if (remaining == null || remaining <= 0) {
-            deactivateSubscription(membership);
-            return false;
-        }
-
-        membership.setRemainingVisits(membership.getRemainingVisits() - 1);
-        recalculateSubscriptionStatus(membership);
-        return true;
-    }
-
-    private void deactivateSubscription(Membership membership) {
-        membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE)
-                .setSubscriptionPlan(null);
-    }
-
-
-
-
-
-
-
-    private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
-        return switch (subscriptionPlan) {
-            case MONTHLY -> start.plusMonths(1);
-            case DAY_PASS -> start.plusMinutes(180);
-            case WEEKLY_PASS -> start.plusWeeks(1);
-            case BIANNUAL -> start.plusMonths(6);
-            case ANNUAL -> start.plusYears(1);
-            default -> throw new IllegalArgumentException("Unhandled subscription plan: " + subscriptionPlan);
-        };
-    }
-
-
-
-    private Tenant getTenantByEmail(String email) {
-        return tenantRepository.findTenantByUserEmail(email)
-                .orElseThrow(() -> {
-                    LOGGER.warn("User with email {} not found.", email);
-                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
-                });
-    }
-
-    private String getAuthenticatedUserEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        LOGGER.info("Authenticated user email: {}", email);
-        return email;
-    }
-
-
 }

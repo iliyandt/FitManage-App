@@ -46,6 +46,8 @@ public class SuperAdminDataInitializer implements ApplicationRunner {
             User admin = new User();
 
             admin
+                    .setFirstName("Iliyan")
+                    .setLastName("Todorov")
                     .setEmail(email)
                     .setUsername(username)
                     .setPassword(passwordEncoder.encode(password))

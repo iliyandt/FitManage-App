@@ -22,7 +22,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api/v1/users/members")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF', 'FACILITY_MEMBER')")
 public class MemberController {
     private final MemberService memberService;
     private final TableHelper tableHelper;
@@ -38,8 +38,6 @@ public class MemberController {
     public ResponseEntity<ApiResponse<TableResponseDto>> getMembers(
             @ModelAttribute @Valid MemberFilterRequestDto filter) {
 
-        LOGGER.debug("Fetching gym members with filter: {}", filter);
-
         List<MemberTableDto> members = (!isFilterEmpty(filter))
                 ? memberService.getMembersByFilter(filter)
                 : memberService.getAllMembersForTable();
@@ -48,16 +46,11 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> searchMember(@RequestParam String query, @PathVariable Long memberId) {
-        Optional<MemberResponseDto> member = memberService.getMemberById(query, memberId);
-
-        return member.map(userMemberResponseDto -> ResponseEntity
-                .ok(ApiResponse.success(userMemberResponseDto))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.failure("Member not found.", "MEMBER_NOT_FOUND")));
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> searchMember( @ModelAttribute @Valid MemberFilterRequestDto filter) {
+        MemberResponseDto response = memberService.findMember(filter);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
-
-
 
     @PostMapping
     public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
@@ -101,12 +94,12 @@ public class MemberController {
     }
 
     private boolean isFilterEmpty(MemberFilterRequestDto filter) {
-        return filter.getFirstName() == null &&
+        return filter.getId() == null &&
+                filter.getFirstName() == null &&
                 filter.getLastName() == null &&
                 filter.getGender() == null &&
                 filter.getEmployment() == null &&
                 filter.getBirthDate() == null &&
-                filter.getVisitLimit() == null &&
                 filter.getEmail() == null &&
                 filter.getSubscriptionStatus() == null &&
                 filter.getSubscriptionPlan() == null &&

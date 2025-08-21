@@ -28,10 +28,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -52,18 +49,15 @@ public class MemberServiceImpl implements MemberService {
              TenantService tenantService,
              EmailService emailService,
              ModelMapper modelMapper,
-             BCryptPasswordEncoder passwordEncoder, UserSecurityUtils securityUtils) {
+             BCryptPasswordEncoder passwordEncoder, UserSecurityUtils securityUtils, MembershipService membershipService) {
         this.userService = userService;
         this.roleService = roleService;
         this.tenantService = tenantService;
         this.emailService = emailService;
-
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.securityUtils = securityUtils;
     }
-
-
 
     @Transactional
     @Override
@@ -100,57 +94,61 @@ public class MemberServiceImpl implements MemberService {
         LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
 
+    //TODO: add logic
     @Override
-    public MemberResponseDto checkInMember(Long tenantId, String input) {
+    public MemberResponseDto checkInMember(Long memberId, String input) {
+        User user = userService.findMemberById(memberId);
+
         return null;
     }
 
+
+    //TODO: add logic
     @Override
     public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateRequestDto updateRequest) {
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<MemberTableDto> getAllMembersForTable() {
-        String gymEmail = getAuthenticatedUserEmail();
-        Tenant tenant = getTenantByEmail(gymEmail);
+        LOGGER.info("Fetching all members..");
+        String email = getAuthenticatedUserEmail();
+        Tenant tenant = getTenantByEmail(email);
 
         List<User> members = tenant.getUsers();
 
-        return members.stream()
+        return members.stream().filter(m -> m.getRoles().contains(roleService.findByName(RoleType.FACILITY_MEMBER)))
                 .map(member -> modelMapper.map(member, MemberTableDto.class))
                 .toList();
     }
 
-
+    @Transactional
     @Override
     public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
         LOGGER.info("Search for users with filter: {}", filter);
 
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
-        Specification<Membership> spec = MemberSpecification.build(filter)
-                .and((root, query, cb) -> cb.equal(root.get("gym"), tenant));
+        Specification<User> spec = MemberSpecification.build(filter)
+                .and((root, query, cb) -> cb.equal(root.get("tenant"), tenant));
 
-//        List<Membership> memberList = membershipRepository.findAll(spec);
-//
-//
-//        if (memberList.isEmpty())
-//            throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
-//
-//        return memberList
-//                .stream()
-//                .map(gymMember -> mapToDto(gymMember, GymMemberTableDto.class))
-//                .toList();
+        List<User> memberList = userService.findMembersByFilter(spec);
 
-        return null;
+        if (memberList.isEmpty())
+            throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
+
+        return memberList
+                .stream()
+                .map(member -> modelMapper.map(member, MemberTableDto.class))
+                .toList();
     }
 
-
     @Override
-    public Optional<MemberResponseDto> getMemberById(String input, Long gymId) {
-        return findEntityBySmartQuery(input, gymId)
-                .map(member -> mapToDto(member, MemberResponseDto.class));
+    public MemberResponseDto findMember(MemberFilterRequestDto filter) {
+        return findFirstMemberByFilter(filter)
+                .map(member -> modelMapper.map(member, MemberResponseDto.class))
+                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
     }
 
     private Tenant getTenantByEmail(String email) {
@@ -171,7 +169,9 @@ public class MemberServiceImpl implements MemberService {
     //TODO: refactor for better separation of concerns
     private User buildMember(Tenant tenant, UserCreateRequestDto requestDto) throws MessagingException {
         User user = new User()
-                .setUsername(requestDto.getEmail())
+                .setFirstName(requestDto.getFirstName())
+                .setLastName(requestDto.getLastName())
+                .setUsername(requestDto.getUsername())
                 .setEmail(requestDto.getEmail())
                 .setGender(requestDto.getGender())
                 .setBirthDate(requestDto.getBirthDate())
@@ -243,12 +243,13 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    private Optional<User> findEntityBySmartQuery(String input, Long gymId) {
-        return Optional.empty();
-    }
+    //TODO: what happens when searching by first and last name and there are 2 members with identical names?
+    private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
+        Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
-    private <T> T mapToDto(Object source, Class<T> targetClass) {
-        return modelMapper.map(source, targetClass);
-    }
+        Specification<User> spec = MemberSpecification.build(filter)
+                .and((root, query, cb) -> cb.equal(root.get("tenant"), tenant));
 
+        return userService.findFirstMemberByFilter(spec);
+    }
 }

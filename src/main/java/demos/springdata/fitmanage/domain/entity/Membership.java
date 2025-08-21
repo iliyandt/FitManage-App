@@ -19,11 +19,6 @@ public class Membership extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
-    @Column(nullable = false)
-    private String firstName;
-    @Column(nullable = false)
-    private String lastName;
-
     @Enumerated(EnumType.STRING)
     private Employment employment;
     @Enumerated(EnumType.STRING)
@@ -54,24 +49,6 @@ public class Membership extends BaseEntity{
 
     public Membership setTenant(Tenant tenant) {
         this.tenant = tenant;
-        return this;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public Membership setFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public Membership setLastName(String lastName) {
-        this.lastName = lastName;
         return this;
     }
 
@@ -145,5 +122,12 @@ public class Membership extends BaseEntity{
     public Membership setLastCheckInAt(LocalDateTime lastCheckInAt) {
         this.lastCheckInAt = lastCheckInAt;
         return this;
+    }
+
+    public static boolean isActive(Membership membership) {
+        if (membership.getSubscriptionStatus().equals(SubscriptionStatus.ACTIVE)) {
+            return true;
+        }
+        return false;
     }
 }

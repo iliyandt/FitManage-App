@@ -4,5 +4,5 @@ import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberS
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
 
 public interface MembershipService {
-    MemberResponseDto initializeSubscription(Long id, MemberSubscriptionRequestDto requestDto);
+    MemberResponseDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto);
 }
