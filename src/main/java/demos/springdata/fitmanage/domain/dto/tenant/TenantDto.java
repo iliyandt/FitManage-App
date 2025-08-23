@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class TenantDto {
     private String name;
-    private String email;
+    private String businessEmail;
     private String address;
     private String city;
     private LocalDate subscriptionValidUntil;
@@ -21,12 +21,12 @@ public class TenantDto {
         return this;
     }
 
-    public String getEmail() {
-        return email;
+    public String getBusinessEmail() {
+        return businessEmail;
     }
 
-    public TenantDto setEmail(String email) {
-        this.email = email;
+    public TenantDto setBusinessEmail(String businessEmail) {
+        this.businessEmail = businessEmail;
         return this;
     }
 

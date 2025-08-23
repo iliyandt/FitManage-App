@@ -17,7 +17,8 @@ public class Tenant extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    private String email;
+    @Column(unique = true)
+    private String businessEmail;
 
     private String address;
 
@@ -46,12 +47,12 @@ public class Tenant extends BaseEntity {
         return this;
     }
 
-    public String getEmail() {
-        return email;
+    public String getBusinessEmail() {
+        return businessEmail;
     }
 
-    public Tenant setEmail(String email) {
-        this.email = email;
+    public Tenant setBusinessEmail(String email) {
+        this.businessEmail = email;
         return this;
     }
 

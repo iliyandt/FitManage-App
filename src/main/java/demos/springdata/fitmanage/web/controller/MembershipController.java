@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/users/membership")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN')")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
 public class MembershipController {
     private final MembershipService membershipService;
     private final MembershipPlanService membershipPlanService;
