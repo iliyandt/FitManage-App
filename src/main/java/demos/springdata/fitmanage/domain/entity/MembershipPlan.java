@@ -6,8 +6,8 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "member_plan_prices")
-public class MemberPlanPrice extends BaseEntity{
+@Table(name = "membership_plans")
+public class MembershipPlan extends BaseEntity{
     @ManyToOne(optional = false)
     private User user;
 
@@ -19,7 +19,7 @@ public class MemberPlanPrice extends BaseEntity{
     private BigDecimal seniorPrice;
     private BigDecimal handicapPrice;
 
-    public MemberPlanPrice() {
+    public MembershipPlan() {
     }
 
 
@@ -27,7 +27,7 @@ public class MemberPlanPrice extends BaseEntity{
         return user;
     }
 
-    public MemberPlanPrice setUser(User user) {
+    public MembershipPlan setUser(User user) {
         this.user = user;
         return this;
     }
@@ -36,7 +36,7 @@ public class MemberPlanPrice extends BaseEntity{
         return subscriptionPlan;
     }
 
-    public MemberPlanPrice setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+    public MembershipPlan setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }
@@ -45,7 +45,7 @@ public class MemberPlanPrice extends BaseEntity{
         return price;
     }
 
-    public MemberPlanPrice setPrice(BigDecimal price) {
+    public MembershipPlan setPrice(BigDecimal price) {
         this.price = price;
         return this;
     }
@@ -54,7 +54,7 @@ public class MemberPlanPrice extends BaseEntity{
         return studentPrice;
     }
 
-    public MemberPlanPrice setStudentPrice(BigDecimal studentPrice) {
+    public MembershipPlan setStudentPrice(BigDecimal studentPrice) {
         this.studentPrice = studentPrice;
         return this;
     }
@@ -63,7 +63,7 @@ public class MemberPlanPrice extends BaseEntity{
         return seniorPrice;
     }
 
-    public MemberPlanPrice setSeniorPrice(BigDecimal seniorPrice) {
+    public MembershipPlan setSeniorPrice(BigDecimal seniorPrice) {
         this.seniorPrice = seniorPrice;
         return this;
     }
@@ -72,7 +72,7 @@ public class MemberPlanPrice extends BaseEntity{
         return handicapPrice;
     }
 
-    public MemberPlanPrice setHandicapPrice(BigDecimal handicapPrice) {
+    public MembershipPlan setHandicapPrice(BigDecimal handicapPrice) {
         this.handicapPrice = handicapPrice;
         return this;
     }

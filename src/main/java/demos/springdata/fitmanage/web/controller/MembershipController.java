@@ -2,10 +2,10 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
-import demos.springdata.fitmanage.service.MemberPricingService;
+import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.MembershipService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +19,11 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('FACILITY_ADMIN')")
 public class MembershipController {
     private final MembershipService membershipService;
-    private final MemberPricingService memberPricingService;
+    private final MembershipPlanService membershipPlanService;
 
-    public MembershipController(MembershipService membershipService, MemberPricingService memberPricingService) {
+    public MembershipController(MembershipService membershipService, MembershipPlanService membershipPlanService) {
         this.membershipService = membershipService;
-        this.memberPricingService = memberPricingService;
+        this.membershipPlanService = membershipPlanService;
     }
 
     @PatchMapping("/{memberId}")
@@ -37,7 +37,7 @@ public class MembershipController {
 
     @GetMapping("/subscription_plans/customized_fields")
     public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
-        List<MemberPlanPriceDto> planPriceDtoList = memberPricingService.getPlansAndPricesAsPriceDto();
+        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPricesAsPriceDto();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
                 .toList();

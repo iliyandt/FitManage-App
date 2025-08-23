@@ -4,7 +4,7 @@ import jakarta.validation.constraints.DecimalMin;
 
 import java.math.BigDecimal;
 
-public class MemberPlanEditDto {
+public class MembershipPlanUpdateDto {
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal price;
     @DecimalMin(value = "0.0", message = "Price must be positive")
@@ -14,14 +14,14 @@ public class MemberPlanEditDto {
     @DecimalMin(value = "0.0", message = "Price must be positive")
     private BigDecimal handicapPrice;
 
-    public MemberPlanEditDto() {
+    public MembershipPlanUpdateDto() {
     }
 
     public BigDecimal getPrice() {
         return price;
     }
 
-    public MemberPlanEditDto setPrice(BigDecimal price) {
+    public MembershipPlanUpdateDto setPrice(BigDecimal price) {
         this.price = price;
         return this;
     }
@@ -30,7 +30,7 @@ public class MemberPlanEditDto {
         return studentPrice;
     }
 
-    public MemberPlanEditDto setStudentPrice(BigDecimal studentPrice) {
+    public MembershipPlanUpdateDto setStudentPrice(BigDecimal studentPrice) {
         this.studentPrice = studentPrice;
         return this;
     }
@@ -39,7 +39,7 @@ public class MemberPlanEditDto {
         return seniorPrice;
     }
 
-    public MemberPlanEditDto setSeniorPrice(BigDecimal seniorPrice) {
+    public MembershipPlanUpdateDto setSeniorPrice(BigDecimal seniorPrice) {
         this.seniorPrice = seniorPrice;
         return this;
     }
@@ -48,7 +48,7 @@ public class MemberPlanEditDto {
         return handicapPrice;
     }
 
-    public MemberPlanEditDto setHandicapPrice(BigDecimal handicapPrice) {
+    public MembershipPlanUpdateDto setHandicapPrice(BigDecimal handicapPrice) {
         this.handicapPrice = handicapPrice;
         return this;
     }

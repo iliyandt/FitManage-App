@@ -51,8 +51,8 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PostMapping("/resend")
-    public ResponseEntity<VerificationResponseDto> resendVerificationCode(@RequestParam String email) {
+    @PostMapping("/{email}")
+    public ResponseEntity<VerificationResponseDto> resendVerificationCode(@PathVariable String email) {
         return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), HttpStatus.CREATED);
     }
 

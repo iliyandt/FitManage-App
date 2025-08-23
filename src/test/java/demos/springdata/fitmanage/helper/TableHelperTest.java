@@ -3,10 +3,9 @@ package demos.springdata.fitmanage.helper;
 import demos.springdata.fitmanage.domain.dto.common.config.ColumnsLayoutConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.SortingConfigDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanPriceDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ class TableHelperTest {
 
     @Test
     void buildTableConfig_containsExpectedCreateFieldsAndVisibility_forMemberPlanPriceDto() {
-        ConfigDto config = helper.buildTableConfig("/plan-prices", MemberPlanPriceDto.class);
+        ConfigDto config = helper.buildTableConfig("/plan-prices", MembershipPlanDto.class);
 
 
         Map<String, Boolean> createFields = config.getCreateFields();
@@ -68,7 +67,7 @@ class TableHelperTest {
 
     @Test
     void buildRows_mapsUsingProvidedMapper() {
-        MemberPlanPriceDto dto = new MemberPlanPriceDto()
+        MembershipPlanDto dto = new MembershipPlanDto()
                 .setId(10L);
 
         List<Map<String, Object>> rows = helper.buildRows(List.of(dto), helper::buildRowMap);
