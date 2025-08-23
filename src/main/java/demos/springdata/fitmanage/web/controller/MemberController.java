@@ -63,10 +63,9 @@ public class MemberController {
 
     @PostMapping("/{memberId}/check-in")
     public ResponseEntity<ApiResponse<UserResponseDto>> checkInMember(
-            @PathVariable Long memberId,
-            @RequestParam String query) {
+            @PathVariable Long memberId) {
 
-        UserResponseDto result = memberService.checkInMember(memberId, query);
+        UserResponseDto result = memberService.checkInMember(memberId);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }

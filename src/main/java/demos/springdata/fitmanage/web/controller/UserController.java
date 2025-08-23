@@ -27,7 +27,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-
     //todo: what is if the given id is from another user here? Can i change the details from another user without permission?
     @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto dto) {

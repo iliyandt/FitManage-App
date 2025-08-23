@@ -5,10 +5,12 @@ import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberF
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -40,6 +42,7 @@ public class MemberServiceImpl implements MemberService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserSecurityUtils securityUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
+    private final MembershipService membershipService;
 
     @Autowired
     public MemberServiceImpl
@@ -56,6 +59,7 @@ public class MemberServiceImpl implements MemberService {
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.securityUtils = securityUtils;
+        this.membershipService = membershipService;
     }
 
     @Transactional
@@ -93,12 +97,25 @@ public class MemberServiceImpl implements MemberService {
         LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
 
-    //TODO: add logic
-    @Override
-    public UserResponseDto checkInMember(Long memberId, String input) {
-        User user = userService.findUserById(memberId);
 
-        return null;
+    @Transactional
+    @Override
+    public UserResponseDto checkInMember(Long memberId) {
+        User user = userService.findUserById(memberId);
+        Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
+
+        Membership updatedMembership = membershipService.checkIn(activeMembership);
+
+
+        return modelMapper.map(user, UserResponseDto.class)
+                .setAllowedVisits(updatedMembership.getAllowedVisits())
+                .setRemainingVisits(updatedMembership.getRemainingVisits())
+                .setEmployment(updatedMembership.getEmployment())
+                .setSubscriptionPlan(updatedMembership.getSubscriptionPlan())
+                .setSubscriptionStatus(updatedMembership.getSubscriptionStatus())
+                .setSubscriptionStartDate(updatedMembership.getSubscriptionStartDate())
+                .setSubscriptionEndDate(updatedMembership.getSubscriptionEndDate())
+                .setLastCheckInAt(LocalDateTime.now());
     }
 
 

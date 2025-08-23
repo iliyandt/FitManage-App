@@ -40,12 +40,12 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
 
+    //TODO: response returns only the membership details but not the user details
     @Transactional
     @Override
     public UserResponseDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
-
 
         LOGGER.info("Initializing subscription for user with username: {}", user.getActualUsername());
 
@@ -67,6 +67,29 @@ public class MembershipServiceImpl implements MembershipService {
         Membership saved = membershipRepository.save(membership);
 
         return modelMapper.map(saved, UserResponseDto.class);
+    }
+
+
+    @Override
+    @Transactional
+    public Membership checkIn(Membership membership) {
+        if (membership.getSubscriptionPlan().isVisitBased()) {
+            int remaining = membership.getRemainingVisits() - 1;
+            membership.setRemainingVisits(Math.max(remaining, 0));
+
+            if (remaining <= 0) {
+                membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+            }
+        }
+        return membershipRepository.save(membership);
+    }
+
+    @Override
+    public Membership getActiveMembership(Set<Membership> memberships) {
+        return memberships.stream()
+                .filter(Membership::isActive)
+                .findFirst()
+                .orElseThrow(() -> new FitManageAppException("User doesn't have active membership", ApiErrorCode.NOT_FOUND));
     }
 
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
@@ -103,16 +126,6 @@ public class MembershipServiceImpl implements MembershipService {
             default -> throw new IllegalArgumentException("Unhandled subscription plan: " + subscriptionPlan);
         };
     }
-
-
-
-    public Optional<Membership> getActiveMembership(Set<Membership> memberships) {
-        return memberships.stream()
-                .filter(Membership::isActive)
-                .findFirst();
-    }
-
-
 
     private void validateSubscriptionChange(Membership membership, MemberUpdateDto updateRequest) {
         SubscriptionPlan currentPlan = membership.getSubscriptionPlan();

@@ -12,7 +12,7 @@ public interface MemberService {
     UserResponseDto createMember(UserCreateRequestDto requestDto);
     void removeMember(Long memberId);
     UserResponseDto updateMemberDetails(Long memberId, MemberUpdateDto memberUpdateDto);
-    UserResponseDto checkInMember(Long tenantId, String input);
+    UserResponseDto checkInMember(Long memberId);
     List<MemberTableDto> getAllMembersForTable();
     List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto memberFilterRequestDto);
     UserResponseDto findMember(MemberFilterRequestDto filter);

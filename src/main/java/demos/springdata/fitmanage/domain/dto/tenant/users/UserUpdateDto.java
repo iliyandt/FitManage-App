@@ -1,6 +1,4 @@
 package demos.springdata.fitmanage.domain.dto.tenant.users;
-
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
