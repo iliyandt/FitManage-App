@@ -1,12 +1,15 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanUpdateDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.MembershipPlanService;
+import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -43,16 +46,16 @@ public class MembershipPlanController {
     }
 
 
-//    @GetMapping("/table")
-//    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
-//        List<MemberPlansTableDto> planPriceDtoList = memberPricingService.getPlansAndPrices();
-//        TableResponseDto response = new TableResponseDto();
-//        response.setConfig(tableHelper.buildTableConfig("pricing/plans", MemberPlansTableDto.class));
-//        response.setColumns(TableColumnBuilder.buildColumns(MemberPlansTableDto.class));
-//        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
-//
-//        return ResponseEntity.ok(ApiResponse.success(response));
-//    }
+    @GetMapping
+    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
+        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPrices();
+        TableResponseDto response = new TableResponseDto();
+        response.setConfig(tableHelper.buildTableConfig("/membership-plans", MemberPlanTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(MemberPlanTableDto.class));
+        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     @PatchMapping("/{planId}")
     public ResponseEntity<ApiResponse<MembershipPlanUpdateDto>> editPlanPrices(@PathVariable Long planId,

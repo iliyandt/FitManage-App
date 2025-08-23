@@ -52,8 +52,10 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
 
     @Override
-    public List<MemberPlanTableDto> getPlansAndPrices() {
-        return List.of();
+    public List<MembershipPlanDto> getPlansAndPrices() {
+        List<MembershipPlan> plans = membershipPlanRepository.findAll();
+        return plans.stream()
+                .map(p -> modelMapper.map(p, MembershipPlanDto.class)).toList();
     }
 
     @Override
