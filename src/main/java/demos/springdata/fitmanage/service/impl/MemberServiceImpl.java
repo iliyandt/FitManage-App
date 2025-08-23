@@ -98,6 +98,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    //TODO: save the visit in the visit repository
     @Transactional
     @Override
     public UserResponseDto checkInMember(Long memberId) {
@@ -119,7 +120,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    //TODO: add logic
     @Override
     public UserResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
         User user = userService.findUserById(memberId);
@@ -161,6 +161,8 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
+    //TODO: responseDto returns not the information about membership
+    @Transactional
     @Override
     public UserResponseDto findMember(MemberFilterRequestDto filter) {
         return findFirstMemberByFilter(filter)
@@ -261,11 +263,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //TODO: what happens when searching by first and last name and there are 2 members with identical names?
-    private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
+    protected Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
         Specification<User> spec = MemberSpecification.build(filter)
-                .and((root, query, cb) -> cb.equal(root.get("tenant"), tenant));
+                .and((root, query, cb) -> cb.equal(root.get("tenant").get("id"), tenant.getId()));
 
         return userService.findFirstMemberByFilter(spec);
     }
