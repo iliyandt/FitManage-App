@@ -19,10 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
-    @Column(nullable = true)
     private String firstName;
-
-    @Column(nullable = true)
     private String lastName;
 
     @Column(unique = true)
