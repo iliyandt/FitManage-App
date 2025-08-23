@@ -2,16 +2,14 @@ package demos.springdata.fitmanage.domain.dto.tenant.users.member.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.enums.Employment;
-import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
-public class MemberUpdateRequestDto {
+public class MemberUpdateDto {
 
 
     @Size(min = 2, max = 15)
@@ -33,14 +31,14 @@ public class MemberUpdateRequestDto {
     )
     private String phone;
 
-    public MemberUpdateRequestDto() {
+    public MemberUpdateDto() {
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public MemberUpdateRequestDto setFirstName(String firstName) {
+    public MemberUpdateDto setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
@@ -49,7 +47,7 @@ public class MemberUpdateRequestDto {
         return lastName;
     }
 
-    public MemberUpdateRequestDto setLastName(String lastName) {
+    public MemberUpdateDto setLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
@@ -58,7 +56,7 @@ public class MemberUpdateRequestDto {
         return email;
     }
 
-    public MemberUpdateRequestDto setEmail(String email) {
+    public MemberUpdateDto setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -67,7 +65,7 @@ public class MemberUpdateRequestDto {
         return employment;
     }
 
-    public MemberUpdateRequestDto setEmployment(Employment employment) {
+    public MemberUpdateDto setEmployment(Employment employment) {
         this.employment = employment;
         return this;
     }
@@ -76,7 +74,7 @@ public class MemberUpdateRequestDto {
         return birthDate;
     }
 
-    public MemberUpdateRequestDto setBirthDate(OffsetDateTime birthDate) {
+    public MemberUpdateDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }
@@ -85,7 +83,7 @@ public class MemberUpdateRequestDto {
         return subscriptionPlan;
     }
 
-    public MemberUpdateRequestDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+    public MemberUpdateDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }
@@ -94,7 +92,7 @@ public class MemberUpdateRequestDto {
         return phone;
     }
 
-    public MemberUpdateRequestDto setPhone(String phone) {
+    public MemberUpdateDto setPhone(String phone) {
         this.phone = phone;
         return this;
     }

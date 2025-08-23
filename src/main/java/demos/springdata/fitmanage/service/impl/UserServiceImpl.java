@@ -2,15 +2,9 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateRequestDto;
 import demos.springdata.fitmanage.domain.entity.*;
-import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.MembershipRepository;
-import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
@@ -18,12 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,16 +50,12 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-
-    @Transactional
     @Override
     public void updateUserProfile(String email, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for gym with email: {}", email);
         User user = getUserOrElseThrow(email);
-
-        User updatedUser = updateUserDetails(dto, user);
-
-        userRepository.save(updatedUser);
+        modelMapper.map(dto, user);
+        userRepository.save(user);
         LOGGER.info("Updated basic info for user with email: {}", email);
     }
 
@@ -122,21 +108,5 @@ public class UserServiceImpl implements UserService {
                     LOGGER.warn("User with email {} not found", email);
                     return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
                 });
-    }
-
-    private User updateUserDetails(UserUpdateDto dto, User user) {
-        if (user.getUsername().equals(dto.getUsername())) {
-            LOGGER.error("Username same as current one.");
-            throw new FitManageAppException("Username cannot be the same.", ApiErrorCode.CONFLICT);
-        }
-
-        if (userRepository.findByUsername(dto.getUsername()).isPresent()) {
-            LOGGER.error("Username {} already taken.", dto.getUsername());
-            throw new FitManageAppException("Username already taken.", ApiErrorCode.CONFLICT);
-        }
-
-        modelMapper.map(dto, user);
-        LOGGER.info("User details for user with email: {} updated.", user.getEmail());
-        return user;
     }
 }

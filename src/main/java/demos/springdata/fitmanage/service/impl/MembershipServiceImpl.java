@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -13,13 +13,10 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipRepository;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
-import demos.springdata.fitmanage.util.AuthContext;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +114,7 @@ public class MembershipServiceImpl implements MembershipService {
 
 
 
-    private void validateSubscriptionChange(Membership membership, MemberUpdateRequestDto updateRequest) {
+    private void validateSubscriptionChange(Membership membership, MemberUpdateDto updateRequest) {
         SubscriptionPlan currentPlan = membership.getSubscriptionPlan();
         SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();
 

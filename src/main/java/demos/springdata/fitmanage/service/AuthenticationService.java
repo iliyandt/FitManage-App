@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 
 public interface AuthenticationService {
-    RegistrationResponseDto registerGym(RegistrationRequestDto registrationRequestDto, TenantDto tenantDto);
+    RegistrationResponseDto registerTenant(RegistrationRequestDto registrationRequestDto, TenantDto tenantDto);
     EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto);
     UserDetails authenticateUser(LoginRequestDto loginRequestDto);
     VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto);

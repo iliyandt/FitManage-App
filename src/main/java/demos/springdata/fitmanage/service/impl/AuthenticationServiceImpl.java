@@ -62,13 +62,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public RegistrationResponseDto registerGym(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
+    public RegistrationResponseDto registerTenant(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
         LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
         validateCredentials(registrationRequest);
 
-        Tenant tenant = new Tenant()
-                .setName(tenantDto.getName())
-                .setSubscriptionValidUntil(null);
+        Tenant tenant = new Tenant();
+        modelMapper.map(tenantDto, tenant);
 
         tenantRepository.save(tenant);
 
@@ -217,19 +216,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 
-    private void validateCredentials(RegistrationRequestDto gymRegistrationDto) {
+    private void validateCredentials(RegistrationRequestDto request) {
         Map<String, String> errors = new HashMap<>();
-        if (userRepository.findByUsername(gymRegistrationDto.getUsername()).isPresent()) {
-            LOGGER.warn("Username {} already exists", gymRegistrationDto.getUsername());
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            LOGGER.warn("Username {} already exists", request.getUsername());
             errors.put("username", "Gym with this username already exists");
         }
 
-        if (userRepository.findByEmail(gymRegistrationDto.getEmail()).isPresent()) {
-            LOGGER.warn("Account with email {} already exists", gymRegistrationDto.getEmail());
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            LOGGER.warn("Account with email {} already exists", request.getEmail());
             errors.put("email", "Email is already registered");
         }
 
-        if (!gymRegistrationDto.getPassword().equals(gymRegistrationDto.getConfirmPassword())) {
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
             LOGGER.warn("Passwords do not match.");
             errors.put("confirmPassword", "Passwords do not match");
         }

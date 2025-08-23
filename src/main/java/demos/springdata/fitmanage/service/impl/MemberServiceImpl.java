@@ -1,11 +1,10 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -105,7 +104,7 @@ public class MemberServiceImpl implements MemberService {
 
     //TODO: add logic
     @Override
-    public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateRequestDto updateRequest) {
+    public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
         return null;
     }
 

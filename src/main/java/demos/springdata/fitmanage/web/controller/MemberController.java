@@ -5,7 +5,7 @@ import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberF
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateRequestDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberService;
@@ -22,7 +22,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api/v1/users/members")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF', 'FACILITY_MEMBER')")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
 public class MemberController {
     private final MemberService memberService;
     private final TableHelper tableHelper;
@@ -72,8 +72,8 @@ public class MemberController {
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateRequestDto memberUpdateRequestDto) {
-        MemberResponseDto updatedMember = memberService.updateMemberDetails(memberId, memberUpdateRequestDto);
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        MemberResponseDto updatedMember = memberService.updateMemberDetails(memberId, memberUpdateDto);
         return ResponseEntity.ok(ApiResponse.success(updatedMember));
     }
 

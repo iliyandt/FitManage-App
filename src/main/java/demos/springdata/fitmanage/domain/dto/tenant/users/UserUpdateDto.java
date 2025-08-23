@@ -6,14 +6,6 @@ import jakarta.validation.constraints.Size;
 
 public class UserUpdateDto {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 2, max = 60, message = "Username must be between 2 and 60 characters")
-    private String username;
-
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    private String email;
-
     @NotBlank(message = "Phone is required")
     private String phone;
 
@@ -27,28 +19,10 @@ public class UserUpdateDto {
 
     public UserUpdateDto() {}
 
-    public UserUpdateDto(String username, String email, String phone, String address, String city) {
-        this.username = username;
-        this.email = email;
+    public UserUpdateDto(String phone, String address, String city) {
         this.phone = phone;
         this.address = address;
         this.city = city;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhone() {

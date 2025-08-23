@@ -1,11 +1,9 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +16,12 @@ public class Tenant extends BaseEntity {
 
     @Column(unique = true)
     private String name;
+
+    private String email;
+
+    private String address;
+
+    private String city;
 
     @Column(name = "subscription_valid_until")
     private LocalDate subscriptionValidUntil;
@@ -42,6 +46,32 @@ public class Tenant extends BaseEntity {
         return this;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public Tenant setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public Tenant setAddress(String address) {
+        this.address = address;
+        return this;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Tenant setCity(String city) {
+        this.city = city;
+        return this;
+    }
 
     public LocalDate getSubscriptionValidUntil() {
         return subscriptionValidUntil;
