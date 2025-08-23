@@ -32,6 +32,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -61,6 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.tenantRepository = tenantRepository;
     }
 
+    @Transactional
     @Override
     public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
         LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
