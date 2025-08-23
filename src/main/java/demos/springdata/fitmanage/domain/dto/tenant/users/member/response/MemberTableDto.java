@@ -22,7 +22,7 @@ public class MemberTableDto {
     private Employment employment;
     private OffsetDateTime birthDate;
     private SubscriptionStatus subscriptionStatus;
-    @DropDown(url = "gym-members/subscription_plans/customized_fields")
+    @DropDown(url = "users/subscription-plans/customized-fields")
     private SubscriptionPlan subscriptionPlan;
     private String phone;
     private Integer allowedVisits;

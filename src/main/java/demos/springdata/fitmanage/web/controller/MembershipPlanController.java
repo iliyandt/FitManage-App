@@ -5,7 +5,6 @@ import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanUpdateDto;
 import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
-import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.MembershipPlanService;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
