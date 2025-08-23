@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.tenant.users.member.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import jakarta.validation.constraints.Email;
@@ -9,7 +10,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
-public class MemberUpdateDto {
+public class MemberUpdateDto extends UserUpdateDto {
 
 
     @Size(min = 2, max = 15)
@@ -24,12 +25,6 @@ public class MemberUpdateDto {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
     private SubscriptionPlan subscriptionPlan;
-
-    @Pattern(
-            regexp = "^\\+?[0-9]{7,15}$",
-            message = "Phone number must be 7 to 15 digits and may start with '+'"
-    )
-    private String phone;
 
     public MemberUpdateDto() {
     }
@@ -85,15 +80,6 @@ public class MemberUpdateDto {
 
     public MemberUpdateDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
-        return this;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public MemberUpdateDto setPhone(String phone) {
-        this.phone = phone;
         return this;
     }
 }

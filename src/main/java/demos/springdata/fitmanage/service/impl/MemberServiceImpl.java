@@ -3,7 +3,7 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberResponseDto createMember(UserCreateRequestDto requestDto) {
+    public UserResponseDto createMember(UserCreateRequestDto requestDto) {
         String userEmail = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(userEmail);
 
@@ -78,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
         userService.save(user);
         LOGGER.info("Successfully added member with ID {} to gym '{}'", user.getId(), tenant.getName());
 
-        return modelMapper.map(user, MemberResponseDto.class);
+        return modelMapper.map(user, UserResponseDto.class);
     }
 
     @Override
@@ -95,8 +95,8 @@ public class MemberServiceImpl implements MemberService {
 
     //TODO: add logic
     @Override
-    public MemberResponseDto checkInMember(Long memberId, String input) {
-        User user = userService.findMemberById(memberId);
+    public UserResponseDto checkInMember(Long memberId, String input) {
+        User user = userService.findUserById(memberId);
 
         return null;
     }
@@ -104,8 +104,9 @@ public class MemberServiceImpl implements MemberService {
 
     //TODO: add logic
     @Override
-    public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
-        return null;
+    public UserResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
+        User user = userService.findUserById(memberId);
+        return userService.updateProfile(user.getId(), updateRequest);
     }
 
     @Transactional(readOnly = true)
@@ -144,9 +145,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponseDto findMember(MemberFilterRequestDto filter) {
+    public UserResponseDto findMember(MemberFilterRequestDto filter) {
         return findFirstMemberByFilter(filter)
-                .map(member -> modelMapper.map(member, MemberResponseDto.class))
+                .map(member -> modelMapper.map(member, UserResponseDto.class))
                 .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
     }
 

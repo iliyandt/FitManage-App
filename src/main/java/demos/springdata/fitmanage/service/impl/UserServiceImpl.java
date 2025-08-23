@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -51,12 +52,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserProfile(String email, UserUpdateDto dto) {
-        LOGGER.info("Updating basic info for gym with email: {}", email);
-        User user = getUserOrElseThrow(email);
+    public UserResponseDto updateProfile(Long id, UserUpdateDto dto) {
+        LOGGER.info("Updating basic info for user with id: {}", id);
+        User user = findUserById(id);
+
         modelMapper.map(dto, user);
-        userRepository.save(user);
-        LOGGER.info("Updated basic info for user with email: {}", email);
+
+        User savedUser = userRepository.save(user);
+
+        return modelMapper.map(savedUser, UserResponseDto.class);
     }
 
     @Override
@@ -82,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
         return userRepository.findByIdAndTenantId(memberId, tenantId)
-                .orElseThrow(() -> new FitManageAppException("Мember not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
     }
 
     @Override
@@ -96,17 +100,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findMemberById(Long memberId) {
+    public User findUserById(Long memberId) {
         return userRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
-    }
-
-    @Override
-    public User getUserOrElseThrow(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> {
-                    LOGGER.warn("User with email {} not found", email);
-                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
-                });
     }
 }

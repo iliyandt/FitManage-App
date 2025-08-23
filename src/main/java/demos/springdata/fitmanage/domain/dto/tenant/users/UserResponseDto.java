@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users.member.response;
+package demos.springdata.fitmanage.domain.dto.tenant.users;
 
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 
-public class MemberResponseDto {
+public class UserResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
@@ -28,14 +28,14 @@ public class MemberResponseDto {
     private Integer remainingVisits;
     private LocalDateTime lastCheckInAt;
 
-    public MemberResponseDto() {
+    public UserResponseDto() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public MemberResponseDto setId(Long id) {
+    public UserResponseDto setId(Long id) {
         this.id = id;
         return this;
     }
@@ -44,7 +44,7 @@ public class MemberResponseDto {
         return firstName;
     }
 
-    public MemberResponseDto setFirstName(String firstName) {
+    public UserResponseDto setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
@@ -53,7 +53,7 @@ public class MemberResponseDto {
         return lastName;
     }
 
-    public MemberResponseDto setLastName(String lastName) {
+    public UserResponseDto setLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
@@ -62,7 +62,7 @@ public class MemberResponseDto {
         return email;
     }
 
-    public MemberResponseDto setEmail(String email) {
+    public UserResponseDto setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -71,7 +71,7 @@ public class MemberResponseDto {
         return gender;
     }
 
-    public MemberResponseDto setGender(Gender gender) {
+    public UserResponseDto setGender(Gender gender) {
         this.gender = gender;
         return this;
     }
@@ -80,7 +80,7 @@ public class MemberResponseDto {
         return employment;
     }
 
-    public MemberResponseDto setEmployment(Employment employment) {
+    public UserResponseDto setEmployment(Employment employment) {
         this.employment = employment;
         return this;
     }
@@ -89,7 +89,7 @@ public class MemberResponseDto {
         return birthDate;
     }
 
-    public MemberResponseDto setBirthDate(OffsetDateTime birthDate) {
+    public UserResponseDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }
@@ -98,7 +98,7 @@ public class MemberResponseDto {
         return createdAt;
     }
 
-    public MemberResponseDto setCreatedAt(LocalDateTime createdAt) {
+    public UserResponseDto setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -107,7 +107,7 @@ public class MemberResponseDto {
         return updatedAt;
     }
 
-    public MemberResponseDto setUpdatedAt(LocalDateTime updatedAt) {
+    public UserResponseDto setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -116,7 +116,7 @@ public class MemberResponseDto {
         return phone;
     }
 
-    public MemberResponseDto setPhone(String phone) {
+    public UserResponseDto setPhone(String phone) {
         this.phone = phone;
         return this;
     }
@@ -125,7 +125,7 @@ public class MemberResponseDto {
         return subscriptionPlan;
     }
 
-    public MemberResponseDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+    public UserResponseDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }
@@ -134,7 +134,7 @@ public class MemberResponseDto {
         return subscriptionStatus;
     }
 
-    public MemberResponseDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
+    public UserResponseDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
         this.subscriptionStatus = subscriptionStatus;
         return this;
     }
@@ -143,7 +143,7 @@ public class MemberResponseDto {
         return subscriptionStartDate;
     }
 
-    public MemberResponseDto setSubscriptionStartDate(LocalDateTime subscriptionStartDate) {
+    public UserResponseDto setSubscriptionStartDate(LocalDateTime subscriptionStartDate) {
         this.subscriptionStartDate = subscriptionStartDate;
         return this;
     }
@@ -152,7 +152,7 @@ public class MemberResponseDto {
         return subscriptionEndDate;
     }
 
-    public MemberResponseDto setSubscriptionEndDate(LocalDateTime subscriptionEndDate) {
+    public UserResponseDto setSubscriptionEndDate(LocalDateTime subscriptionEndDate) {
         this.subscriptionEndDate = subscriptionEndDate;
         return this;
     }
@@ -161,7 +161,7 @@ public class MemberResponseDto {
         return allowedVisits;
     }
 
-    public MemberResponseDto setAllowedVisits(Integer allowedVisits) {
+    public UserResponseDto setAllowedVisits(Integer allowedVisits) {
         this.allowedVisits = allowedVisits;
         return this;
     }
@@ -170,7 +170,7 @@ public class MemberResponseDto {
         return remainingVisits;
     }
 
-    public MemberResponseDto setRemainingVisits(Integer remainingVisits) {
+    public UserResponseDto setRemainingVisits(Integer remainingVisits) {
         this.remainingVisits = remainingVisits;
         return this;
     }
@@ -179,7 +179,7 @@ public class MemberResponseDto {
         return lastCheckInAt;
     }
 
-    public MemberResponseDto setLastCheckInAt(LocalDateTime lastCheckInAt) {
+    public UserResponseDto setLastCheckInAt(LocalDateTime lastCheckInAt) {
         this.lastCheckInAt = lastCheckInAt;
         return this;
     }

@@ -2,25 +2,15 @@ package demos.springdata.fitmanage.domain.dto.auth.response;
 
 public class RegistrationResponseDto {
 
-    private String username;
     private String email;
     private String verificationCode;
 
     public RegistrationResponseDto() {
     }
 
-    public RegistrationResponseDto(String username, String email, String verificationCode) {
-        this.username = username;
+    public RegistrationResponseDto(String email, String verificationCode) {
         this.email = email;
         this.verificationCode = verificationCode;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {

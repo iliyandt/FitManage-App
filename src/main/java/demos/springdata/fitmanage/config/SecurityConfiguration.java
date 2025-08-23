@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.config;
 
+import demos.springdata.fitmanage.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;

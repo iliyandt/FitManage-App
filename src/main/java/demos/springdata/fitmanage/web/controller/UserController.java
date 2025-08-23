@@ -27,10 +27,11 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
-        String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        userService.updateUserProfile(email, dto);
+
+    //todo: what is if the given id is from another user here? Can i change the details from another user without permission?
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto dto) {
+        userService.updateProfile(id, dto);
         return ResponseEntity.ok(ApiResponse.success("User details updated successfully."));
     }
 }

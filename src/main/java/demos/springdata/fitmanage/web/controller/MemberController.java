@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
@@ -47,39 +47,39 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> searchMember( @ModelAttribute @Valid MemberFilterRequestDto filter) {
-        MemberResponseDto response = memberService.findMember(filter);
+    public ResponseEntity<ApiResponse<UserResponseDto>> searchMember(@ModelAttribute @Valid MemberFilterRequestDto filter) {
+        UserResponseDto response = memberService.findMember(filter);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<UserResponseDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
         LOGGER.info("Received request to create member: {}", requestDto);
-        MemberResponseDto responseDto = memberService.createMember(requestDto);
+        UserResponseDto responseDto = memberService.createMember(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
     }
 
     @PostMapping("/{memberId}/check-in")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> checkInMember(
+    public ResponseEntity<ApiResponse<UserResponseDto>> checkInMember(
             @PathVariable Long memberId,
             @RequestParam String query) {
 
-        MemberResponseDto result = memberService.checkInMember(memberId, query);
+        UserResponseDto result = memberService.checkInMember(memberId, query);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        MemberResponseDto updatedMember = memberService.updateMemberDetails(memberId, memberUpdateDto);
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateMember(@PathVariable Long id, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        UserResponseDto updatedMember = memberService.updateMemberDetails(id, memberUpdateDto);
         return ResponseEntity.ok(ApiResponse.success(updatedMember));
     }
 
-    @DeleteMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<Void>> deleteMember(@PathVariable Long memberId) {
-        memberService.removeMember(memberId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteMember(@PathVariable Long id) {
+        memberService.removeMember(id);
         //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));
     }

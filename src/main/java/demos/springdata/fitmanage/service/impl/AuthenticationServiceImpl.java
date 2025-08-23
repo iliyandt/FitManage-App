@@ -62,7 +62,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public RegistrationResponseDto registerTenant(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
+    public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
         LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
         validateCredentials(registrationRequest);
 
@@ -78,7 +78,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         LOGGER.info("Registration successful for user: {}", user.getEmail());
 
         return new RegistrationResponseDto(
-                user.getUsername(),
                 user.getEmail(),
                 user.getVerificationCode()
         );

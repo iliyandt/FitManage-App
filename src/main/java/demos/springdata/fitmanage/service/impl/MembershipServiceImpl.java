@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -42,8 +42,8 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Transactional
     @Override
-    public MemberResponseDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
-        User user = userService.findMemberById(memberId);
+    public UserResponseDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
+        User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
 
@@ -66,7 +66,7 @@ public class MembershipServiceImpl implements MembershipService {
 
         Membership saved = membershipRepository.save(membership);
 
-        return modelMapper.map(saved, MemberResponseDto.class);
+        return modelMapper.map(saved, UserResponseDto.class);
     }
 
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
