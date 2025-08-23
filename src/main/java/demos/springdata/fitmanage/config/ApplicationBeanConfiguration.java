@@ -1,9 +1,8 @@
 package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +30,8 @@ public class ApplicationBeanConfiguration {
     }
 
     private void configureUserMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(User.class, TenantResponseDto.class)
-                .addMappings(mapper -> mapper.map(User::getUsername, TenantResponseDto::setUsername));
+        modelMapper.typeMap(User.class, UserResponseDto.class)
+                .addMappings(mapper -> mapper.map(User::getUsername, UserResponseDto::setUsername));
     }
 
 

@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -37,13 +36,14 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public TenantResponseDto getUserSummaryByEmail(String email) {
+    public UserResponseDto getUserSummaryByEmail(String email) {
         LOGGER.info("Fetching gym with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        TenantResponseDto dto = modelMapper.map(user, TenantResponseDto.class);
+        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         dto.setUsername(user.getActualUsername());
+        dto.setRole(user.getRoles());
 
         int membersCount = user.getMemberships().size();
         dto.setMembersCount(membersCount);
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateProfile(Long id, UserUpdateDto dto) {
+    public demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto updateProfile(Long id, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for user with id: {}", id);
         User user = findUserById(id);
 
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(user);
 
-        return modelMapper.map(savedUser, UserResponseDto.class);
+        return modelMapper.map(savedUser, demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto.class);
     }
 
     @Override

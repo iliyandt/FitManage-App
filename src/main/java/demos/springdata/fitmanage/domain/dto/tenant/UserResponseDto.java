@@ -1,6 +1,10 @@
 package demos.springdata.fitmanage.domain.dto.tenant;
 
-public class TenantResponseDto {
+import demos.springdata.fitmanage.domain.entity.Role;
+
+import java.util.Set;
+
+public class UserResponseDto {
     private Long id;
     private String username;
     private String email;
@@ -9,20 +13,10 @@ public class TenantResponseDto {
     private String phone;
     private int membersCount;
     private boolean isSubscriptionActive;
+    private Set<Role> role;
 
 
-    public TenantResponseDto() {
-    }
-
-    public TenantResponseDto(Long id, String username, String city, String address, String email, String phone, int membersCount, boolean isSubscriptionActive) {
-        this.id = id;
-        this.username = username;
-        this.city = city;
-        this.address = address;
-        this.email = email;
-        this.phone = phone;
-        this.membersCount = membersCount;
-        this.isSubscriptionActive = isSubscriptionActive;
+    public UserResponseDto() {
     }
 
     public Long getId() {
@@ -53,7 +47,7 @@ public class TenantResponseDto {
         return address;
     }
 
-    public TenantResponseDto setAddress(String address) {
+    public UserResponseDto setAddress(String address) {
         this.address = address;
         return this;
     }
@@ -90,5 +84,12 @@ public class TenantResponseDto {
         isSubscriptionActive = subscriptionActive;
     }
 
+    public Set<Role> getRole() {
+        return role;
+    }
 
+    public UserResponseDto setRole(Set<Role> role) {
+        this.role = role;
+        return this;
+    }
 }

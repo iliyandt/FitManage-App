@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
 import demos.springdata.fitmanage.service.UserService;
 import jakarta.validation.Valid;
@@ -21,9 +21,9 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<TenantResponseDto>> authenticatedUser() {
+    public ResponseEntity<ApiResponse<UserResponseDto>> authenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        TenantResponseDto user = userService.getUserSummaryByEmail(email);
+        UserResponseDto user = userService.getUserSummaryByEmail(email);
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 

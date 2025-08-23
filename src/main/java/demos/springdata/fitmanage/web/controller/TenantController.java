@@ -1,10 +1,8 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
 import demos.springdata.fitmanage.service.TenantService;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +22,8 @@ public class TenantController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<@Valid List<TenantResponseDto>> getAllTenants() {
-        List<TenantResponseDto> allTenants = tenantService.getAllTenants();
+    public ResponseEntity<@Valid List<UserResponseDto>> getAllTenants() {
+        List<UserResponseDto> allTenants = tenantService.getAllTenants();
         return ResponseEntity.ok(allTenants);
     }
 }

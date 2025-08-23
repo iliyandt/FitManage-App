@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.tenant.TenantResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import org.springframework.data.jpa.domain.Specification;
@@ -10,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    TenantResponseDto getUserSummaryByEmail(String email);
-    UserResponseDto updateProfile(Long id, UserUpdateDto dto);
+    UserResponseDto getUserSummaryByEmail(String email);
+    demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto updateProfile(Long id, UserUpdateDto dto);
     boolean existsByEmailAndTenant(String email, Long tenantId);
     boolean existsByPhoneAndTenant(String phone, Long tenantId);
     User save(User user);
