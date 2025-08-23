@@ -87,7 +87,7 @@ public class MemberController {
 
     private TableResponseDto buildTableResponse(List<MemberTableDto> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/gym-members", MemberTableDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/users/members", MemberTableDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(MemberTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;
