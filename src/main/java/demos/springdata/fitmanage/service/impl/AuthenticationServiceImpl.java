@@ -217,11 +217,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void validateCredentials(RegistrationRequestDto request) {
         Map<String, String> errors = new HashMap<>();
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            LOGGER.warn("Username {} already exists", request.getUsername());
-            errors.put("username", "Gym with this username already exists");
-        }
-
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             LOGGER.warn("Account with email {} already exists", request.getEmail());
             errors.put("email", "Email is already registered");

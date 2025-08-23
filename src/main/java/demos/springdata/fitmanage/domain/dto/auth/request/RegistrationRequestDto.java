@@ -6,9 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class RegistrationRequestDto {
-    @NotNull(message = "Name is required")
-    @Size(min = 2, max = 60, message = "Name must be between 2 and 60 characters")
-    private String username;
     @NotBlank
     @Email(message = "Email must be valid")
     private String email;
@@ -22,19 +19,10 @@ public class RegistrationRequestDto {
     public RegistrationRequestDto() {
     }
 
-    public RegistrationRequestDto(String username, String email, String password, String confirmPassword) {
-        this.username = username;
+    public RegistrationRequestDto(String email, String password, String confirmPassword) {
         this.email = email;
         this.password = password;
         this.confirmPassword = confirmPassword;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
