@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1")
-@PreAuthorize("hasAuthority('SYSTEM_ADMIN')")
+@PreAuthorize("hasAnyAuthority('SYSTEM_ADMIN', 'FACILITY_ADMIN')")
 public class EnumValuesController {
 
     private final EnumService enumService;
