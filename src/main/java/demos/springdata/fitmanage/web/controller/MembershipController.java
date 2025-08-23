@@ -35,7 +35,7 @@ public class MembershipController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/subscription-plans/customized-fields")
+    @GetMapping("/plans/options")
     public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
         List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPricesAsPriceDto();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
