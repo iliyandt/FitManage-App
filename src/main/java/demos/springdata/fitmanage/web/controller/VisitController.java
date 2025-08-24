@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.VisitService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -15,7 +16,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/visits")
+@RequestMapping("/api/v1/members")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_MEMBER')")
 public class VisitController {
     private final VisitService visitService;
     private final TableHelper tableHelper;
@@ -26,9 +28,10 @@ public class VisitController {
         this.tableHelper = tableHelper;
     }
 
-    @GetMapping("/member/{gymMemberId}")
-    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable Long gymMemberId) {
-        return null;
+    @GetMapping("/{memberId}/visits")
+    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable Long memberId) {
+        List<VisitDto> visitsForMember = visitService.findVisitsForMember(memberId);
+        return ResponseEntity.ok(ApiResponse.success(visitsForMember));
     }
 
     @GetMapping("/period/{id}/{start}/{end}")

@@ -6,6 +6,8 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "memberships",
@@ -19,6 +21,8 @@ public class Membership extends BaseEntity{
     @ManyToOne
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
+    @OneToMany(mappedBy = "membership", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Visit> visits = new ArrayList<>();
     @Enumerated(EnumType.STRING)
     private Employment employment;
     @Enumerated(EnumType.STRING)
@@ -49,6 +53,15 @@ public class Membership extends BaseEntity{
 
     public Membership setTenant(Tenant tenant) {
         this.tenant = tenant;
+        return this;
+    }
+
+    public List<Visit> getVisits() {
+        return visits;
+    }
+
+    public Membership setVisits(List<Visit> visits) {
+        this.visits = visits;
         return this;
     }
 

@@ -11,8 +11,9 @@ public class Visit extends BaseEntity {
     @JoinColumn(name = "membership_id", nullable = false)
     private Membership membership;
 
-    @Column(name = "gym_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(name = "check_in_at", nullable = false)
     private LocalDateTime checkInAt;
@@ -20,6 +21,9 @@ public class Visit extends BaseEntity {
     @PrePersist
     public void onCreate() {
         this.checkInAt = LocalDateTime.now();
+    }
+
+    public Visit() {
     }
 
     public Membership getMembership() {
@@ -31,12 +35,12 @@ public class Visit extends BaseEntity {
         return this;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public Visit setUserId(Long userId) {
-        this.userId = userId;
+    public Visit setUser(User user) {
+        this.user = user;
         return this;
     }
 

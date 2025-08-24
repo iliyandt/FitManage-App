@@ -5,10 +5,7 @@ import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberF
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.entity.Membership;
-import demos.springdata.fitmanage.domain.entity.Role;
-import demos.springdata.fitmanage.domain.entity.Tenant;
-import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -38,11 +35,12 @@ public class MemberServiceImpl implements MemberService {
     private final RoleService roleService;
     private final TenantService tenantService;
     private final EmailService emailService;
+    private final MembershipService membershipService;
+    private final VisitService visitService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserSecurityUtils securityUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
-    private final MembershipService membershipService;
 
     @Autowired
     public MemberServiceImpl
@@ -51,7 +49,7 @@ public class MemberServiceImpl implements MemberService {
              TenantService tenantService,
              EmailService emailService,
              ModelMapper modelMapper,
-             BCryptPasswordEncoder passwordEncoder, UserSecurityUtils securityUtils, MembershipService membershipService) {
+             BCryptPasswordEncoder passwordEncoder, UserSecurityUtils securityUtils, MembershipService membershipService, VisitService visitService) {
         this.userService = userService;
         this.roleService = roleService;
         this.tenantService = tenantService;
@@ -60,6 +58,7 @@ public class MemberServiceImpl implements MemberService {
         this.passwordEncoder = passwordEncoder;
         this.securityUtils = securityUtils;
         this.membershipService = membershipService;
+        this.visitService = visitService;
     }
 
     @Transactional
@@ -98,7 +97,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    //TODO: save the visit in the visit repository
+    //TODO: dto maps 3 classes at once. How to optimize?
     @Transactional
     @Override
     public UserResponseDto checkInMember(Long memberId) {
@@ -106,7 +105,7 @@ public class MemberServiceImpl implements MemberService {
         Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
 
         Membership updatedMembership = membershipService.checkIn(activeMembership);
-
+        Visit visit = visitService.checkIn(activeMembership, memberId);
 
         return modelMapper.map(user, UserResponseDto.class)
                 .setAllowedVisits(updatedMembership.getAllowedVisits())
@@ -116,7 +115,7 @@ public class MemberServiceImpl implements MemberService {
                 .setSubscriptionStatus(updatedMembership.getSubscriptionStatus())
                 .setSubscriptionStartDate(updatedMembership.getSubscriptionStartDate())
                 .setSubscriptionEndDate(updatedMembership.getSubscriptionEndDate())
-                .setLastCheckInAt(LocalDateTime.now());
+                .setLastCheckInAt(visit.getCheckInAt());
     }
 
 
