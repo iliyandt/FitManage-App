@@ -1,7 +1,6 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users.member.request;
+package demos.springdata.fitmanage.domain.dto.member.request;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 public class MemberSubscriptionRequestDto {
     private Integer allowedVisits;

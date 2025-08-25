@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users.member.request;
+package demos.springdata.fitmanage.domain.dto.member.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.enums.Gender;

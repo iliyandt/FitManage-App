@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.users.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
+import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;

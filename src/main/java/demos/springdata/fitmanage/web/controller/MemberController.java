@@ -1,13 +1,12 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
+import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -72,9 +71,9 @@ public class MemberController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> updateMember(@PathVariable Long id, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        memberService.updateMemberDetails(id, memberUpdateDto);
-        return ResponseEntity.ok(ApiResponse.success("User details updated successfully."));
+    public ResponseEntity<ApiResponse<UserProfileDto>> updateMember(@PathVariable Long id, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        UserProfileDto userProfileDto = memberService.updateMemberDetails(id, memberUpdateDto);
+        return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 
 

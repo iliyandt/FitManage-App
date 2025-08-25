@@ -1,9 +1,8 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
 import demos.springdata.fitmanage.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

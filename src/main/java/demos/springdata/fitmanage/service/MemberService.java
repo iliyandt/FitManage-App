@@ -1,12 +1,10 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 
 import java.util.List;
 

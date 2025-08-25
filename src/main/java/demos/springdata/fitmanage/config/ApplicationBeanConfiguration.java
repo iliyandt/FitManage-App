@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
 import org.modelmapper.ModelMapper;

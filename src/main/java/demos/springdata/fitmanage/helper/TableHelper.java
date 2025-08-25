@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.config.*;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import org.slf4j.Logger;

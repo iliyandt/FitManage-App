@@ -1,10 +1,9 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users.member.request;
+package demos.springdata.fitmanage.domain.dto.member.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 

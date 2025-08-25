@@ -1,9 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.users.*;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;

@@ -1,13 +1,11 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {

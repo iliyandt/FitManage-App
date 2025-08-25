@@ -1,10 +1,13 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users;
+package demos.springdata.fitmanage.domain.dto.users;
 
+
+import demos.springdata.fitmanage.domain.enums.Gender;
 
 public class UserUpdateDto {
     private String phone;
     private String address;
     private String city;
+    private Gender gender;
 
     public UserUpdateDto() {}
 
@@ -36,5 +39,14 @@ public class UserUpdateDto {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public UserUpdateDto setGender(Gender gender) {
+        this.gender = gender;
+        return this;
     }
 }

@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.tenant.users;
+package demos.springdata.fitmanage.domain.dto.users;
 
 public final class StaffResponseDto extends UserBaseResponseDto {
     private Integer membersCount;
