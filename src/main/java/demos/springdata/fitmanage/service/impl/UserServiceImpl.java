@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.UserRepository;
@@ -14,8 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -36,31 +40,37 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public UserResponseDto getUserSummaryByEmail(String email) {
+    public UserProfileDto getUserProfileByEmail(String email) {
         LOGGER.info("Fetching gym with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
-        dto.setUsername(user.getActualUsername());
-        dto.setRole(user.getRoles());
+        Set<RoleType> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        
+        if (roles.contains(RoleType.FACILITY_MEMBER)) {
+            return mapMemberProfile(user, roles);
+        }
 
-        int membersCount = user.getMemberships().size();
-        dto.setMembersCount(membersCount);
+        if (roles.contains(RoleType.FACILITY_ADMIN) || roles.contains(RoleType.FACILITY_STAFF)) {
+            return mapStaffProfile(user, roles);
+        }
 
-        return dto;
+        return mapBaseProfile(user, roles);
     }
 
     @Override
-    public demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto updateProfile(Long id, UserUpdateDto dto) {
+    public UserProfileDto updateProfile(Long id, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for user with id: {}", id);
         User user = findUserById(id);
 
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(dto, user);
 
         User savedUser = userRepository.save(user);
 
-        return modelMapper.map(savedUser, demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto.class);
+        return modelMapper.map(savedUser, UserBaseResponseDto.class);
     }
 
     @Override
@@ -103,5 +113,39 @@ public class UserServiceImpl implements UserService {
     public User findUserById(Long memberId) {
         return userRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+    }
+
+    private UserBaseResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
+        UserBaseResponseDto dto = modelMapper.map(user, UserBaseResponseDto.class);
+        dto.setUsername(user.getActualUsername());
+        dto.setRoles(roles);
+        return dto;
+    }
+
+    private StaffResponseDto mapStaffProfile(User user, Set<RoleType> roles) {
+        StaffResponseDto dto = modelMapper.map(user, StaffResponseDto.class);
+        dto.setUsername(user.getActualUsername());
+        dto.setRoles(roles);
+        dto.setMembersCount(user.getMemberships().size());
+        return dto;
+    }
+
+    private MemberResponseDto mapMemberProfile(User user, Set<RoleType> roles) {
+        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
+        dto.setUsername(user.getActualUsername());
+        dto.setRoles(roles);
+
+        user.getMemberships().stream().findFirst().ifPresent(m -> {
+            dto.setSubscriptionPlan(m.getSubscriptionPlan())
+                    .setSubscriptionStatus(m.getSubscriptionStatus())
+                    .setSubscriptionStartDate(m.getSubscriptionStartDate())
+                    .setSubscriptionEndDate(m.getSubscriptionEndDate())
+                    .setAllowedVisits(m.getAllowedVisits())
+                    .setRemainingVisits(m.getRemainingVisits())
+                    .setLastCheckInAt(m.getLastCheckInAt())
+                    .setEmployment(m.getEmployment());
+        });
+
+        return dto;
     }
 }

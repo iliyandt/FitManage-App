@@ -17,21 +17,21 @@ import java.util.Map;
 @Service
 public class UserAccountSettingsServiceImpl implements UserAccountSettingsService {
 
-    private final GymAccountSettingsRepository gymAccountSettingsRepository;
+    private final GymAccountSettingsRepository accountSettingsRepository;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
 
     @Autowired
-    public UserAccountSettingsServiceImpl(GymAccountSettingsRepository gymAccountSettingsRepository, ModelMapper modelMapper) {
-        this.gymAccountSettingsRepository = gymAccountSettingsRepository;
+    public UserAccountSettingsServiceImpl(GymAccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper) {
+        this.accountSettingsRepository = accountSettingsRepository;
         this.modelMapper = modelMapper;
     }
 
 
     @Override
     public AccountSettingsDto getUserSettings(Long id) {
-        LOGGER.info("Fetching account settings for gym ID {}", id);
-        return gymAccountSettingsRepository.findByUserId(id)
+        LOGGER.info("Fetching account settings for account with ID {}", id);
+        return accountSettingsRepository.findByUserId(id)
                 .map(settings -> modelMapper.map(settings, AccountSettingsDto.class))
                 .orElse(new AccountSettingsDto());
     }
@@ -39,15 +39,15 @@ public class UserAccountSettingsServiceImpl implements UserAccountSettingsServic
     @Override
     @Transactional
     public AccountSettingsDto updateUserSettings(Long id, Map<String, Object> newSettings) {
-        LOGGER.info("Updating account settings for gym ID {}", id);
-        AccountSettings settings = gymAccountSettingsRepository.findByUserId(id)
+        LOGGER.info("Updating account settings for account ID {}", id);
+        AccountSettings settings = accountSettingsRepository.findByUserId(id)
                 .orElseGet(() -> {
                     AccountSettings accountSettings = new AccountSettings();
                     accountSettings.setUser(new User());
                     return accountSettings;
                 });
         settings.getSettings().putAll(newSettings);
-        AccountSettings savedSettings = gymAccountSettingsRepository.save(settings);
+        AccountSettings savedSettings = accountSettingsRepository.save(settings);
 
         return modelMapper.map(savedSettings, AccountSettingsDto.class);
     }

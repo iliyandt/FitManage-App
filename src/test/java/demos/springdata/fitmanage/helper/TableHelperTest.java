@@ -3,7 +3,7 @@ package demos.springdata.fitmanage.helper;
 import demos.springdata.fitmanage.domain.dto.common.config.ColumnsLayoutConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.ConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.SortingConfigDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

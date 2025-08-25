@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.service.TenantService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ public class TenantController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<@Valid List<UserResponseDto>> getAllTenants() {
-        List<UserResponseDto> allTenants = tenantService.getAllTenants();
+    public ResponseEntity<@Valid List<UserBaseResponseDto>> getAllTenants() {
+        List<UserBaseResponseDto> allTenants = tenantService.getAllTenants();
         return ResponseEntity.ok(allTenants);
     }
 }

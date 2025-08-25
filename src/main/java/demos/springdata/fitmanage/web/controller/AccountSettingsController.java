@@ -2,7 +2,8 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.accountsettings.AccountSettingsDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
 import demos.springdata.fitmanage.service.UserAccountSettingsService;
 import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
@@ -28,25 +29,24 @@ public class AccountSettingsController {
         this.userService = userService;
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
-        String currentGymEmail = getCurrentGymEmail();
-        UserResponseDto gym = userService.getUserSummaryByEmail(currentGymEmail);
-        AccountSettingsDto gymSettings = userAccountSettingsService.getUserSettings(gym.getId());
-        return ResponseEntity.ok(ApiResponse.success(gymSettings));
-    }
-
-    @PutMapping("update/me")
-    public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
-        String currentGymEmail = getCurrentGymEmail();
-        UserResponseDto gym = userService.getUserSummaryByEmail(currentGymEmail);
-
-        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(gym.getId(), newSettings);
-        LOGGER.info("Updated settings: " + updatedSettings);
-
-        return ResponseEntity.ok(ApiResponse.success(updatedSettings));
-    }
-
+//    @GetMapping("/me")
+//    public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
+//        String currentGymEmail = getCurrentGymEmail();
+//        UserProfileDto profile = userService.getUserProfileByEmail(currentGymEmail);
+//        AccountSettingsDto settings = userAccountSettingsService.getUserSettings(profile.);
+//        return ResponseEntity.ok(ApiResponse.success(settings));
+//    }
+//
+//    @PutMapping("update/me")
+//    public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
+//        String authenticatedEmail = getCurrentGymEmail();
+//        UserProfileDto profile = userService.getUserProfileByEmail(authenticatedEmail);
+//
+//        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(profile.getId(), newSettings);
+//        LOGGER.info("Updated settings: " + updatedSettings);
+//
+//        return ResponseEntity.ok(ApiResponse.success(updatedSettings));
+//    }
 
 
     private String getCurrentGymEmail() {

@@ -40,8 +40,8 @@ public class AuthController {
     }
 
     @PostMapping(path = "/register")
-    public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestDto userDto, @RequestBody TenantDto tenantDto) {
-        RegistrationResponseDto response = authenticationService.registerUser(userDto, tenantDto);
+    public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
+        RegistrationResponseDto response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

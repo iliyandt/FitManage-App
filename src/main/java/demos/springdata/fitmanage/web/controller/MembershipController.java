@@ -2,9 +2,9 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.MembershipService;
 import jakarta.validation.Valid;
@@ -26,17 +26,17 @@ public class MembershipController {
         this.membershipPlanService = membershipPlanService;
     }
 
-    @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<UserResponseDto>> updateSubscription(
+    @PutMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<UserProfileDto>> initializeSubscription(
             @PathVariable Long memberId,
             @RequestBody @Valid MemberSubscriptionRequestDto dto) {
 
-        UserResponseDto response = membershipService.initializeSubscription(memberId, dto);
+        UserProfileDto response = membershipService.initializeSubscription(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/plans/options")
-    public ResponseEntity<ApiResponse<List<EnumOption>>> getAllSubscriptionPlans() {
+    public ResponseEntity<ApiResponse<List<EnumOption>>> getAccountSubscriptionPlans() {
         List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPricesAsPriceDto();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))

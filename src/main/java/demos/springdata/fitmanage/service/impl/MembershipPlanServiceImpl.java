@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanUpdateDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
 import demos.springdata.fitmanage.domain.entity.MembershipPlan;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;

@@ -1,13 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.tenant.users.*;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -27,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -63,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public UserResponseDto createMember(UserCreateRequestDto requestDto) {
+    public UserProfileDto createMember(UserCreateRequestDto requestDto) {
         String userEmail = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(userEmail);
 
@@ -81,7 +80,7 @@ public class MemberServiceImpl implements MemberService {
         userService.save(user);
         LOGGER.info("Successfully added member with ID {} to gym '{}'", user.getId(), tenant.getName());
 
-        return modelMapper.map(user, UserResponseDto.class);
+        return modelMapper.map(user, MemberResponseDto.class);
     }
 
     @Override
@@ -100,14 +99,14 @@ public class MemberServiceImpl implements MemberService {
     //TODO: dto maps 3 classes at once. How to optimize?
     @Transactional
     @Override
-    public UserResponseDto checkInMember(Long memberId) {
+    public UserProfileDto checkInMember(Long memberId) {
         User user = userService.findUserById(memberId);
         Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
 
         Membership updatedMembership = membershipService.checkIn(activeMembership);
         Visit visit = visitService.checkIn(activeMembership, memberId);
 
-        return modelMapper.map(user, UserResponseDto.class)
+        return modelMapper.map(user, MemberResponseDto.class)
                 .setAllowedVisits(updatedMembership.getAllowedVisits())
                 .setRemainingVisits(updatedMembership.getRemainingVisits())
                 .setEmployment(updatedMembership.getEmployment())
@@ -120,9 +119,8 @@ public class MemberServiceImpl implements MemberService {
 
 
     @Override
-    public UserResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
-        User user = userService.findUserById(memberId);
-        return userService.updateProfile(user.getId(), updateRequest);
+    public UserProfileDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
+        return userService.updateProfile(memberId, updateRequest);
     }
 
     @Transactional(readOnly = true)
@@ -160,13 +158,34 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
-    //TODO: responseDto returns not the information about membership
+
+    //TODO: refactor, it contains duplicate code lines form UserServiceImpl: mapMemberProfile()
     @Transactional
     @Override
-    public UserResponseDto findMember(MemberFilterRequestDto filter) {
-        return findFirstMemberByFilter(filter)
-                .map(member -> modelMapper.map(member, UserResponseDto.class))
+    public UserProfileDto findMember(MemberFilterRequestDto filter) {
+        User user = findFirstMemberByFilter(filter)
                 .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+
+        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
+        dto.setUsername(user.getActualUsername());
+
+        Set<RoleType> roles = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        dto.setRoles(roles);
+
+        user.getMemberships().stream().findFirst().ifPresent(m -> {
+            dto.setSubscriptionPlan(m.getSubscriptionPlan())
+                    .setSubscriptionStatus(m.getSubscriptionStatus())
+                    .setSubscriptionStartDate(m.getSubscriptionStartDate())
+                    .setSubscriptionEndDate(m.getSubscriptionEndDate())
+                    .setAllowedVisits(m.getAllowedVisits())
+                    .setRemainingVisits(m.getRemainingVisits())
+                    .setLastCheckInAt(m.getLastCheckInAt())
+                    .setEmployment(m.getEmployment());
+        });
+
+        return dto;
     }
 
     private Tenant getTenantByEmail(String email) {

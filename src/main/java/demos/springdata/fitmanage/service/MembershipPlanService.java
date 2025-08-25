@@ -1,8 +1,7 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanUpdateDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
 
 
 import java.util.List;

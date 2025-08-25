@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
@@ -33,11 +33,11 @@ public class TenantServiceImpl implements TenantService {
 
     @Transactional
     @Override
-    public List<UserResponseDto> getAllTenants() {
+    public List<UserBaseResponseDto> getAllTenants() {
         LOGGER.info("Retrieving all tenants..");
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> this.modelMapper.map(tenant, UserResponseDto.class))
+                .map(tenant -> this.modelMapper.map(tenant, UserBaseResponseDto.class))
                 .toList();
     }
 }

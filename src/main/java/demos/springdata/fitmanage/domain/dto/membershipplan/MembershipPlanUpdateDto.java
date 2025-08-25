@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.pricing;
+package demos.springdata.fitmanage.domain.dto.membershipplan;
 
 import jakarta.validation.constraints.DecimalMin;
 

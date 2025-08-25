@@ -1,10 +1,10 @@
-package demos.springdata.fitmanage.domain.dto.pricing;
+package demos.springdata.fitmanage.domain.dto.membershipplan;
 
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 
 import java.math.BigDecimal;
 
-public class MemberPlanTableDto {
+public class MembershipPlanTableDto {
     private Long id;
     private SubscriptionPlan subscriptionPlan;
     private BigDecimal price;
@@ -13,14 +13,14 @@ public class MemberPlanTableDto {
     private BigDecimal handicapPrice;
 
 
-    public MemberPlanTableDto() {
+    public MembershipPlanTableDto() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public MemberPlanTableDto setId(Long id) {
+    public MembershipPlanTableDto setId(Long id) {
         this.id = id;
         return this;
     }
@@ -29,7 +29,7 @@ public class MemberPlanTableDto {
         return subscriptionPlan;
     }
 
-    public MemberPlanTableDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
+    public MembershipPlanTableDto setSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
         this.subscriptionPlan = subscriptionPlan;
         return this;
     }
@@ -38,7 +38,7 @@ public class MemberPlanTableDto {
         return price;
     }
 
-    public MemberPlanTableDto setPrice(BigDecimal price) {
+    public MembershipPlanTableDto setPrice(BigDecimal price) {
         this.price = price;
         return this;
     }
@@ -47,7 +47,7 @@ public class MemberPlanTableDto {
         return studentPrice;
     }
 
-    public MemberPlanTableDto setStudentPrice(BigDecimal studentPrice) {
+    public MembershipPlanTableDto setStudentPrice(BigDecimal studentPrice) {
         this.studentPrice = studentPrice;
         return this;
     }
@@ -56,7 +56,7 @@ public class MemberPlanTableDto {
         return seniorPrice;
     }
 
-    public MemberPlanTableDto setSeniorPrice(BigDecimal seniorPrice) {
+    public MembershipPlanTableDto setSeniorPrice(BigDecimal seniorPrice) {
         this.seniorPrice = seniorPrice;
         return this;
     }
@@ -65,7 +65,7 @@ public class MemberPlanTableDto {
         return handicapPrice;
     }
 
-    public MemberPlanTableDto setHandicapPrice(BigDecimal handicapPrice) {
+    public MembershipPlanTableDto setHandicapPrice(BigDecimal handicapPrice) {
         this.handicapPrice = handicapPrice;
         return this;
     }

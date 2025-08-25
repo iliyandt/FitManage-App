@@ -2,8 +2,7 @@ package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.config.*;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.team.response.StaffMemberTableDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,15 +120,8 @@ public class TableHelper {
                     "birthDate"
             ),
 
-            StaffMemberTableDto.class, Set.of(
-                    "firstName",
-                    "lastName",
-                    "username",
-                    "email",
-                    "roleSelection"
-            ),
 
-            MemberPlanTableDto.class, Set.of(
+            MembershipPlanTableDto.class, Set.of(
                     "price",
                     "studentPrice",
                     "seniorPrice",
@@ -139,8 +131,8 @@ public class TableHelper {
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
             MemberTableDto.class, Set.of("firstName", "lastName", "phone", "subscriptionStatus"),
-            StaffMemberTableDto.class, Set.of("firstName", "lastName", "email", "phone", "staffRoleName"),
-            MemberPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
+
+            MembershipPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
             VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone")
     );
 

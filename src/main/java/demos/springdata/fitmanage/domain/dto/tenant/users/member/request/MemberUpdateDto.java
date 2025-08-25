@@ -11,15 +11,12 @@ import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
 public class MemberUpdateDto extends UserUpdateDto {
-
-
     @Size(min = 2, max = 15)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
     private String firstName;
     @Size(min = 2, max = 30)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
-    @Email(message = "Email must be valid")
     private String email;
     private Employment employment;
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")

@@ -2,9 +2,9 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MemberPlanTableDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanUpdateDto;
-import demos.springdata.fitmanage.domain.dto.pricing.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.MembershipPlanService;
@@ -48,8 +48,8 @@ public class MembershipPlanController {
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
         List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/membership-plans", MemberPlanTableDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(MemberPlanTableDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/membership-plans", MembershipPlanTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(MembershipPlanTableDto.class));
         response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
 
         return ResponseEntity.ok(ApiResponse.success(response));

@@ -1,8 +1,9 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.tenant.users.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.tenant.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.tenant.users.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.tenant.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -40,10 +40,10 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
 
-    //TODO: response returns only the membership details but not the user details
+    //TODO: refactor for better separation of concerns
     @Transactional
     @Override
-    public UserResponseDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
+    public UserProfileDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
@@ -65,8 +65,19 @@ public class MembershipServiceImpl implements MembershipService {
         }
 
         Membership saved = membershipRepository.save(membership);
+        user.getMemberships().add(saved);
 
-        return modelMapper.map(saved, UserResponseDto.class);
+        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
+        dto.setUsername(user.getActualUsername());
+
+        return dto.setSubscriptionPlan(saved.getSubscriptionPlan())
+                .setSubscriptionStatus(saved.getSubscriptionStatus())
+                .setSubscriptionStartDate(saved.getSubscriptionStartDate())
+                .setSubscriptionEndDate(saved.getSubscriptionEndDate())
+                .setAllowedVisits(saved.getAllowedVisits())
+                .setRemainingVisits(saved.getRemainingVisits())
+                .setLastCheckInAt(saved.getLastCheckInAt())
+                .setEmployment(saved.getEmployment());
     }
 
 
