@@ -29,25 +29,24 @@ public class AccountSettingsController {
         this.userService = userService;
     }
 
-//    @GetMapping("/me")
-//    public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
-//        String currentGymEmail = getCurrentGymEmail();
-//        UserProfileDto profile = userService.getUserProfileByEmail(currentGymEmail);
-//        AccountSettingsDto settings = userAccountSettingsService.getUserSettings(profile.);
-//        return ResponseEntity.ok(ApiResponse.success(settings));
-//    }
-//
-//    @PutMapping("update/me")
-//    public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
-//        String authenticatedEmail = getCurrentGymEmail();
-//        UserProfileDto profile = userService.getUserProfileByEmail(authenticatedEmail);
-//
-//        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(profile.getId(), newSettings);
-//        LOGGER.info("Updated settings: " + updatedSettings);
-//
-//        return ResponseEntity.ok(ApiResponse.success(updatedSettings));
-//    }
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
+        String currentGymEmail = getCurrentGymEmail();
+        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(currentGymEmail);
+        AccountSettingsDto settings = userAccountSettingsService.getUserSettings(profile.getId());
+        return ResponseEntity.ok(ApiResponse.success(settings));
+    }
 
+    @PutMapping("update/me")
+    public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
+        String authenticatedEmail = getCurrentGymEmail();
+        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(authenticatedEmail);
+
+        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(profile.getId(), newSettings);
+        LOGGER.info("Updated settings: " + updatedSettings);
+
+        return ResponseEntity.ok(ApiResponse.success(updatedSettings));
+    }
 
     private String getCurrentGymEmail() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
