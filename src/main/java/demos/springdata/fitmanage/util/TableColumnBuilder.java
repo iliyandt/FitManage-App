@@ -8,6 +8,7 @@ import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class TableColumnBuilder {
@@ -75,8 +76,10 @@ public class TableColumnBuilder {
             return "date";
         } else if (type.isEnum()) {
             return "enum";
+        } else if (type == Set.class){
+            return "array";
         } else {
-            return "object"; 
+            return "object";
         }
     }
 

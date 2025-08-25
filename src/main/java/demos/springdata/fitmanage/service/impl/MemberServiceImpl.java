@@ -132,10 +132,20 @@ public class MemberServiceImpl implements MemberService {
         String email = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(email);
 
-        List<User> members = tenant.getUsers();
+        List<User> users = tenant.getUsers();
 
-        return members.stream().filter(m -> m.getRoles().contains(roleService.findByName(RoleType.FACILITY_MEMBER)))
-                .map(member -> modelMapper.map(member, MemberTableDto.class))
+        return users.stream().filter(m -> m.getRoles().contains(roleService.findByName(RoleType.FACILITY_MEMBER)))
+                .map(user -> {
+                    MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
+
+                    Set<RoleType> roleTypes = user.getRoles()
+                            .stream()
+                            .map(Role::getName)
+                            .collect(Collectors.toSet());
+
+                    dto.setRoles(roleTypes);
+                    return dto;
+                })
                 .toList();
     }
 

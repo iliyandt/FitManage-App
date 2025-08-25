@@ -1,14 +1,11 @@
 package demos.springdata.fitmanage.domain.dto.member.response;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import demos.springdata.fitmanage.domain.entity.Role;
-import demos.springdata.fitmanage.domain.enums.Employment;
-import demos.springdata.fitmanage.domain.enums.Gender;
-import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
+import demos.springdata.fitmanage.domain.enums.*;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 public class MemberTableDto {
@@ -18,7 +15,7 @@ public class MemberTableDto {
     private String lastName;
     private String email;
     private Gender gender;
-    private Set<Role> roles;
+    private Set<RoleType> roles = new HashSet<>();
     private Employment employment;
     private OffsetDateTime birthDate;
     private SubscriptionStatus subscriptionStatus;
@@ -73,11 +70,11 @@ public class MemberTableDto {
         this.gender = gender;
     }
 
-    public Set<Role> getRoles() {
+    public Set<RoleType> getRoles() {
         return roles;
     }
 
-    public MemberTableDto setRoles(Set<Role> roles) {
+    public MemberTableDto setRoles(Set<RoleType> roles) {
         this.roles = roles;
         return this;
     }
