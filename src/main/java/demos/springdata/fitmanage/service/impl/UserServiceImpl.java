@@ -59,6 +59,7 @@ public class UserServiceImpl implements UserService {
         return mapBaseProfile(user, roles);
     }
 
+    //TODO: is this the best way to map the role to the response?
     @Override
     public UserProfileDto updateProfile(Long id, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for user with id: {}", id);
@@ -67,9 +68,18 @@ public class UserServiceImpl implements UserService {
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(dto, user);
 
+
         User savedUser = userRepository.save(user);
 
-        return modelMapper.map(savedUser, UserBaseResponseDto.class);
+        UserBaseResponseDto response = modelMapper.map(savedUser, UserBaseResponseDto.class);
+
+        Set<RoleType> roleTypes = user.getRoles()
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        response.setRoles(roleTypes);
+
+        return response;
     }
 
     @Override
