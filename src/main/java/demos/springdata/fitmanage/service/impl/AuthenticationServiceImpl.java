@@ -17,6 +17,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
+import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.EmailService;
@@ -196,9 +197,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private static void verifyAccountStatus(UserDetails authUser) {
-        if (authUser instanceof User user) {
+        if (authUser instanceof CustomUserDetails user) {
             if (!user.isEnabled()) {
-                throw new FitManageAppException("Account not verified. Please verify your account", ApiErrorCode.UNAUTHORIZED);
+                throw new FitManageAppException("Account not verified. Please verify your account"
+                        , ApiErrorCode.UNAUTHORIZED);
             }
         }
     }

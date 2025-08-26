@@ -146,7 +146,7 @@ public class MemberServiceImpl implements MemberService {
         Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
 
 
-        List<MemberTableDto> list = tenant.getUsers().stream()
+        return tenant.getUsers().stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
@@ -169,8 +169,6 @@ public class MemberServiceImpl implements MemberService {
                     return dto;
                 })
                 .toList();
-
-        return list;
     }
 
     //TODO: contains duplicate code from the getAllMembersForTable()
