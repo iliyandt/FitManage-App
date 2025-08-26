@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         return mapBaseProfile(user, roles);
     }
 
-    //TODO: is this the best way to map the role to the response?
+    //TODO: is this the best way to map the role to the response? do we need a response for the update?
     @Override
     public UserProfileDto updateProfile(Long id, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for user with id: {}", id);

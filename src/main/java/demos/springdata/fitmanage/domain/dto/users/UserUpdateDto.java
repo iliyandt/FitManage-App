@@ -12,6 +12,7 @@ public class UserUpdateDto {
     @Size(min = 2, max = 30)
     @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
     private String lastName;
+    private String username;
     private String phone;
     private String address;
     private String city;
@@ -34,6 +35,15 @@ public class UserUpdateDto {
 
     public UserUpdateDto setLastName(String lastName) {
         this.lastName = lastName;
+        return this;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public UserUpdateDto setUsername(String username) {
+        this.username = username;
         return this;
     }
 
