@@ -3,8 +3,9 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.accountsettings.AccountSettingsDto;
 import demos.springdata.fitmanage.domain.entity.AccountSettings;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.repository.GymAccountSettingsRepository;
+import demos.springdata.fitmanage.repository.AccountSettingsRepository;
 import demos.springdata.fitmanage.service.UserAccountSettingsService;
+import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +18,16 @@ import java.util.Map;
 @Service
 public class UserAccountSettingsServiceImpl implements UserAccountSettingsService {
 
-    private final GymAccountSettingsRepository accountSettingsRepository;
+    private final AccountSettingsRepository accountSettingsRepository;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
+    private final UserService userService;
 
     @Autowired
-    public UserAccountSettingsServiceImpl(GymAccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper) {
+    public UserAccountSettingsServiceImpl(AccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper, UserService userService) {
         this.accountSettingsRepository = accountSettingsRepository;
         this.modelMapper = modelMapper;
+        this.userService = userService;
     }
 
 
@@ -40,10 +43,12 @@ public class UserAccountSettingsServiceImpl implements UserAccountSettingsServic
     @Transactional
     public AccountSettingsDto updateUserSettings(Long id, Map<String, Object> newSettings) {
         LOGGER.info("Updating account settings for account ID {}", id);
+        User user = userService.findUserById(id);
+
         AccountSettings settings = accountSettingsRepository.findByUserId(id)
                 .orElseGet(() -> {
                     AccountSettings accountSettings = new AccountSettings();
-                    accountSettings.setUser(new User());
+                    accountSettings.setUser(user);
                     return accountSettings;
                 });
         settings.getSettings().putAll(newSettings);

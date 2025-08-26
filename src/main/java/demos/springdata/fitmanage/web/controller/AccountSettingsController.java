@@ -21,7 +21,6 @@ import java.util.Map;
 public class AccountSettingsController {
     private final UserAccountSettingsService userAccountSettingsService;
     private final UserService userService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
     public AccountSettingsController(UserAccountSettingsService userAccountSettingsService, UserService userService) {
         this.userAccountSettingsService = userAccountSettingsService;
@@ -42,7 +41,6 @@ public class AccountSettingsController {
         UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(authenticatedEmail);
 
         AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(profile.getId(), newSettings);
-        LOGGER.info("Updated settings: " + updatedSettings);
 
         return ResponseEntity.ok(ApiResponse.success(updatedSettings));
     }

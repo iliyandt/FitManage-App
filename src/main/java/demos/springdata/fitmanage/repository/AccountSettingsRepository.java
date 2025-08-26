@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface GymAccountSettingsRepository extends JpaRepository<AccountSettings, Long> {
+public interface AccountSettingsRepository extends JpaRepository<AccountSettings, Long> {
     Optional<AccountSettings> findByUserId(Long id);
 }

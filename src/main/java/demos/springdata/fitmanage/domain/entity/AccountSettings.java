@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "gym_account_settings")
+@Table(name = "account_settings")
 public class AccountSettings extends BaseEntity {
     @OneToOne
-    @JoinColumn(name = "gym_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @Column(columnDefinition = "TEXT")
