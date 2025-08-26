@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
@@ -115,7 +114,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public UserProfileDto checkInMember(Long memberId) {
         User user = userService.findUserById(memberId);
-        Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
+        Membership activeMembership = membershipService.getRequiredActiveMembership(user.getMemberships());
 
         Membership updatedMembership = membershipService.checkIn(activeMembership);
         Visit visit = visitService.checkIn(activeMembership, memberId);
@@ -152,15 +151,14 @@ public class MemberServiceImpl implements MemberService {
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
 
-                    Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
-
-                    if (activeMembership != null) {
-                        dto.setSubscriptionStatus(activeMembership.getSubscriptionStatus());
-                        dto.setSubscriptionPlan(activeMembership.getSubscriptionPlan());
-                        dto.setAllowedVisits(activeMembership.getAllowedVisits());
-                        dto.setRemainingVisits(activeMembership.getRemainingVisits());
-                        dto.setEmployment(activeMembership.getEmployment());
-                    }
+                    membershipService.getActiveMembership(user.getMemberships())
+                            .ifPresent(membership -> {
+                                dto.setSubscriptionStatus(membership.getSubscriptionStatus());
+                                dto.setSubscriptionPlan(membership.getSubscriptionPlan());
+                                dto.setAllowedVisits(membership.getAllowedVisits());
+                                dto.setRemainingVisits(membership.getRemainingVisits());
+                                dto.setEmployment(membership.getEmployment());
+                            });
 
                     Set<RoleType> roleTypes = user.getRoles().stream()
                             .map(Role::getName)
@@ -195,7 +193,7 @@ public class MemberServiceImpl implements MemberService {
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
 
-                    Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
+                    Optional<Membership> activeMembership = membershipService.getActiveMembership(user.getMemberships());
 
                     modelMapper.map(activeMembership, dto);
 

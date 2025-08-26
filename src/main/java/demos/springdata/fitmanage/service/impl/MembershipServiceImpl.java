@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -108,11 +109,18 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Membership getActiveMembership(Set<Membership> memberships) {
+    public Membership getRequiredActiveMembership(Set<Membership> memberships) {
         return memberships.stream()
                 .filter(Membership::isActive)
                 .findFirst()
                 .orElseThrow(() -> new FitManageAppException("User doesn't have active membership", ApiErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    public Optional<Membership> getActiveMembership(Set<Membership> memberships) {
+        return memberships.stream()
+                .filter(Membership::isActive)
+                .findFirst();
     }
 
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
