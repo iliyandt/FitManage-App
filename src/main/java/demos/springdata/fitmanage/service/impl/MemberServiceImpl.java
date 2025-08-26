@@ -146,14 +146,20 @@ public class MemberServiceImpl implements MemberService {
         Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
 
 
-        return tenant.getUsers().stream()
+        List<MemberTableDto> list = tenant.getUsers().stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
 
                     Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
 
-                    modelMapper.map(activeMembership, dto);
+                    if (activeMembership != null) {
+                        dto.setSubscriptionStatus(activeMembership.getSubscriptionStatus());
+                        dto.setSubscriptionPlan(activeMembership.getSubscriptionPlan());
+                        dto.setAllowedVisits(activeMembership.getAllowedVisits());
+                        dto.setRemainingVisits(activeMembership.getRemainingVisits());
+                        dto.setEmployment(activeMembership.getEmployment());
+                    }
 
                     Set<RoleType> roleTypes = user.getRoles().stream()
                             .map(Role::getName)
@@ -163,6 +169,8 @@ public class MemberServiceImpl implements MemberService {
                     return dto;
                 })
                 .toList();
+
+        return list;
     }
 
     //TODO: contains duplicate code from the getAllMembersForTable()
