@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.domain.dto.tenant;
 import java.time.LocalDate;
 
 public class TenantDto {
+    private Long id;
     private String name;
     private String businessEmail;
     private String address;
@@ -10,6 +11,15 @@ public class TenantDto {
     private LocalDate subscriptionValidUntil;
 
     public TenantDto() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public TenantDto setId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public String getName() {

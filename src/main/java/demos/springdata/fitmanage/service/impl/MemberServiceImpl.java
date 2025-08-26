@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
@@ -238,12 +239,9 @@ public class MemberServiceImpl implements MemberService {
         return dto;
     }
 
-    private Tenant getTenantByEmail(String email) {
-        return tenantService.getTenantByEmail(email)
-                .orElseThrow(() -> {
-                    LOGGER.warn("User with email {} not found.", email);
-                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
-                });
+
+    public Tenant getTenantByEmail(String email) {
+        return tenantService.getTenantByEmail(email);
     }
 
     private String getAuthenticatedUserEmail() {

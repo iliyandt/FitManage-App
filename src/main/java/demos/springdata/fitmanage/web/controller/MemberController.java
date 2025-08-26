@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
@@ -32,7 +33,6 @@ public class MemberController {
         this.memberService = memberService;
         this.tableHelper = tableHelper;
     }
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<TableResponseDto>> getMembers(

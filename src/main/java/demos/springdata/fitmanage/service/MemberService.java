@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.entity.Tenant;
 
 import java.util.List;
 

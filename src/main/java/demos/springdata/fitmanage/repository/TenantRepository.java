@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface TenantRepository extends JpaRepository<Tenant, Long> {
     @Query("SELECT t FROM Tenant t JOIN t.users u WHERE u.email = :email")
-    Optional<Tenant> findTenantByUserEmail(@Param("email") String email);
+    Tenant findTenantByUserEmail(@Param("email") String email);
 
     Optional<Tenant> findByName(String name);
 }

@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.repository.TenantRepository;
@@ -9,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +30,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Optional<Tenant> getTenantByEmail(String email) {
+    public Tenant getTenantByEmail(String email) {
         return tenantRepository.findTenantByUserEmail(email);
     }
 
@@ -39,5 +42,12 @@ public class TenantServiceImpl implements TenantService {
                 .stream()
                 .map(tenant -> this.modelMapper.map(tenant, UserBaseResponseDto.class))
                 .toList();
+    }
+
+    @Override
+    public TenantDto getTenantDtoByEmail() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Tenant tenant = getTenantByEmail(email);
+        return modelMapper.map(tenant, TenantDto.class);
     }
 }
