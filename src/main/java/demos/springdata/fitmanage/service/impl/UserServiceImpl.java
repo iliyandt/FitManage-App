@@ -129,6 +129,8 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
+
+    //TODO: contains duplicate code from MemberServiceImpl findMember()
     private MemberResponseDto mapMemberProfile(User user, Set<RoleType> roles) {
         MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
         dto.setUsername(user.getActualUsername());
