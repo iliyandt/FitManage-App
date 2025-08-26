@@ -30,7 +30,7 @@ public class TenantController {
         return ResponseEntity.ok(allTenants);
     }
 
-    @PreAuthorize("hasAuthority('FACILITY_MEMBER')")
+    @PreAuthorize("hasAnyAuthority('FACILITY_MEMBER', 'FACILITY_STAFF', 'FACILITY_ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<TenantDto>> getTenantForCurrentMember() {
         return ResponseEntity.ok(ApiResponse.success(tenantService.getTenantDtoByEmail()));
