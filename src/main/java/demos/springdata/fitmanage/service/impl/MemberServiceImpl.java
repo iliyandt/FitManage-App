@@ -25,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +63,12 @@ public class MemberServiceImpl implements MemberService {
         this.visitService = visitService;
     }
 
+    //TODO optimize every method where i should map the roles manually like this to use overall:
+//    private Set<RoleType> extractRoleTypes(User user) {
+//        return user.getRoles().stream()
+//                .map(Role::getName)
+//                .collect(Collectors.toSet());
+//    }
     @Transactional
     @Override
     public UserProfileDto createMember(UserCreateRequestDto requestDto) {
@@ -78,11 +85,15 @@ public class MemberServiceImpl implements MemberService {
 
         validateCredentials(user, requestDto);
 
-        user.setTenant(tenant);
         userService.save(user);
-        LOGGER.info("Successfully added member with ID {} to gym '{}'", user.getId(), tenant.getName());
+        LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        return modelMapper.map(user, MemberResponseDto.class);
+        return modelMapper.map(user, MemberResponseDto.class)
+                .setRoles(
+                        user.getRoles().stream()
+                                .map(Role::getName)
+                                .collect(Collectors.toSet())
+                );
     }
 
     @Override
@@ -132,23 +143,29 @@ public class MemberServiceImpl implements MemberService {
         String email = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(email);
 
-        List<User> users = tenant.getUsers();
+        Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
 
-        return users.stream().filter(m -> m.getRoles().contains(roleService.findByName(RoleType.FACILITY_MEMBER)))
+
+        return tenant.getUsers().stream()
+                .filter(user -> user.getRoles().contains(facilityMemberRole))
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
 
-                    Set<RoleType> roleTypes = user.getRoles()
-                            .stream()
+                    Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
+
+                    modelMapper.map(activeMembership, dto);
+
+                    Set<RoleType> roleTypes = user.getRoles().stream()
                             .map(Role::getName)
                             .collect(Collectors.toSet());
-
                     dto.setRoles(roleTypes);
+
                     return dto;
                 })
                 .toList();
     }
 
+    //TODO: contains duplicate code from the getAllMembersForTable()
     @Transactional
     @Override
     public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
@@ -164,9 +181,24 @@ public class MemberServiceImpl implements MemberService {
         if (memberList.isEmpty())
             throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
 
+        Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
         return memberList
                 .stream()
-                .map(member -> modelMapper.map(member, MemberTableDto.class))
+                .filter(user -> user.getRoles().contains(facilityMemberRole))
+                .map(user -> {
+                    MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
+
+                    Membership activeMembership = membershipService.getActiveMembership(user.getMemberships());
+
+                    modelMapper.map(activeMembership, dto);
+
+                    Set<RoleType> roleTypes = user.getRoles().stream()
+                            .map(Role::getName)
+                            .collect(Collectors.toSet());
+                    dto.setRoles(roleTypes);
+
+                    return dto;
+                })
                 .toList();
     }
 

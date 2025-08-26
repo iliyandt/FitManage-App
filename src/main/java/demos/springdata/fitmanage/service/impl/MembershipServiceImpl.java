@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
+import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -40,7 +42,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
 
-    //TODO: refactor for better separation of concerns
+    //TODO: refactor for better separation of concerns!!!!
     @Transactional
     @Override
     public UserProfileDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
@@ -54,9 +56,13 @@ public class MembershipServiceImpl implements MembershipService {
                         .setUser(user)
                         .setTenant(tenant));
 
+
         SubscriptionPlan plan = requestDto.getSubscriptionPlan();
         membership.setSubscriptionPlan(plan)
-                .setEmployment(requestDto.getEmployment());
+                .setEmployment(requestDto.getEmployment())
+                .setUser(user)
+                .setTenant(tenant);
+
 
         if (plan.isVisitBased()) {
             initializeVisitBasedSubscription(membership, requestDto);
@@ -64,13 +70,19 @@ public class MembershipServiceImpl implements MembershipService {
             initializeTimeBasedSubscription(membership);
         }
 
+
         Membership saved = membershipRepository.save(membership);
         user.getMemberships().add(saved);
 
-        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
-        dto.setUsername(user.getActualUsername());
+        MemberResponseDto memberResponse = modelMapper.map(user, MemberResponseDto.class);
+        memberResponse.setUsername(user.getActualUsername());
+        memberResponse.setRoles(
+                user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toSet())
+        );
 
-        return dto.setSubscriptionPlan(saved.getSubscriptionPlan())
+        return memberResponse.setSubscriptionPlan(saved.getSubscriptionPlan())
                 .setSubscriptionStatus(saved.getSubscriptionStatus())
                 .setSubscriptionStartDate(saved.getSubscriptionStartDate())
                 .setSubscriptionEndDate(saved.getSubscriptionEndDate())

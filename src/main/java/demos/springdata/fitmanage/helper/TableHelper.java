@@ -60,7 +60,7 @@ public class TableHelper {
             field.setAccessible(true);
             try {
                 Object value = field.get(dto);
-                row.put(field.getName(), value != null ? value : "N/A");
+                row.put(field.getName(), value);
             } catch (IllegalAccessException e) {
                 row.put(field.getName(), "ERROR");
             }
