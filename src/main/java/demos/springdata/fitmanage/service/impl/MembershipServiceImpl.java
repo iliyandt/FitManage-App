@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,56 +43,23 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
 
-    //TODO: refactor for better separation of concerns!!!!
+    //TODO: when plan is single visit should it be automatically checkedIn or no? if yes the visit should be at the same day/hour, if not it can be used other time.
     @Transactional
     @Override
-    public UserProfileDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto) {
+    public UserProfileDto setupMembershipPlan(Long memberId, MemberSubscriptionRequestDto requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
-        LOGGER.info("Initializing subscription for user with username: {}", user.getActualUsername());
-
         Membership membership = membershipRepository.findByUserAndTenant(user, tenant)
-                .orElseGet(() -> new Membership()
-                        .setUser(user)
-                        .setTenant(tenant));
+                .orElseThrow(() -> new FitManageAppException("User has no created membership.", ApiErrorCode.NOT_FOUND));
 
+        activateMembership(membership, user, requestDto);
 
-        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
-        membership.setSubscriptionPlan(plan)
-                .setEmployment(requestDto.getEmployment())
-                .setUser(user)
-                .setTenant(tenant);
+        Membership savedMembership = membershipRepository.save(membership);
+        user.getMemberships().add(savedMembership);
 
-
-        if (plan.isVisitBased()) {
-            initializeVisitBasedSubscription(membership, requestDto);
-        } else {
-            initializeTimeBasedSubscription(membership);
-        }
-
-
-        Membership saved = membershipRepository.save(membership);
-        user.getMemberships().add(saved);
-
-        MemberResponseDto memberResponse = modelMapper.map(user, MemberResponseDto.class);
-        memberResponse.setUsername(user.getActualUsername());
-        memberResponse.setRoles(
-                user.getRoles().stream()
-                        .map(Role::getName)
-                        .collect(Collectors.toSet())
-        );
-
-        return memberResponse.setSubscriptionPlan(saved.getSubscriptionPlan())
-                .setSubscriptionStatus(saved.getSubscriptionStatus())
-                .setSubscriptionStartDate(saved.getSubscriptionStartDate())
-                .setSubscriptionEndDate(saved.getSubscriptionEndDate())
-                .setAllowedVisits(saved.getAllowedVisits())
-                .setRemainingVisits(saved.getRemainingVisits())
-                .setLastCheckInAt(saved.getLastCheckInAt())
-                .setEmployment(saved.getEmployment());
+        return getMappedUserAndMembershipDetails(user, savedMembership);
     }
-
 
     @Override
     @Transactional
@@ -108,7 +75,6 @@ public class MembershipServiceImpl implements MembershipService {
         }
 
         if (membership.getSubscriptionPlan().isVisitBased()) {
-
             if (membership.getRemainingVisits() <= 0) {
                 membership.setSubscriptionPlan(null);
                 membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
@@ -132,13 +98,6 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Optional<Membership> getActiveMembership(Set<Membership> memberships) {
-        return memberships.stream()
-                .filter(Membership::isActive)
-                .findFirst();
-    }
-
-    @Override
     public void save(Membership membership) {
         membershipRepository.save(membership);
     }
@@ -151,9 +110,11 @@ public class MembershipServiceImpl implements MembershipService {
                 : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
 
         membership
+                .setSubscriptionPlan(requestDto.getSubscriptionPlan())
+                .setSubscriptionStatus(SubscriptionStatus.ACTIVE)
+                .setEmployment(requestDto.getEmployment())
                 .setAllowedVisits(allowedVisits)
                 .setRemainingVisits(allowedVisits)
-                .setSubscriptionStatus(SubscriptionStatus.ACTIVE)
                 .setSubscriptionStartDate(LocalDateTime.now())
                 .setSubscriptionEndDate(null);
     }
@@ -178,6 +139,36 @@ public class MembershipServiceImpl implements MembershipService {
         };
     }
 
+    private MemberResponseDto getMappedUserAndMembershipDetails(User user, Membership savedMembership) {
+        MemberResponseDto memberResponse = modelMapper.map(user, MemberResponseDto.class);
+        modelMapper.map(savedMembership, memberResponse);
+        memberResponse.setUsername(user.getActualUsername());
+        memberResponse.setRoles(extractRoleTypes(user));
+
+        return memberResponse;
+    }
+
+    private void activateMembership(Membership membership, User user, MemberSubscriptionRequestDto requestDto) {
+        LOGGER.info("Activating membership for user with username: {}", user.getActualUsername());
+        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
+
+        if (plan.isVisitBased()) {
+            initializeVisitBasedSubscription(membership, requestDto);
+        } else {
+            membership.setEmployment(requestDto.getEmployment());
+            membership.setSubscriptionPlan(plan);
+            initializeTimeBasedSubscription(membership);
+        }
+
+    }
+
+    private Set<RoleType> extractRoleTypes(User user) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
+
+    //TODO: use for validating before setting new membership, if the new requested membership is like some old one update the old one.
     private void validateSubscriptionChange(Membership membership, MemberUpdateDto updateRequest) {
         SubscriptionPlan currentPlan = membership.getSubscriptionPlan();
         SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();

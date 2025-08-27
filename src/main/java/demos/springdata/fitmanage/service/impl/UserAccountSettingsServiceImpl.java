@@ -19,9 +19,10 @@ import java.util.Map;
 public class UserAccountSettingsServiceImpl implements UserAccountSettingsService {
 
     private final AccountSettingsRepository accountSettingsRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
-    private final UserService userService;
+
 
     @Autowired
     public UserAccountSettingsServiceImpl(AccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper, UserService userService) {
@@ -29,7 +30,6 @@ public class UserAccountSettingsServiceImpl implements UserAccountSettingsServic
         this.modelMapper = modelMapper;
         this.userService = userService;
     }
-
 
     @Override
     public AccountSettingsDto getUserSettings(Long id) {

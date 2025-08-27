@@ -24,13 +24,11 @@ public class VisitServiceImpl implements VisitService {
     private static final Logger LOGGER = LoggerFactory.getLogger(VisitServiceImpl.class);
     private final ModelMapper modelMapper;
 
-
     @Autowired
     public VisitServiceImpl(VisitRepository visitRepository, ModelMapper modelMapper) {
         this.visitRepository = visitRepository;
         this.modelMapper = modelMapper;
     }
-
 
     //TODO: What information to return in the DTO?
     @Override
@@ -63,16 +61,12 @@ public class VisitServiceImpl implements VisitService {
         return savedVisit;
     }
 
-
-
+    //TODO: add logic
     @Override
     @Transactional
     public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end) {
-
         return List.of();
     }
-
-
 
     private VisitTableResponse manualMapDto(Visit visit) {
         Membership membership = visit.getMembership();

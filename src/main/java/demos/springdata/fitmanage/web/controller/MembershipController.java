@@ -31,7 +31,7 @@ public class MembershipController {
             @PathVariable Long memberId,
             @RequestBody @Valid MemberSubscriptionRequestDto dto) {
 
-        UserProfileDto response = membershipService.initializeSubscription(memberId, dto);
+        UserProfileDto response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

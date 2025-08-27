@@ -39,7 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         this.modelMapper = modelMapper;
     }
 
-    //TODO: Create a dto for the specific case here
+    //TODO: Create a dto for the specific case here?
     @Override
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);
