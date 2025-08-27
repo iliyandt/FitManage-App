@@ -67,6 +67,7 @@ public class User extends BaseEntity implements UserDetails {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user")
+    @OrderBy("createdAt DESC")
     private Set<Membership> memberships = new HashSet<>();
 
     @OneToMany(mappedBy = "user")

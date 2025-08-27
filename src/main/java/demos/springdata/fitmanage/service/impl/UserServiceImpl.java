@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,10 +46,8 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        Set<RoleType> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-        
+        Set<RoleType> roles = extractRoleTypes(user);
+
         if (roles.contains(RoleType.FACILITY_MEMBER)) {
             return mapMemberProfile(user, roles);
         }
@@ -60,7 +59,6 @@ public class UserServiceImpl implements UserService {
         return mapBaseProfile(user, roles);
     }
 
-    //TODO: is this the best way to map the role to the response? do we need a response for the update?
     @Override
     public UserProfileDto updateProfile(Long id, UserUpdateDto dto) {
         LOGGER.info("Updating basic info for user with id: {}", id);
@@ -74,11 +72,7 @@ public class UserServiceImpl implements UserService {
 
         UserBaseResponseDto response = modelMapper.map(savedUser, UserBaseResponseDto.class);
 
-        Set<RoleType> roleTypes = user.getRoles()
-                .stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-        response.setRoles(roleTypes);
+        response.setRoles(extractRoleTypes(user));
 
         return response;
     }
@@ -142,24 +136,24 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-    //TODO: contains duplicate code from MemberServiceImpl findMember()
     private MemberResponseDto mapMemberProfile(User user, Set<RoleType> roles) {
         MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
         dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);
 
-        user.getMemberships().stream().findFirst().ifPresent(m -> {
-            dto.setSubscriptionPlan(m.getSubscriptionPlan())
-                    .setSubscriptionStatus(m.getSubscriptionStatus())
-                    .setSubscriptionStartDate(m.getSubscriptionStartDate())
-                    .setSubscriptionEndDate(m.getSubscriptionEndDate())
-                    .setAllowedVisits(m.getAllowedVisits())
-                    .setRemainingVisits(m.getRemainingVisits())
-                    .setLastCheckInAt(m.getLastCheckInAt())
-                    .setEmployment(m.getEmployment());
-        });
+        Membership membership = user.getMemberships().stream()
+                .max(Comparator.comparing(Membership::getCreatedAt))
+                .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
+        modelMapper.map(membership, dto);
         return dto;
     }
+
+    private Set<RoleType> extractRoleTypes(User user) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
+
 }

@@ -6,7 +6,7 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 import java.time.LocalDateTime;
 
-public final class MemberResponseDto extends UserBaseResponseDto {
+public class MemberResponseDto extends UserBaseResponseDto {
     private SubscriptionPlan subscriptionPlan;
     private SubscriptionStatus subscriptionStatus;
     private LocalDateTime subscriptionStartDate;

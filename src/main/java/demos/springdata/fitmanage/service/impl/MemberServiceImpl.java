@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
@@ -70,12 +71,25 @@ public class MemberServiceImpl implements MemberService {
     public UserProfileDto createMember(UserCreateRequestDto requestDto) {
         String userEmail = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(userEmail);
-        User user = buildAndSendVerificationEmail(requestDto, tenant);
+
+        User user = buildMember(tenant, requestDto);
+
+        validateCredentials(user, requestDto);
+
+        createAndSendInitialPasswordToUser(user);
+
+        Membership membership = createAndLinkMembershipToMember(tenant, user);
+        userService.save(user);
+        membershipService.save(membership);
+
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        return modelMapper.map(user, MemberResponseDto.class)
-                .setRoles(extractRoleTypes(user));
+        UserBaseResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(extractRoleTypes(user));
+        modelMapper.map(membership, mappedMember);
+
+        return mappedMember;
     }
+
 
     @Override
     public void removeMember(Long memberId) {
@@ -120,7 +134,6 @@ public class MemberServiceImpl implements MemberService {
 
         Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
 
-
         return tenant.getUsers().stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
                 .map(this::mapUserToMemberTableDto)
@@ -143,6 +156,7 @@ public class MemberServiceImpl implements MemberService {
             throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
 
         Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
+
         return memberList
                 .stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
@@ -150,15 +164,16 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
-
-    //TODO: refactor, it contains duplicate code lines form UserServiceImpl: mapMemberProfile()
     @Transactional
     @Override
     public UserProfileDto findMember(MemberFilterRequestDto filter) {
         User user = findFirstMemberByFilter(filter)
                 .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
 
-        Membership membership = user.getMemberships().stream().findFirst().orElse(null);
+        Membership membership = user.getMemberships().stream()
+                .max(Comparator.comparing(Membership::getCreatedAt))
+                .orElseThrow(() -> new IllegalStateException("User has no memberships"));
+
         MemberResponseDto dto = mapToResponseDto(user, membership, null);
         dto.setUsername(user.getActualUsername());
         dto.setRoles(extractRoleTypes(user));
@@ -178,43 +193,16 @@ public class MemberServiceImpl implements MemberService {
         return email;
     }
 
-    //TODO: refactor for better separation of concerns
-    private User buildMember(Tenant tenant, UserCreateRequestDto requestDto) throws MessagingException {
-        User user = new User()
-                .setFirstName(requestDto.getFirstName())
-                .setLastName(requestDto.getLastName())
-                .setUsername(requestDto.getUsername())
-                .setEmail(requestDto.getEmail())
-                .setGender(requestDto.getGender())
-                .setBirthDate(requestDto.getBirthDate())
-                .setPhone(requestDto.getPhone())
-                .setTenant(tenant)
+    private User buildMember(Tenant tenant, UserCreateRequestDto requestDto) {
+
+        User user = modelMapper.map(requestDto, User.class);
+        user.setTenant(tenant)
                 .setCreatedAt(LocalDateTime.now())
                 .setUpdatedAt(LocalDateTime.now())
                 .setEnabled(true);
 
-        validateCredentials(user, requestDto);
-        LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
-        String initialPassword = securityUtils.generateDefaultPassword();
-//        LOGGER.info("Sending Email verification code to {}", user.getEmail());
-//        emailService.sendUserVerificationEmail(user.getEmail(), "Account verification", "Verification code: " + user.getVerificationCode());
-        sendInitialPassword(user, initialPassword);
-        user.setPassword(passwordEncoder.encode(initialPassword))
-                .setUpdatedAt(LocalDateTime.now());
-
         Role role = roleService.findByName(RoleType.FACILITY_MEMBER);
         user.getRoles().add(role);
-
-        Membership membership = new Membership()
-                .setTenant(tenant)
-                .setUser(user)
-                .setSubscriptionStatus(SubscriptionStatus.INACTIVE)
-                .setAllowedVisits(0)
-                .setRemainingVisits(0);
-
-        user.getMemberships().add(membership);
-        userService.save(user);
-        membershipService.save(membership);
 
         return user;
     }
@@ -235,6 +223,26 @@ public class MemberServiceImpl implements MemberService {
         if (!errors.isEmpty()) {
             throw new MultipleValidationException(errors);
         }
+    }
+
+    private void createAndSendInitialPasswordToUser(User user) {
+        LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
+        String initialPassword = securityUtils.generateDefaultPassword();
+        sendInitialPassword(user, initialPassword);
+        user.setPassword(passwordEncoder.encode(initialPassword))
+                .setUpdatedAt(LocalDateTime.now());
+    }
+
+    private static Membership createAndLinkMembershipToMember(Tenant tenant, User user) {
+        Membership membership = new Membership()
+                .setTenant(tenant)
+                .setUser(user)
+                .setSubscriptionStatus(SubscriptionStatus.INACTIVE)
+                .setAllowedVisits(0)
+                .setRemainingVisits(0);
+
+        user.getMemberships().add(membership);
+        return membership;
     }
 
     //TODO: extract htmlMessage code, Update with company logo
@@ -263,7 +271,6 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    //TODO: what happens when searching by first and last name and there are 2 members with identical names?
     private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
@@ -276,46 +283,26 @@ public class MemberServiceImpl implements MemberService {
         return userService.findFirstMemberByFilter(spec);
     }
 
-    private User buildAndSendVerificationEmail(UserCreateRequestDto requestDto, Tenant tenant) {
-        User user;
-        try {
-            user = buildMember(tenant, requestDto);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send verification email while creating member: {}", requestDto.getEmail(), e);
-            throw new FitManageAppException("Failed to send verification email", ApiErrorCode.INTERNAL_ERROR);
-        }
-        return user;
-    }
-
     private MemberResponseDto mapToResponseDto(User user, Membership updatedMembership, Visit visit) {
-        MemberResponseDto response = modelMapper.map(user, MemberResponseDto.class)
-                .setAllowedVisits(updatedMembership.getAllowedVisits())
-                .setRemainingVisits(updatedMembership.getRemainingVisits())
-                .setEmployment(updatedMembership.getEmployment())
-                .setSubscriptionPlan(updatedMembership.getSubscriptionPlan())
-                .setSubscriptionStatus(updatedMembership.getSubscriptionStatus())
-                .setSubscriptionStartDate(updatedMembership.getSubscriptionStartDate())
-                .setSubscriptionEndDate(updatedMembership.getSubscriptionEndDate());
+        MemberResponseDto mappedUser = modelMapper.map(user, MemberResponseDto.class);
+        modelMapper.map(updatedMembership, mappedUser);
 
         if (visit != null) {
-            response.setLastCheckInAt(visit.getCheckInAt());
+            mappedUser.setLastCheckInAt(visit.getCheckInAt());
         }
 
-        return response;
+        return mappedUser;
     }
 
     private MemberTableDto mapUserToMemberTableDto(User user) {
         MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
 
-        membershipService.getActiveMembership(user.getMemberships())
-                .ifPresent(membership -> {
-                    dto.setSubscriptionStatus(membership.getSubscriptionStatus());
-                    dto.setSubscriptionPlan(membership.getSubscriptionPlan());
-                    dto.setAllowedVisits(membership.getAllowedVisits());
-                    dto.setRemainingVisits(membership.getRemainingVisits());
-                    dto.setEmployment(membership.getEmployment());
-                    dto.setRoles(extractRoleTypes(user));
-                });
+        Membership membership = user.getMemberships().stream()
+                .max(Comparator.comparing(Membership::getCreatedAt))
+                .orElseThrow(() -> new IllegalStateException("User has no memberships"));
+
+        modelMapper.map(membership, dto);
+        dto.setRoles(extractRoleTypes(user));
 
         return dto;
     }

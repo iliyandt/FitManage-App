@@ -33,9 +33,15 @@ public class Membership extends BaseEntity{
     private LocalDateTime subscriptionEndDate;
     private Integer allowedVisits;
     private Integer remainingVisits;
+    private LocalDateTime createdAt;
     private LocalDateTime lastCheckInAt;
 
     public Membership() {
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
     }
 
     public User getUser() {
@@ -125,6 +131,15 @@ public class Membership extends BaseEntity{
 
     public Membership setRemainingVisits(Integer remainingVisits) {
         this.remainingVisits = remainingVisits;
+        return this;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public Membership setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 
