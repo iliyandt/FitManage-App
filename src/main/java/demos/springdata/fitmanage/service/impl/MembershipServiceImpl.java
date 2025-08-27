@@ -97,14 +97,29 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     @Transactional
     public Membership checkIn(Membership membership) {
-        if (membership.getSubscriptionPlan().isVisitBased()) {
-            int remaining = membership.getRemainingVisits() - 1;
-            membership.setRemainingVisits(Math.max(remaining, 0));
-
-            if (remaining <= 0) {
-                membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+        if (membership.getSubscriptionPlan().isTimeBased()) {
+            if (membership.getSubscriptionEndDate().isBefore(LocalDateTime.now())) {
+                membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE)
+                        .setSubscriptionPlan(null)
+                        .setSubscriptionStartDate(null)
+                        .setSubscriptionEndDate(null);
+                return membershipRepository.save(membership);
             }
         }
+
+        if (membership.getSubscriptionPlan().isVisitBased()) {
+
+            if (membership.getRemainingVisits() <= 0) {
+                membership.setSubscriptionPlan(null);
+                membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
+                return membershipRepository.save(membership);
+            }else {
+                int remaining = membership.getRemainingVisits() - 1;
+                membership.setRemainingVisits(remaining);
+            }
+
+        }
+
         return membershipRepository.save(membership);
     }
 

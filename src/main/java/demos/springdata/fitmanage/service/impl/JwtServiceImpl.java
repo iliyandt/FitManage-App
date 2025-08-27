@@ -84,7 +84,6 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
-
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
         try {

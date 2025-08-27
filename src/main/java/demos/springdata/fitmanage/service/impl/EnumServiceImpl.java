@@ -3,11 +3,9 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.EnumService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -20,9 +18,7 @@ public class EnumServiceImpl implements EnumService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EnumServiceImpl.class);
     private static final String ENUM_PACKAGE = "demos.springdata.fitmanage.domain.enums.";
 
-
-    @Autowired
-    public EnumServiceImpl(UserRepository userRepository) {
+    public EnumServiceImpl() {
     }
 
     @Override
@@ -49,7 +45,6 @@ public class EnumServiceImpl implements EnumService {
             throw new FitManageAppException("Enum not found: " + enumName, ApiErrorCode.NOT_FOUND);
         }
     }
-
 
     private String capitalize(String input) {
         String[] words = input.split(" ");

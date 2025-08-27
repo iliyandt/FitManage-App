@@ -27,7 +27,6 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         LOGGER.info("Attempting to load user details for email: {}", email);
         User user = userRepository.findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
-
         return new CustomUserDetails(user);
     }
 }

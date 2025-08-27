@@ -2,15 +2,15 @@ package demos.springdata.fitmanage.domain.dto.membershipplan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class MembershipPlanDto {
 
     private Long id;
     private SubscriptionPlan subscriptionPlan;
     private SubscriptionStatus subscriptionStatus;
-    private LocalDateTime subscriptionStartDate;
-    private LocalDateTime subscriptionEndDate;
+    private LocalDate subscriptionStartDate;
+    private LocalDate subscriptionEndDate;
     private Integer allowedVisits;
     private Integer remainingVisits;
 
@@ -44,20 +44,20 @@ public class MembershipPlanDto {
         return this;
     }
 
-    public LocalDateTime getSubscriptionStartDate() {
+    public LocalDate getSubscriptionStartDate() {
         return subscriptionStartDate;
     }
 
-    public MembershipPlanDto setSubscriptionStartDate(LocalDateTime subscriptionStartDate) {
+    public MembershipPlanDto setSubscriptionStartDate(LocalDate subscriptionStartDate) {
         this.subscriptionStartDate = subscriptionStartDate;
         return this;
     }
 
-    public LocalDateTime getSubscriptionEndDate() {
+    public LocalDate getSubscriptionEndDate() {
         return subscriptionEndDate;
     }
 
-    public MembershipPlanDto setSubscriptionEndDate(LocalDateTime subscriptionEndDate) {
+    public MembershipPlanDto setSubscriptionEndDate(LocalDate subscriptionEndDate) {
         this.subscriptionEndDate = subscriptionEndDate;
         return this;
     }

@@ -236,7 +236,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private void sendVerificationEmail(User user) { //TODO: htmlMessage code extract, Update with company logo
+    //TODO: htmlMessage code extract, Update with company logo
+    private void sendVerificationEmail(User user) {
         String subject = "Account Verification";
         String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
         String htmlMessage = "<html>"

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServiceImpl implements EmailService {
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
 
     @Autowired
@@ -21,6 +21,7 @@ public class EmailServiceImpl implements EmailService {
         this.emailSender = emailSender;
     }
 
+    @Override
     public void sendUserVerificationEmail(String to, String subject, String text) throws MessagingException {
         LOGGER.info("Preparing to send verification email to: {}, subject: {}", to, subject);
 

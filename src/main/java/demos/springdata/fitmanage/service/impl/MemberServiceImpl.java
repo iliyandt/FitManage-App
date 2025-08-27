@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestD
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -74,17 +75,8 @@ public class MemberServiceImpl implements MemberService {
     public UserProfileDto createMember(UserCreateRequestDto requestDto) {
         String userEmail = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(userEmail);
-
-        User user;
-        try {
-            user = buildMember(tenant, requestDto);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send verification email while creating member: {}", requestDto.getEmail(), e);
-            throw new FitManageAppException("Failed to send verification email", ApiErrorCode.INTERNAL_ERROR);
-        }
-
+        User user = buildAndSendVerificationEmail(requestDto, tenant);
         validateCredentials(user, requestDto);
-
         userService.save(user);
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
@@ -109,7 +101,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    //TODO: dto maps 3 classes at once. How to optimize?
     @Transactional
     @Override
     public UserProfileDto checkInMember(Long memberId) {
@@ -117,19 +108,14 @@ public class MemberServiceImpl implements MemberService {
         Membership activeMembership = membershipService.getRequiredActiveMembership(user.getMemberships());
 
         Membership updatedMembership = membershipService.checkIn(activeMembership);
-        Visit visit = visitService.checkIn(activeMembership, memberId);
 
-        return modelMapper.map(user, MemberResponseDto.class)
-                .setAllowedVisits(updatedMembership.getAllowedVisits())
-                .setRemainingVisits(updatedMembership.getRemainingVisits())
-                .setEmployment(updatedMembership.getEmployment())
-                .setSubscriptionPlan(updatedMembership.getSubscriptionPlan())
-                .setSubscriptionStatus(updatedMembership.getSubscriptionStatus())
-                .setSubscriptionStartDate(updatedMembership.getSubscriptionStartDate())
-                .setSubscriptionEndDate(updatedMembership.getSubscriptionEndDate())
-                .setLastCheckInAt(visit.getCheckInAt());
+        Visit visit = null;
+        if (updatedMembership.getSubscriptionStatus() == SubscriptionStatus.ACTIVE) {
+            visit = visitService.checkIn(updatedMembership, memberId);
+        }
+
+        return mapToResponseDto(user, updatedMembership, visit);
     }
-
 
     @Override
     public UserProfileDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
@@ -148,25 +134,7 @@ public class MemberServiceImpl implements MemberService {
 
         return tenant.getUsers().stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
-                .map(user -> {
-                    MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
-
-                    membershipService.getActiveMembership(user.getMemberships())
-                            .ifPresent(membership -> {
-                                dto.setSubscriptionStatus(membership.getSubscriptionStatus());
-                                dto.setSubscriptionPlan(membership.getSubscriptionPlan());
-                                dto.setAllowedVisits(membership.getAllowedVisits());
-                                dto.setRemainingVisits(membership.getRemainingVisits());
-                                dto.setEmployment(membership.getEmployment());
-                            });
-
-                    Set<RoleType> roleTypes = user.getRoles().stream()
-                            .map(Role::getName)
-                            .collect(Collectors.toSet());
-                    dto.setRoles(roleTypes);
-
-                    return dto;
-                })
+                .map(this::mapUserToMemberTableDto)
                 .toList();
     }
 
@@ -192,7 +160,7 @@ public class MemberServiceImpl implements MemberService {
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
                 .map(user -> {
                     MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
-
+                    //TODO: when no subscription inactive status + employment and plan?
                     Optional<Membership> activeMembership = membershipService.getActiveMembership(user.getMemberships());
 
                     modelMapper.map(activeMembership, dto);
@@ -327,12 +295,60 @@ public class MemberServiceImpl implements MemberService {
     }
 
     //TODO: what happens when searching by first and last name and there are 2 members with identical names?
-    protected Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
+    private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
         Specification<User> spec = MemberSpecification.build(filter)
                 .and((root, query, cb) -> cb.equal(root.get("tenant").get("id"), tenant.getId()));
 
         return userService.findFirstMemberByFilter(spec);
+    }
+
+    private User buildAndSendVerificationEmail(UserCreateRequestDto requestDto, Tenant tenant) {
+        User user;
+        try {
+            user = buildMember(tenant, requestDto);
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send verification email while creating member: {}", requestDto.getEmail(), e);
+            throw new FitManageAppException("Failed to send verification email", ApiErrorCode.INTERNAL_ERROR);
+        }
+        return user;
+    }
+
+    private MemberResponseDto mapToResponseDto(User user, Membership updatedMembership, Visit visit) {
+        MemberResponseDto response = modelMapper.map(user, MemberResponseDto.class)
+                .setAllowedVisits(updatedMembership.getAllowedVisits())
+                .setRemainingVisits(updatedMembership.getRemainingVisits())
+                .setEmployment(updatedMembership.getEmployment())
+                .setSubscriptionPlan(updatedMembership.getSubscriptionPlan())
+                .setSubscriptionStatus(updatedMembership.getSubscriptionStatus())
+                .setSubscriptionStartDate(updatedMembership.getSubscriptionStartDate())
+                .setSubscriptionEndDate(updatedMembership.getSubscriptionEndDate());
+
+        if (visit != null) {
+            response.setLastCheckInAt(visit.getCheckInAt());
+        }
+
+        return response;
+    }
+
+    private MemberTableDto mapUserToMemberTableDto(User user) {
+        MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
+
+        membershipService.getActiveMembership(user.getMemberships())
+                .ifPresent(membership -> {
+                    dto.setSubscriptionStatus(membership.getSubscriptionStatus());
+                    dto.setSubscriptionPlan(membership.getSubscriptionPlan());
+                    dto.setAllowedVisits(membership.getAllowedVisits());
+                    dto.setRemainingVisits(membership.getRemainingVisits());
+                    dto.setEmployment(membership.getEmployment());
+                });
+
+        Set<RoleType> roleTypes = user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+        dto.setRoles(roleTypes);
+
+        return dto;
     }
 }
