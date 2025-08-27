@@ -209,6 +209,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = mapUser(requestDto);
         encryptUserPassword(user);
         user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
 
         Role gymAdminRole = roleService.findByName(RoleType.FACILITY_ADMIN);
         user.getRoles().add(gymAdminRole);

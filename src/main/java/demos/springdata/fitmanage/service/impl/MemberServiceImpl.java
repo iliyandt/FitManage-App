@@ -233,6 +233,7 @@ public class MemberServiceImpl implements MemberService {
                 .setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
 
 
+
         LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
         String initialPassword = securityUtils.generateDefaultPassword();
 

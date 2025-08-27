@@ -15,6 +15,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public UserProfileDto getUserProfileByEmail(String email) {
         LOGGER.info("Fetching gym with email: {}", email);
@@ -67,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(dto, user);
-
+        user.setUpdatedAt(LocalDateTime.now());
 
         User savedUser = userRepository.save(user);
 
@@ -126,6 +127,7 @@ public class UserServiceImpl implements UserService {
 
     private UserBaseResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
         UserBaseResponseDto dto = modelMapper.map(user, UserBaseResponseDto.class);
+        dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);
         return dto;
@@ -133,16 +135,17 @@ public class UserServiceImpl implements UserService {
 
     private StaffResponseDto mapStaffProfile(User user, Set<RoleType> roles) {
         StaffResponseDto dto = modelMapper.map(user, StaffResponseDto.class);
+        dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);
         dto.setMembersCount(user.getMemberships().size());
         return dto;
     }
 
-
     //TODO: contains duplicate code from MemberServiceImpl findMember()
     private MemberResponseDto mapMemberProfile(User user, Set<RoleType> roles) {
         MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
+        dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);
 

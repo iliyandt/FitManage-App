@@ -5,9 +5,6 @@ import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.service.UserAccountSettingsService;
 import demos.springdata.fitmanage.service.UserService;
-import demos.springdata.fitmanage.service.impl.AuthenticationServiceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,8 +26,8 @@ public class AccountSettingsController {
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
-        String currentGymEmail = getCurrentGymEmail();
-        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(currentGymEmail);
+        String email = getCurrentGymEmail();
+        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(email);
         AccountSettingsDto settings = userAccountSettingsService.getUserSettings(profile.getId());
         return ResponseEntity.ok(ApiResponse.success(settings));
     }

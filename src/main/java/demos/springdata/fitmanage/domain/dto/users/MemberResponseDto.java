@@ -15,6 +15,8 @@ public final class MemberResponseDto extends UserBaseResponseDto {
     private Integer remainingVisits;
     private LocalDateTime lastCheckInAt;
     private Employment employment;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public MemberResponseDto() {
     }
@@ -88,6 +90,28 @@ public final class MemberResponseDto extends UserBaseResponseDto {
 
     public MemberResponseDto setEmployment(Employment employment) {
         this.employment = employment;
+        return this;
+    }
+
+    @Override
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @Override
+    public MemberResponseDto setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    @Override
+    public MemberResponseDto setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
         return this;
     }
 }
