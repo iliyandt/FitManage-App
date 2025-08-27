@@ -158,20 +158,7 @@ public class MemberServiceImpl implements MemberService {
         return memberList
                 .stream()
                 .filter(user -> user.getRoles().contains(facilityMemberRole))
-                .map(user -> {
-                    MemberTableDto dto = modelMapper.map(user, MemberTableDto.class);
-                    //TODO: when no subscription inactive status + employment and plan?
-                    Optional<Membership> activeMembership = membershipService.getActiveMembership(user.getMemberships());
-
-                    modelMapper.map(activeMembership, dto);
-
-                    Set<RoleType> roleTypes = user.getRoles().stream()
-                            .map(Role::getName)
-                            .collect(Collectors.toSet());
-                    dto.setRoles(roleTypes);
-
-                    return dto;
-                })
+                .map(this::mapUserToMemberTableDto)
                 .toList();
     }
 

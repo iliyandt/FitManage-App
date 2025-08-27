@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.OffsetDateTime;
@@ -73,7 +74,7 @@ public class MemberSpecification {
 
     private static Specification<User> employment(Employment employment) {
         return (root, query, cb) ->
-                cb.equal(root.join("membership").get("employment"), employment);
+                cb.equal(root.join("memberships", JoinType.LEFT).get("employment"), employment);
     }
 
     private static Specification<User> birthDate(OffsetDateTime birthDate) {
@@ -93,12 +94,12 @@ public class MemberSpecification {
 
     private static Specification<User> subscriptionStatus(SubscriptionStatus status) {
         return (root, query, cb) ->
-                cb.equal(root.join("membership").get("subscriptionStatus"), status);
+                cb.equal(root.join("memberships", JoinType.LEFT).get("subscriptionStatus"), status);
     }
 
     private static Specification<User> subscriptionPlan(SubscriptionPlan plan) {
         return (root, query, cb) ->
-                cb.equal(root.join("membership").get("subscriptionPlan"), plan);
+                cb.equal(root.join("memberships", JoinType.LEFT).get("subscriptionPlan"), plan);
     }
 
 }
