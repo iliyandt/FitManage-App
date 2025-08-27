@@ -9,7 +9,12 @@ import java.util.Set;
 
 public interface MembershipService {
     UserProfileDto initializeSubscription(Long memberId, MemberSubscriptionRequestDto requestDto);
+
     Membership checkIn(Membership membership);
-   Membership getRequiredActiveMembership(Set<Membership> memberships);
+
+    Membership getRequiredActiveMembership(Set<Membership> memberships);
+
     Optional<Membership> getActiveMembership(Set<Membership> memberships);
+
+    void save(Membership membership);
 }

@@ -11,6 +11,7 @@ import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -206,14 +207,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private User initializeNewUser(RegistrationRequestDto requestDto) {
-        User user = mapUser(requestDto);
+        User user = mapUser(requestDto)
+                .setGender(Gender.NOT_SPECIFIED)
+                .setCreatedAt(LocalDateTime.now())
+                .setUpdatedAt(LocalDateTime.now());
         encryptUserPassword(user);
-        user.setCreatedAt(LocalDateTime.now());
-        user.setUpdatedAt(LocalDateTime.now());
 
         Role gymAdminRole = roleService.findByName(RoleType.FACILITY_ADMIN);
         user.getRoles().add(gymAdminRole);
-
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
         sendVerificationEmail(user);

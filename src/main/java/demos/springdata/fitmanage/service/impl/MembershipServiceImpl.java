@@ -138,6 +138,11 @@ public class MembershipServiceImpl implements MembershipService {
                 .findFirst();
     }
 
+    @Override
+    public void save(Membership membership) {
+        membershipRepository.save(membership);
+    }
+
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
         LOGGER.info("Visit-based subscription detected. Initializing visits...");
 

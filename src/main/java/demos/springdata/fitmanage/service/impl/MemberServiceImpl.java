@@ -64,28 +64,17 @@ public class MemberServiceImpl implements MemberService {
         this.visitService = visitService;
     }
 
-    //TODO optimize every method where i should map the roles manually like this to use overall:
-//    private Set<RoleType> extractRoleTypes(User user) {
-//        return user.getRoles().stream()
-//                .map(Role::getName)
-//                .collect(Collectors.toSet());
-//    }
+
     @Transactional
     @Override
     public UserProfileDto createMember(UserCreateRequestDto requestDto) {
         String userEmail = getAuthenticatedUserEmail();
         Tenant tenant = getTenantByEmail(userEmail);
         User user = buildAndSendVerificationEmail(requestDto, tenant);
-        validateCredentials(user, requestDto);
-        userService.save(user);
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
         return modelMapper.map(user, MemberResponseDto.class)
-                .setRoles(
-                        user.getRoles().stream()
-                                .map(Role::getName)
-                                .collect(Collectors.toSet())
-                );
+                .setRoles(extractRoleTypes(user));
     }
 
     @Override
@@ -138,7 +127,6 @@ public class MemberServiceImpl implements MemberService {
                 .toList();
     }
 
-    //TODO: contains duplicate code from the getAllMembersForTable()
     @Transactional
     @Override
     public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
@@ -170,24 +158,10 @@ public class MemberServiceImpl implements MemberService {
         User user = findFirstMemberByFilter(filter)
                 .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
 
-        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
+        Membership membership = user.getMemberships().stream().findFirst().orElse(null);
+        MemberResponseDto dto = mapToResponseDto(user, membership, null);
         dto.setUsername(user.getActualUsername());
-
-        Set<RoleType> roles = user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-        dto.setRoles(roles);
-
-        user.getMemberships().stream().findFirst().ifPresent(m -> {
-            dto.setSubscriptionPlan(m.getSubscriptionPlan())
-                    .setSubscriptionStatus(m.getSubscriptionStatus())
-                    .setSubscriptionStartDate(m.getSubscriptionStartDate())
-                    .setSubscriptionEndDate(m.getSubscriptionEndDate())
-                    .setAllowedVisits(m.getAllowedVisits())
-                    .setRemainingVisits(m.getRemainingVisits())
-                    .setLastCheckInAt(m.getLastCheckInAt())
-                    .setEmployment(m.getEmployment());
-        });
+        dto.setRoles(extractRoleTypes(user));
 
         return dto;
     }
@@ -216,24 +190,31 @@ public class MemberServiceImpl implements MemberService {
                 .setPhone(requestDto.getPhone())
                 .setTenant(tenant)
                 .setCreatedAt(LocalDateTime.now())
-                .setVerificationCode(securityUtils.generateVerificationCode())
-                .setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
+                .setUpdatedAt(LocalDateTime.now())
+                .setEnabled(true);
 
-
-
+        validateCredentials(user, requestDto);
         LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
         String initialPassword = securityUtils.generateDefaultPassword();
-
-        emailService.sendUserVerificationEmail(user.getEmail(), "Account verification", "Verification code: " + user.getVerificationCode());
-
-
+//        LOGGER.info("Sending Email verification code to {}", user.getEmail());
+//        emailService.sendUserVerificationEmail(user.getEmail(), "Account verification", "Verification code: " + user.getVerificationCode());
         sendInitialPassword(user, initialPassword);
-
         user.setPassword(passwordEncoder.encode(initialPassword))
                 .setUpdatedAt(LocalDateTime.now());
 
         Role role = roleService.findByName(RoleType.FACILITY_MEMBER);
         user.getRoles().add(role);
+
+        Membership membership = new Membership()
+                .setTenant(tenant)
+                .setUser(user)
+                .setSubscriptionStatus(SubscriptionStatus.INACTIVE)
+                .setAllowedVisits(0)
+                .setRemainingVisits(0);
+
+        user.getMemberships().add(membership);
+        userService.save(user);
+        membershipService.save(membership);
 
         return user;
     }
@@ -286,6 +267,9 @@ public class MemberServiceImpl implements MemberService {
     private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
+        LOGGER.warn("Searching users with filter: {}", filter);
+        LOGGER.warn("Tenant ID: {}", tenant.getId());
+
         Specification<User> spec = MemberSpecification.build(filter)
                 .and((root, query, cb) -> cb.equal(root.get("tenant").get("id"), tenant.getId()));
 
@@ -330,13 +314,15 @@ public class MemberServiceImpl implements MemberService {
                     dto.setAllowedVisits(membership.getAllowedVisits());
                     dto.setRemainingVisits(membership.getRemainingVisits());
                     dto.setEmployment(membership.getEmployment());
+                    dto.setRoles(extractRoleTypes(user));
                 });
 
-        Set<RoleType> roleTypes = user.getRoles().stream()
+        return dto;
+    }
+
+    private Set<RoleType> extractRoleTypes(User user) {
+        return user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet());
-        dto.setRoles(roleTypes);
-
-        return dto;
     }
 }
