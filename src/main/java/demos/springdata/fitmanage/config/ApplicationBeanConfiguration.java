@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
@@ -29,6 +30,10 @@ public class ApplicationBeanConfiguration {
         modelMapper.typeMap(Membership.class, MemberResponseDto.class)
                 .addMappings(mapper -> {
                     mapper.skip(MemberResponseDto::setId);
+                });
+        modelMapper.typeMap(Membership.class, MemberTableDto.class)
+                .addMappings(mapper -> {
+                    mapper.skip(MemberTableDto::setId);
                 });
 
         configureUserMapper(modelMapper);
