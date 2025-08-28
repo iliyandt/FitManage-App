@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service;
 
+import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
@@ -16,5 +17,5 @@ public interface MemberService {
     UserProfileDto checkInMember(Long memberId);
     List<MemberTableDto> getAllMembersForTable();
     List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto memberFilterRequestDto);
-    UserProfileDto findMember(MemberFilterRequestDto filter);
+    List<MemberResponseDto> findMember(MemberFilterRequestDto filter);
 }

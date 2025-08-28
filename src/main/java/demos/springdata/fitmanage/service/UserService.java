@@ -17,6 +17,6 @@ public interface UserService {
     void delete(User user);
     User getByIdAndTenantId(Long memberId, Long tenantId);
     List<User> findMembersByFilter(Specification<User> spec);
-    Optional<User> findFirstMemberByFilter(Specification<User> spec);
+    List<User> findFirstMemberByFilter(Specification<User> spec);
     User findUserById(Long memberId);
 }

@@ -166,19 +166,20 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public UserProfileDto findMember(MemberFilterRequestDto filter) {
-        User user = findFirstMemberByFilter(filter)
-                .orElseThrow(() -> new FitManageAppException("Member not found", ApiErrorCode.NOT_FOUND));
+    public List<MemberResponseDto> findMember(MemberFilterRequestDto filter) {
+        List<User> users = findFirstMemberByFilter(filter);
 
-        Membership membership = user.getMemberships().stream()
-                .max(Comparator.comparing(Membership::getCreatedAt))
-                .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
-        MemberResponseDto dto = mapToResponseDto(user, membership, null);
-        dto.setUsername(user.getActualUsername());
-        dto.setRoles(extractRoleTypes(user));
+        return users.stream().map(user -> {
+            Membership membership = user.getMemberships().stream()
+                    .max(Comparator.comparing(Membership::getCreatedAt))
+                    .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
-        return dto;
+            MemberResponseDto dto = mapToResponseDto(user, membership, null);
+            dto.setUsername(user.getActualUsername());
+            dto.setRoles(extractRoleTypes(user));
+            return dto;
+        }).toList();
     }
 
 
@@ -271,7 +272,7 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    private Optional<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
+    private List<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
         Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
 
         LOGGER.warn("Searching users with filter: {}", filter);

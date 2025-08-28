@@ -1,6 +1,9 @@
 package demos.springdata.fitmanage.domain.enums;
 
-public enum StaffProfile {
+public enum StaffRole {
+    MANAGER,
+    NUTRITIONIST,
+    MASSAGE_THERAPIST,
     TRAINER,
     RECEPTIONIST,
     CLEANER,

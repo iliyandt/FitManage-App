@@ -109,8 +109,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findFirstMemberByFilter(Specification<User> spec) {
-        return userRepository.findOne(spec);
+    public List<User> findFirstMemberByFilter(Specification<User> spec) {
+        return userRepository.findAll(spec);
     }
 
     @Override

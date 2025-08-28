@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import demos.springdata.fitmanage.domain.enums.StaffRole;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,11 +17,9 @@ public class StaffProfile extends BaseEntity {
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
 
-    @Column(nullable = false)
-    private String firstName;
+    @Enumerated(EnumType.STRING)
+    private StaffRole staffProfile;
 
-    @Column(nullable = false)
-    private String lastName;
 
     public StaffProfile() {
     }
@@ -43,22 +42,12 @@ public class StaffProfile extends BaseEntity {
         return this;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public StaffRole getStaffProfile() {
+        return staffProfile;
     }
 
-    public StaffProfile setFirstName(String firstName) {
-        this.firstName = firstName;
+    public StaffProfile setStaffProfile(StaffRole staffProfile) {
+        this.staffProfile = staffProfile;
         return this;
     }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public StaffProfile setLastName(String lastName) {
-        this.lastName = lastName;
-        return this;
-    }
-
 }

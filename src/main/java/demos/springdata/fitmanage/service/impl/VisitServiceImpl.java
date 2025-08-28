@@ -34,7 +34,6 @@ public class VisitServiceImpl implements VisitService {
         this.userService = userService;
     }
 
-    //TODO: What information to return in the DTO?
     @Override
     public List<VisitDto> findVisitsForMember(Long memberId) {
         List<Visit> visitList = visitRepository.findByUser_Id(memberId)
@@ -66,7 +65,6 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    @Transactional
     public List<VisitTableResponse> getVisitsInPeriod(Long facilityAdminId, LocalDateTime start, LocalDateTime end) {
         User user = userService.findUserById(facilityAdminId);
         Tenant tenant = user.getTenant();

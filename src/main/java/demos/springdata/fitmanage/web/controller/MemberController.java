@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
+import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
@@ -49,8 +50,8 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<UserProfileDto>> searchMember(@ModelAttribute @Valid MemberFilterRequestDto filter) {
-        UserProfileDto response = memberService.findMember(filter);
+    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> searchMember(@ModelAttribute @Valid MemberFilterRequestDto filter) {
+        List<MemberResponseDto> response = memberService.findMember(filter);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
