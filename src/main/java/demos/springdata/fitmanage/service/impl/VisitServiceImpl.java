@@ -64,15 +64,18 @@ public class VisitServiceImpl implements VisitService {
     //TODO: add logic
     @Override
     @Transactional
-    public List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end) {
-        return List.of();
+    public List<VisitTableResponse> getVisitsInPeriod(Long id, LocalDateTime start, LocalDateTime end) {
+        List<Visit> visits = visitRepository.findByUser_IdAndCheckInAtBetween(id, start, end);
+
+        return visits.stream().map(this::manualMapDto).toList();
     }
 
     private VisitTableResponse manualMapDto(Visit visit) {
         Membership membership = visit.getMembership();
 
         VisitTableResponse dto = new VisitTableResponse();
-        dto.setId(visit.getId())
+
+        dto.setId(visit.getUser().getId())
                 .setFirstName(membership.getUser().getFirstName())
                 .setLastName(membership.getUser().getLastName())
                 .setPhone(membership.getUser().getPhone())
