@@ -3,10 +3,13 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.visit.VisitDto;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
+import demos.springdata.fitmanage.domain.entity.Tenant;
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.entity.Visit;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.VisitRepository;
+import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.service.VisitService;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -16,18 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(VisitServiceImpl.class);
     private final ModelMapper modelMapper;
+    private final UserService userService;
 
     @Autowired
-    public VisitServiceImpl(VisitRepository visitRepository, ModelMapper modelMapper) {
+    public VisitServiceImpl(VisitRepository visitRepository, ModelMapper modelMapper, UserService userService) {
         this.visitRepository = visitRepository;
         this.modelMapper = modelMapper;
+        this.userService = userService;
     }
 
     //TODO: What information to return in the DTO?
@@ -61,11 +65,13 @@ public class VisitServiceImpl implements VisitService {
         return savedVisit;
     }
 
-    //TODO: add logic
     @Override
     @Transactional
-    public List<VisitTableResponse> getVisitsInPeriod(Long id, LocalDateTime start, LocalDateTime end) {
-        List<Visit> visits = visitRepository.findByUser_IdAndCheckInAtBetween(id, start, end);
+    public List<VisitTableResponse> getVisitsInPeriod(Long facilityAdminId, LocalDateTime start, LocalDateTime end) {
+        User user = userService.findUserById(facilityAdminId);
+        Tenant tenant = user.getTenant();
+
+        List<Visit> visits = visitRepository.findByUserTenantAndCheckInAtBetween(tenant ,start, end);
 
         return visits.stream().map(this::manualMapDto).toList();
     }
