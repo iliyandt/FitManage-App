@@ -65,6 +65,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
+    @Transactional
     public List<VisitTableResponse> getVisitsInPeriod(Long facilityAdminId, LocalDateTime start, LocalDateTime end) {
         User user = userService.findUserById(facilityAdminId);
         Tenant tenant = user.getTenant();

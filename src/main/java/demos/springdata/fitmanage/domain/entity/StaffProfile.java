@@ -18,7 +18,7 @@ public class StaffProfile extends BaseEntity {
     private Tenant tenant;
 
     @Enumerated(EnumType.STRING)
-    private StaffRole staffProfile;
+    private StaffRole staffRole;
 
 
     public StaffProfile() {
@@ -42,12 +42,12 @@ public class StaffProfile extends BaseEntity {
         return this;
     }
 
-    public StaffRole getStaffProfile() {
-        return staffProfile;
+    public StaffRole getStaffRole() {
+        return staffRole;
     }
 
     public StaffProfile setStaffProfile(StaffRole staffProfile) {
-        this.staffProfile = staffProfile;
+        this.staffRole = staffProfile;
         return this;
     }
 }

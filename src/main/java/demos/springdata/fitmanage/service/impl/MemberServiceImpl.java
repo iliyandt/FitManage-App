@@ -182,7 +182,6 @@ public class MemberServiceImpl implements MemberService {
         }).toList();
     }
 
-
     public Tenant getTenantByEmail(String email) {
         return tenantService.getTenantByEmail(email);
     }

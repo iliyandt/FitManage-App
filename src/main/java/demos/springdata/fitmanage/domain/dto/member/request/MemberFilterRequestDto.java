@@ -28,7 +28,6 @@ public class MemberFilterRequestDto {
     private OffsetDateTime birthDate;
 
     @Column(unique = true)
-    @Email(message = "Email must be valid")
     private String email;
     private SubscriptionStatus subscriptionStatus;
     private SubscriptionPlan subscriptionPlan;
