@@ -1,18 +1,17 @@
 package demos.springdata.fitmanage.domain.dto.membershipplan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+
 
 public class MembershipPlanDto {
 
     private Long id;
     private SubscriptionPlan subscriptionPlan;
-    private SubscriptionStatus subscriptionStatus;
-    private LocalDate subscriptionStartDate;
-    private LocalDate subscriptionEndDate;
-    private Integer allowedVisits;
-    private Integer remainingVisits;
+    private BigDecimal price;
+    private BigDecimal studentPrice;
+    private BigDecimal seniorPrice;
+    private BigDecimal handicapPrice;
 
     public MembershipPlanDto() {
     }
@@ -35,48 +34,39 @@ public class MembershipPlanDto {
         return this;
     }
 
-    public SubscriptionStatus getSubscriptionStatus() {
-        return subscriptionStatus;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public MembershipPlanDto setSubscriptionStatus(SubscriptionStatus subscriptionStatus) {
-        this.subscriptionStatus = subscriptionStatus;
+    public MembershipPlanDto setPrice(BigDecimal price) {
+        this.price = price;
         return this;
     }
 
-    public LocalDate getSubscriptionStartDate() {
-        return subscriptionStartDate;
+    public BigDecimal getStudentPrice() {
+        return studentPrice;
     }
 
-    public MembershipPlanDto setSubscriptionStartDate(LocalDate subscriptionStartDate) {
-        this.subscriptionStartDate = subscriptionStartDate;
+    public MembershipPlanDto setStudentPrice(BigDecimal studentPrice) {
+        this.studentPrice = studentPrice;
         return this;
     }
 
-    public LocalDate getSubscriptionEndDate() {
-        return subscriptionEndDate;
+    public BigDecimal getSeniorPrice() {
+        return seniorPrice;
     }
 
-    public MembershipPlanDto setSubscriptionEndDate(LocalDate subscriptionEndDate) {
-        this.subscriptionEndDate = subscriptionEndDate;
+    public MembershipPlanDto setSeniorPrice(BigDecimal seniorPrice) {
+        this.seniorPrice = seniorPrice;
         return this;
     }
 
-    public Integer getAllowedVisits() {
-        return allowedVisits;
+    public BigDecimal getHandicapPrice() {
+        return handicapPrice;
     }
 
-    public MembershipPlanDto setAllowedVisits(Integer allowedVisits) {
-        this.allowedVisits = allowedVisits;
-        return this;
-    }
-
-    public Integer getRemainingVisits() {
-        return remainingVisits;
-    }
-
-    public MembershipPlanDto setRemainingVisits(Integer remainingVisits) {
-        this.remainingVisits = remainingVisits;
+    public MembershipPlanDto setHandicapPrice(BigDecimal handicapPrice) {
+        this.handicapPrice = handicapPrice;
         return this;
     }
 }
