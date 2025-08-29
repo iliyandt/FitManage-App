@@ -9,7 +9,7 @@ public class UserSecurityUtils {
     private final Random random = new Random();
 
     public String generateDefaultPassword() {
-        return "GymMember" + System.currentTimeMillis() + "!";
+        return "InitialPass" + System.currentTimeMillis() + "!";
     }
 
     public String generateVerificationCode() {

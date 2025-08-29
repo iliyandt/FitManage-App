@@ -224,7 +224,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void validateCredentials(RegistrationRequestDto request) {
         Map<String, String> errors = new HashMap<>();
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            LOGGER.warn("Account with email {} already exists", request.getEmail());
+            LOGGER.warn("User with email {} already exists", request.getEmail());
             errors.put("email", "Email is already registered");
         }
 

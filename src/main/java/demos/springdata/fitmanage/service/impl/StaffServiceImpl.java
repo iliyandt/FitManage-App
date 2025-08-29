@@ -1,0 +1,163 @@
+package demos.springdata.fitmanage.service.impl;
+
+import demos.springdata.fitmanage.domain.dto.staff.StaffCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.*;
+import demos.springdata.fitmanage.domain.entity.Role;
+import demos.springdata.fitmanage.domain.entity.StaffProfile;
+import demos.springdata.fitmanage.domain.entity.Tenant;
+import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.RoleType;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.MultipleValidationException;
+import demos.springdata.fitmanage.repository.StaffRepository;
+import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.UserSecurityUtils;
+import jakarta.mail.MessagingException;
+import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+public class StaffServiceImpl implements StaffService {
+    private final StaffRepository staffRepository;
+    private final TenantService tenantService;
+    private final RoleService roleService;
+    private final UserService userService;
+    private final EmailService emailService;
+    private final ModelMapper modelMapper;
+    private final UserSecurityUtils securityUtils;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StaffServiceImpl.class);
+
+    @Autowired
+    public StaffServiceImpl(StaffRepository staffRepository, TenantService tenantService, RoleService roleService, UserService userService, EmailService emailService, ModelMapper modelMapper, UserSecurityUtils securityUtils, BCryptPasswordEncoder passwordEncoder) {
+        this.staffRepository = staffRepository;
+        this.tenantService = tenantService;
+        this.roleService = roleService;
+        this.userService = userService;
+        this.emailService = emailService;
+        this.modelMapper = modelMapper;
+        this.securityUtils = securityUtils;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    @Transactional
+    @Override
+    public UserProfileDto createStaff(StaffCreateRequestDto requestDto) {
+        String authenticatedUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        Tenant tenant = tenantService.getTenantByEmail(authenticatedUserEmail);
+
+        User staff = buildStaff(tenant, requestDto);
+        validateCredentials(staff, requestDto);
+        createAndSendInitialPasswordToUser(staff);
+
+        StaffProfile staffProfile = createAndLinkStaffProfileToUser(tenant, staff, requestDto);
+
+        userService.save(staff);
+        staffRepository.save(staffProfile);
+
+        LOGGER.info("Successfully added staff with ID {} to facility '{}'", staff.getId(), tenant.getName());
+
+        StaffResponseDto mappedStaff = modelMapper.map(staff, StaffResponseDto.class);
+        mappedStaff.setRoles(extractRoleTypes(staff));
+        modelMapper.map(staffProfile, mappedStaff);
+        mappedStaff.setStaffRole(requestDto.getStaffRole());
+
+        return mappedStaff;
+    }
+
+    private StaffProfile createAndLinkStaffProfileToUser(Tenant tenant, User user, StaffCreateRequestDto requestDto) {
+        StaffProfile staffProfile = new StaffProfile()
+                .setTenant(tenant)
+                .setUser(user)
+                .setStaffRole(requestDto.getStaffRole());
+
+        user.getStaffProfiles().add(staffProfile);
+        return staffProfile;
+    }
+
+    private User buildStaff(Tenant tenant, UserCreateRequestDto requestDto) {
+
+        User user = modelMapper.map(requestDto, User.class);
+        user.setTenant(tenant)
+                .setCreatedAt(LocalDateTime.now())
+                .setUpdatedAt(LocalDateTime.now())
+                .setEnabled(true);
+
+        Role role = roleService.findByName(RoleType.FACILITY_STAFF);
+        user.getRoles().add(role);
+
+        return user;
+    }
+
+    //TODO: override method for validation because now it duplicates same logic in every service
+    private void validateCredentials(User member, UserCreateRequestDto requestDto) {
+        Map<String, String> errors = new HashMap<>();
+
+        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
+            LOGGER.warn("User with email {} already exists", requestDto.getEmail());
+            errors.put("email", "Email is already registered");
+        }
+
+        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
+            LOGGER.warn("User with phone {} already exists", member.getPhone());
+            errors.put("phone", "Phone used from another member");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultipleValidationException(errors);
+        }
+    }
+
+    private void createAndSendInitialPasswordToUser(User user) {
+        LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
+        String initialPassword = securityUtils.generateDefaultPassword();
+        sendInitialPassword(user, initialPassword);
+        user.setPassword(passwordEncoder.encode(initialPassword))
+                .setUpdatedAt(LocalDateTime.now());
+    }
+
+    //TODO: extract method so it does not duplicate same logic in every service, extract htmlMessage code, Update with company logo
+    private void sendInitialPassword(User user, String initialPassword) {
+        String subject = "Password";
+        String password = "PASSWORD " + initialPassword;
+        String htmlMessage = "<html>"
+                + "<body style=\"font-family: Arial, sans-serif;\">"
+                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
+                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
+                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
+                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
+                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
+                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + password + "</p>"
+                + "</div>"
+                + "</div>"
+                + "</body>"
+                + "</html>";
+
+        try {
+            LOGGER.info("Sending initial password to: {}", user.getEmail());
+            emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
+        } catch (MessagingException e) {
+            LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
+            throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
+        }
+    }
+
+    private Set<RoleType> extractRoleTypes(User user) {
+        return user.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+    }
+}

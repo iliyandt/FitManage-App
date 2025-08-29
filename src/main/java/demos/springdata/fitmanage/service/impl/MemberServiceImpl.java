@@ -78,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
 
         createAndSendInitialPasswordToUser(user);
 
-        Membership membership = createAndLinkMembershipToMember(tenant, user);
+        Membership membership = createAndLinkMembershipToUser(tenant, user);
         userService.save(user);
         membershipService.save(membership);
 
@@ -211,12 +211,12 @@ public class MemberServiceImpl implements MemberService {
         Map<String, String> errors = new HashMap<>();
 
         if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
-            LOGGER.warn("Member with email {} already exists", requestDto.getEmail());
+            LOGGER.warn("User with email {} already exists", requestDto.getEmail());
             errors.put("email", "Email is already registered");
         }
 
         if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
-            LOGGER.warn("Member with phone {} already exists", member.getPhone());
+            LOGGER.warn("User with phone {} already exists", member.getPhone());
             errors.put("phone", "Phone used from another member");
         }
 
@@ -233,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
                 .setUpdatedAt(LocalDateTime.now());
     }
 
-    private static Membership createAndLinkMembershipToMember(Tenant tenant, User user) {
+    private static Membership createAndLinkMembershipToUser(Tenant tenant, User user) {
         Membership membership = new Membership()
                 .setTenant(tenant)
                 .setUser(user)

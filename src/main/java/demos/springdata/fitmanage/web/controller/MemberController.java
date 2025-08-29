@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
@@ -13,9 +12,6 @@ import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +25,6 @@ import java.util.*;
 public class MemberController {
     private final MemberService memberService;
     private final TableHelper tableHelper;
-    private final static Logger LOGGER = LoggerFactory.getLogger(MemberController.class);
 
 
     public MemberController(MemberService memberService, TableHelper tableHelper) {
@@ -57,7 +52,6 @@ public class MemberController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<UserProfileDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
-        LOGGER.info("Received request to create member: {}", requestDto);
         UserProfileDto responseDto = memberService.createMember(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)

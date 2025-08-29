@@ -1,11 +1,34 @@
 package demos.springdata.fitmanage.domain.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum StaffRole {
-    MANAGER,
-    NUTRITIONIST,
-    MASSAGE_THERAPIST,
-    TRAINER,
-    RECEPTIONIST,
-    CLEANER,
-    PHYSIOTHERAPIST
+    MANAGER("Manager"),
+    NUTRITIONIST("Nutritionist"),
+    MASSAGE_THERAPIST("Massage Therapist"),
+    TRAINER("Trainer"),
+    RECEPTIONIST("Receptionist"),
+    CLEANER("Cleaner"),
+    PHYSIOTHERAPIST("Physiotherapist");
+
+    private final String displayName;
+
+    StaffRole(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    @JsonCreator
+    public static SubscriptionPlan fromString(String value) {
+        return SubscriptionPlan.valueOf(value.toUpperCase());
+    }
+
+    @JsonValue
+    public String toJson() {
+        return displayName;
+    }
 }

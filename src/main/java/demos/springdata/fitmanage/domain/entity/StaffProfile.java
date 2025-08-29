@@ -46,7 +46,7 @@ public class StaffProfile extends BaseEntity {
         return staffRole;
     }
 
-    public StaffProfile setStaffProfile(StaffRole staffProfile) {
+    public StaffProfile setStaffRole(StaffRole staffProfile) {
         this.staffRole = staffProfile;
         return this;
     }
