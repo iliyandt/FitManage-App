@@ -2,13 +2,12 @@ package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.users.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

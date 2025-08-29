@@ -7,12 +7,16 @@ import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipPlanRepository;
+import demos.springdata.fitmanage.security.CustomUserDetails;
+import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,7 +31,12 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     private final UserService userService;
 
     @Autowired
-    public MembershipPlanServiceImpl(MembershipPlanRepository membershipPlanRepository, ModelMapper modelMapper, UserService userService) {
+    public MembershipPlanServiceImpl
+            (
+            MembershipPlanRepository membershipPlanRepository,
+            ModelMapper modelMapper,
+            UserService userService
+            ) {
         this.membershipPlanRepository = membershipPlanRepository;
         this.modelMapper = modelMapper;
         this.userService = userService;
@@ -52,7 +61,12 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     @Override
     public List<MembershipPlanDto> getPlansAndPrices() {
-        List<MembershipPlan> plans = membershipPlanRepository.findAll();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
+        Long userId = principal.getId();
+        List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByUser_Id(userId);
+
         return plans.stream()
                 .map(p -> modelMapper.map(p, MembershipPlanDto.class)).toList();
     }
@@ -66,6 +80,9 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     @Override
     public MembershipPlanUpdateDto updatePlanPrices(Long planId, MembershipPlanUpdateDto dto) {
+        MembershipPlan membershipPlan = membershipPlanRepository.getMembershipPlanById(planId);
+        modelMapper.map(dto, membershipPlan);
+        membershipPlanRepository.save(membershipPlan);
         return dto;
     }
 

@@ -1,5 +1,6 @@
-package demos.springdata.fitmanage.domain.dto.users;
+package demos.springdata.fitmanage.domain.dto.member.response;
 
+import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;

@@ -1,19 +1,19 @@
-package demos.springdata.fitmanage.domain.dto.staff;
+package demos.springdata.fitmanage.domain.dto.employee;
 
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 
-public class StaffCreateRequestDto extends UserCreateRequestDto {
+public class EmployeeCreateRequestDto extends UserCreateRequestDto {
     private EmployeeRole employeeRole;
 
-    public StaffCreateRequestDto() {
+    public EmployeeCreateRequestDto() {
     }
 
-    public EmployeeRole getStaffRole() {
+    public EmployeeRole getEmployeeRole() {
         return employeeRole;
     }
 
-    public StaffCreateRequestDto setStaffRole(EmployeeRole employeeRole) {
+    public EmployeeCreateRequestDto setEmployeeRole(EmployeeRole employeeRole) {
         this.employeeRole = employeeRole;
         return this;
     }

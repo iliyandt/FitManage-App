@@ -1,5 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -18,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
         Set<RoleType> roles = extractRoleTypes(user);
+
 
         if (roles.contains(RoleType.FACILITY_MEMBER)) {
             return mapMemberProfile(user, roles);
@@ -127,8 +129,8 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-    private StaffResponseDto mapStaffProfile(User user, Set<RoleType> roles) {
-        StaffResponseDto dto = modelMapper.map(user, StaffResponseDto.class);
+    private EmployeeResponseDto mapStaffProfile(User user, Set<RoleType> roles) {
+        EmployeeResponseDto dto = modelMapper.map(user, EmployeeResponseDto.class);
         dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);

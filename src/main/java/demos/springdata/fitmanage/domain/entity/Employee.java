@@ -42,12 +42,12 @@ public class Employee extends BaseEntity {
         return this;
     }
 
-    public EmployeeRole getStaffRole() {
+    public EmployeeRole getEmployeeRole() {
         return employeeRole;
     }
 
-    public Employee setStaffRole(EmployeeRole staffProfile) {
-        this.employeeRole = staffProfile;
+    public Employee setEmployeeRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
         return this;
     }
 }

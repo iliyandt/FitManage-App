@@ -239,11 +239,11 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
-    public List<Employee> getStaffProfiles() {
+    public List<Employee> getEmployees() {
         return employees;
     }
 
-    public User setStaffProfiles(List<Employee> employees) {
+    public User setEmployees(List<Employee> employees) {
         this.employees = employees;
         return this;
     }
