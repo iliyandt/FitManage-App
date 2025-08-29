@@ -17,15 +17,18 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uq_user_email_tenant", columnNames = {"email", "tenant_id"}),
+                @UniqueConstraint(name = "uq_user_phone_tenant", columnNames = {"phone", "tenant_id"}),
+                @UniqueConstraint(name = "uq_user_username_tenant", columnNames = {"username", "tenant_id"})
+        })
 public class User extends BaseEntity implements UserDetails {
     private String firstName;
     private String lastName;
 
-    @Column(unique = true)
     private String username;
 
-    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -50,7 +53,6 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
-    @Column(unique = true)
     private String phone;
     private String address;
     private String city;
@@ -71,7 +73,7 @@ public class User extends BaseEntity implements UserDetails {
     private Set<Membership> memberships = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private List<StaffProfile> staffProfiles = new ArrayList<>();
+    private List<Employee> employees = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
@@ -237,12 +239,12 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
-    public List<StaffProfile> getStaffProfiles() {
-        return staffProfiles;
+    public List<Employee> getStaffProfiles() {
+        return employees;
     }
 
-    public User setStaffProfiles(List<StaffProfile> staffProfiles) {
-        this.staffProfiles = staffProfiles;
+    public User setStaffProfiles(List<Employee> employees) {
+        this.employees = employees;
         return this;
     }
 

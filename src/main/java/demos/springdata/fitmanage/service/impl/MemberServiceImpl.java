@@ -217,7 +217,7 @@ public class MemberServiceImpl implements MemberService {
 
         if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
             LOGGER.warn("User with phone {} already exists", member.getPhone());
-            errors.put("phone", "Phone used from another member");
+            errors.put("phone", "Phone used from another user");
         }
 
         if (!errors.isEmpty()) {

@@ -3,7 +3,7 @@ package demos.springdata.fitmanage.domain.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum StaffRole {
+public enum EmployeeRole {
     MANAGER("Manager"),
     NUTRITIONIST("Nutritionist"),
     MASSAGE_THERAPIST("Massage Therapist"),
@@ -14,7 +14,7 @@ public enum StaffRole {
 
     private final String displayName;
 
-    StaffRole(String displayName) {
+    EmployeeRole(String displayName) {
         this.displayName = displayName;
     }
 

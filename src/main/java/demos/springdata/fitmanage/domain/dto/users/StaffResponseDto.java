@@ -1,10 +1,10 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
-import demos.springdata.fitmanage.domain.enums.StaffRole;
+import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 
 public class StaffResponseDto extends UserBaseResponseDto {
     private Integer membersCount;
-    private StaffRole staffRole;
+    private EmployeeRole employeeRole;
 
     public StaffResponseDto() {
     }
@@ -18,12 +18,12 @@ public class StaffResponseDto extends UserBaseResponseDto {
         return this;
     }
 
-    public StaffRole getStaffRole() {
-        return staffRole;
+    public EmployeeRole getStaffRole() {
+        return employeeRole;
     }
 
-    public StaffResponseDto setStaffRole(StaffRole staffRole) {
-        this.staffRole = staffRole;
+    public StaffResponseDto setStaffRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
         return this;
     }
 }
