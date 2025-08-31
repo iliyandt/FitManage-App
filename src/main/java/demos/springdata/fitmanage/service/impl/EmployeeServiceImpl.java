@@ -177,7 +177,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeTableDto mapEmployeeToEmployeeTableDto(Employee employee) {
         User user = employee.getUser();
         EmployeeTableDto dto = modelMapper.map(user, EmployeeTableDto.class);
-        dto.setRoles(extractRoleTypes(user));
         dto.setEmployeeRole(employee.getEmployeeRole());
         return dto;
     }
