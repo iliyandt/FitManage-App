@@ -39,6 +39,8 @@ public class MemberFilterRequestDto {
     )
     private String phone;
 
+    private String qrToken;
+
     public MemberFilterRequestDto() {
     }
 
@@ -129,6 +131,15 @@ public class MemberFilterRequestDto {
 
     public MemberFilterRequestDto setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public String getQrToken() {
+        return qrToken;
+    }
+
+    public MemberFilterRequestDto setQrToken(String qrToken) {
+        this.qrToken = qrToken;
         return this;
     }
 }

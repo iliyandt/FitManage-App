@@ -46,6 +46,9 @@ public class MemberSpecification {
         if (filter.getSubscriptionPlan() != null) {
             specs.add(subscriptionPlan(filter.getSubscriptionPlan()));
         }
+        if (filter.getQrToken() != null) {
+            specs.add(qrToken(filter.getQrToken()));
+        }
 
         return specs.stream()
                 .reduce(Specification::and)
@@ -100,6 +103,11 @@ public class MemberSpecification {
     private static Specification<User> subscriptionPlan(SubscriptionPlan plan) {
         return (root, query, cb) ->
                 cb.equal(root.join("memberships", JoinType.LEFT).get("subscriptionPlan"), plan);
+    }
+
+    private static Specification<User> qrToken(String qrToken) {
+        return (root, query, cb) ->
+                cb.equal(root.get("qrToken"), qrToken);
     }
 
 }
