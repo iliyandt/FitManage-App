@@ -1,13 +1,9 @@
 package demos.springdata.fitmanage.domain.dto.employee;
 
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
-import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
-import demos.springdata.fitmanage.domain.enums.RoleType;
-
 import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
 
 public class EmployeeTableDto {
     private Long id;
@@ -15,8 +11,6 @@ public class EmployeeTableDto {
     private String lastName;
     private String email;
     private Gender gender;
-    private Set<RoleType> roles = new HashSet<>();
-    private Employment employment;
     private OffsetDateTime birthDate;
     private String phone;
     private EmployeeRole employeeRole;
@@ -67,24 +61,6 @@ public class EmployeeTableDto {
 
     public EmployeeTableDto setGender(Gender gender) {
         this.gender = gender;
-        return this;
-    }
-
-    public Set<RoleType> getRoles() {
-        return roles;
-    }
-
-    public EmployeeTableDto setRoles(Set<RoleType> roles) {
-        this.roles = roles;
-        return this;
-    }
-
-    public Employment getEmployment() {
-        return employment;
-    }
-
-    public EmployeeTableDto setEmployment(Employment employment) {
-        this.employment = employment;
         return this;
     }
 

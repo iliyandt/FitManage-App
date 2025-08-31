@@ -24,6 +24,9 @@ import java.util.stream.Collectors;
                 @UniqueConstraint(name = "uq_user_username_tenant", columnNames = {"username", "tenant_id"})
         })
 public class User extends BaseEntity implements UserDetails {
+    @Column(name = "qr_token", unique = true)
+    private String qrToken;
+
     private String firstName;
     private String lastName;
 
@@ -81,6 +84,15 @@ public class User extends BaseEntity implements UserDetails {
     }
 
     public User() {
+    }
+
+    public String getQrToken() {
+        return qrToken;
+    }
+
+    public User setQrToken(String qrToken) {
+        this.qrToken = qrToken;
+        return this;
     }
 
     public String getFirstName() {

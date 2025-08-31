@@ -19,4 +19,6 @@ public interface UserService {
     List<User> findMembersByFilter(Specification<User> spec);
     List<User> findFirstMemberByFilter(Specification<User> spec);
     User findUserById(Long memberId);
+
+    Optional<User> findByQrToken(String qrToken);
 }

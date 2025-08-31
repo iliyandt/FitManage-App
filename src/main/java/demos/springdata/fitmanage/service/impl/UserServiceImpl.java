@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -120,6 +121,11 @@ public class UserServiceImpl implements UserService {
     public User findUserById(Long memberId) {
         return userRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    public Optional<User> findByQrToken(String qrToken) {
+        return userRepository.findByQrToken(qrToken);
     }
 
     private UserBaseResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
