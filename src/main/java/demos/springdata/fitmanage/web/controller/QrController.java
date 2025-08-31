@@ -32,6 +32,7 @@ public class QrController {
     }
 
     @GetMapping(value = "/{userId}", produces = MediaType.IMAGE_PNG_VALUE)
+    @PreAuthorize("hasAuthority('FACILITY_MEMBER')")
     public ResponseEntity<byte[]> getQr(@PathVariable Long userId) throws Exception {
         User user = userService.findUserById(userId);
         String qrToken = qrService.generateQrToken(user);
