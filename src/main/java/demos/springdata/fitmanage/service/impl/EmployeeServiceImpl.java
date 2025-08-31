@@ -2,7 +2,6 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
@@ -57,38 +56,38 @@ public class EmployeeServiceImpl implements EmployeeService {
         String authenticatedUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = tenantService.getTenantByEmail(authenticatedUserEmail);
 
-        User staff = buildStaff(tenant, requestDto);
-        validateCredentials(staff, requestDto);
-        createAndSendInitialPasswordToUser(staff);
+        User user = buildEmployee(tenant, requestDto);
+        validateCredentials(user, requestDto);
+        createAndSendInitialPasswordToUser(user);
 
-        Employee employee = createAndLinkStaffProfileToUser(tenant, staff, requestDto);
+        Employee employee = createAndLinkStaffProfileToUser(tenant, user, requestDto);
 
-        userService.save(staff);
+        userService.save(user);
         employeeRepository.save(employee);
 
-        LOGGER.info("Successfully added staff with ID {} to facility '{}'", staff.getId(), tenant.getName());
+        LOGGER.info("Successfully added staff with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        EmployeeResponseDto mappedStaff = modelMapper.map(staff, EmployeeResponseDto.class);
-        mappedStaff.setRoles(extractRoleTypes(staff));
+        EmployeeResponseDto mappedStaff = modelMapper.map(user, EmployeeResponseDto.class);
+        mappedStaff.setRoles(extractRoleTypes(user));
         modelMapper.map(employee, mappedStaff);
         mappedStaff.setEmployeeRole(requestDto.getEmployeeRole());
 
         return mappedStaff;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<EmployeeTableDto> getAllEmployees() {
         LOGGER.info("Fetching all members..");
         String authenticatedUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = tenantService.getTenantByEmail(authenticatedUserEmail);
+        LOGGER.info("Tenant ID: {}", tenant.getId());
 
-        Role facilityEmployeeRole = roleService.findByName(RoleType.FACILITY_STAFF);
+        List<Employee> employees = employeeRepository.findAllByTenant_Id(tenant.getId());
+        LOGGER.info("Found {} employees", employees.size());
 
-
-        return tenant.getUsers().stream()
-                .filter(user -> user.getRoles().contains(facilityEmployeeRole))
-                .map(this::mapUserToMemberTableDto)
+        return employees.stream()
+                .map(this::mapEmployeeToEmployeeTableDto)
                 .toList();
     }
 
@@ -102,7 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    private User buildStaff(Tenant tenant, UserCreateRequestDto requestDto) {
+    private User buildEmployee(Tenant tenant, UserCreateRequestDto requestDto) {
 
         User user = modelMapper.map(requestDto, User.class);
         user.setTenant(tenant)
@@ -175,14 +174,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .collect(Collectors.toSet());
     }
 
-    private EmployeeTableDto mapUserToMemberTableDto(User user) {
+    private EmployeeTableDto mapEmployeeToEmployeeTableDto(Employee employee) {
+        User user = employee.getUser();
         EmployeeTableDto dto = modelMapper.map(user, EmployeeTableDto.class);
-
-        List<Employee> employees = user.getEmployees().stream().toList();
-
-        modelMapper.map(employees, dto);
         dto.setRoles(extractRoleTypes(user));
-
+        dto.setEmployeeRole(employee.getEmployeeRole());
         return dto;
     }
 }
