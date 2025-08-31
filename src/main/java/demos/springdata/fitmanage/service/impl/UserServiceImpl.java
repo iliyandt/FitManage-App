@@ -54,8 +54,9 @@ public class UserServiceImpl implements UserService {
             return mapMemberProfile(user, roles);
         }
 
-        if (roles.contains(RoleType.FACILITY_ADMIN) || roles.contains(RoleType.FACILITY_STAFF)) {
-            return mapStaffProfile(user, roles);
+        if (roles.contains(RoleType.FACILITY_STAFF)) {
+            Employee employee1 = user.getEmployees().stream().findFirst().filter(employee -> employee.getUser().getId().equals(user.getId())).orElse(null);
+            return mapStaffProfile(user, roles, employee1);
         }
 
         return mapBaseProfile(user, roles);
@@ -129,12 +130,13 @@ public class UserServiceImpl implements UserService {
         return dto;
     }
 
-    private EmployeeResponseDto mapStaffProfile(User user, Set<RoleType> roles) {
+    private EmployeeResponseDto mapStaffProfile(User user, Set<RoleType> roles, Employee employee) {
         EmployeeResponseDto dto = modelMapper.map(user, EmployeeResponseDto.class);
         dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);
         dto.setMembersCount(user.getMemberships().size());
+        dto.setEmployeeRole(employee.getEmployeeRole());
         return dto;
     }
 
