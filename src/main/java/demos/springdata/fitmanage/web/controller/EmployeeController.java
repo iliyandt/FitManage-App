@@ -56,6 +56,7 @@ public class EmployeeController {
 
     private boolean isFilterEmpty(MemberFilterRequestDto filter) {
         return filter.getId() == null &&
+                filter.getQrToken() == null &&
                 filter.getFirstName() == null &&
                 filter.getLastName() == null &&
                 filter.getGender() == null &&
