@@ -9,6 +9,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.UserService;
+import demos.springdata.fitmanage.util.RoleUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +49,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        Set<RoleType> roles = extractRoleTypes(user);
-
+        Set<RoleType> roles = RoleUtils.extractRoleTypes(user);
 
         if (roles.contains(RoleType.FACILITY_MEMBER)) {
             return mapMemberProfile(user, roles);
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
 
         UserBaseResponseDto response = modelMapper.map(savedUser, UserBaseResponseDto.class);
 
-        response.setRoles(extractRoleTypes(user));
+        response.setRoles(RoleUtils.extractRoleTypes(user));
 
         return response;
     }
@@ -159,11 +159,4 @@ public class UserServiceImpl implements UserService {
         modelMapper.map(membership, dto);
         return dto;
     }
-
-    private Set<RoleType> extractRoleTypes(User user) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-    }
-
 }

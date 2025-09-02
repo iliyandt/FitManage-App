@@ -23,7 +23,6 @@ public class UserAccountSettingsServiceImpl implements UserAccountSettingsServic
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
 
-
     @Autowired
     public UserAccountSettingsServiceImpl(AccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper, UserService userService) {
         this.accountSettingsRepository = accountSettingsRepository;

@@ -16,6 +16,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipRepository;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
+import demos.springdata.fitmanage.util.RoleUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ public class MembershipServiceImpl implements MembershipService {
         this.userService = userService;
     }
 
-
     //TODO: when plan is single visit should it be automatically checkedIn or no? if yes the visit should be at the same day/hour, if not it can be used other time.
     @Transactional
     @Override
@@ -53,6 +53,7 @@ public class MembershipServiceImpl implements MembershipService {
         Membership membership = membershipRepository.findByUserAndTenant(user, tenant)
                 .orElseThrow(() -> new FitManageAppException("User has no created membership.", ApiErrorCode.NOT_FOUND));
 
+        validateSubscriptionChange(membership, requestDto);
         activateMembership(membership, user, requestDto);
 
         Membership savedMembership = membershipRepository.save(membership);
@@ -143,7 +144,7 @@ public class MembershipServiceImpl implements MembershipService {
         MemberResponseDto memberResponse = modelMapper.map(user, MemberResponseDto.class);
         modelMapper.map(savedMembership, memberResponse);
         memberResponse.setUsername(user.getActualUsername());
-        memberResponse.setRoles(extractRoleTypes(user));
+        memberResponse.setRoles(RoleUtils.extractRoleTypes(user));
 
         return memberResponse;
     }
@@ -162,14 +163,7 @@ public class MembershipServiceImpl implements MembershipService {
 
     }
 
-    private Set<RoleType> extractRoleTypes(User user) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
-    }
-
-    //TODO: use for validating before setting new membership, if the new requested membership is like some old one update the old one.
-    private void validateSubscriptionChange(Membership membership, MemberUpdateDto updateRequest) {
+    private void validateSubscriptionChange(Membership membership, MemberSubscriptionRequestDto updateRequest) {
         SubscriptionPlan currentPlan = membership.getSubscriptionPlan();
         SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();
 

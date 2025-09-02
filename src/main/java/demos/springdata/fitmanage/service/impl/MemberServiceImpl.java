@@ -15,6 +15,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.support.MemberSpecification;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.RoleUtils;
 import demos.springdata.fitmanage.util.UserSecurityUtils;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
@@ -48,12 +49,17 @@ public class MemberServiceImpl implements MemberService {
 
     @Autowired
     public MemberServiceImpl
-            (UserService userService,
-             RoleService roleService,
-             TenantService tenantService,
-             EmailService emailService,
-             ModelMapper modelMapper,
-             BCryptPasswordEncoder passwordEncoder, UserSecurityUtils securityUtils, MembershipService membershipService, VisitService visitService) {
+            (
+                    UserService userService,
+                    RoleService roleService,
+                    TenantService tenantService,
+                    EmailService emailService,
+                    ModelMapper modelMapper,
+                    BCryptPasswordEncoder passwordEncoder,
+                    UserSecurityUtils securityUtils,
+                    MembershipService membershipService,
+                    VisitService visitService
+            ) {
         this.userService = userService;
         this.roleService = roleService;
         this.tenantService = tenantService;
@@ -84,12 +90,11 @@ public class MemberServiceImpl implements MemberService {
 
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        UserBaseResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(extractRoleTypes(user));
+        UserBaseResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(RoleUtils.extractRoleTypes(user));
         modelMapper.map(membership, mappedMember);
 
         return mappedMember;
     }
-
 
     @Override
     public void removeMember(Long memberId) {
@@ -102,7 +107,6 @@ public class MemberServiceImpl implements MemberService {
         userService.delete(user);
         LOGGER.info("Member with ID {} deleted successfully", memberId);
     }
-
 
     @Transactional
     @Override
@@ -177,7 +181,7 @@ public class MemberServiceImpl implements MemberService {
 
             MemberResponseDto dto = mapToResponseDto(user, membership, null);
             dto.setUsername(user.getActualUsername());
-            dto.setRoles(extractRoleTypes(user));
+            dto.setRoles(RoleUtils.extractRoleTypes(user));
             return dto;
         }).toList();
     }
@@ -302,14 +306,8 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
         modelMapper.map(membership, dto);
-        dto.setRoles(extractRoleTypes(user));
+        dto.setRoles(RoleUtils.extractRoleTypes(user));
 
         return dto;
-    }
-
-    private Set<RoleType> extractRoleTypes(User user) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
     }
 }

@@ -27,10 +27,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
-
     @Value("${security.jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
-
 
     @Autowired
     public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UserService userService, ModelMapper modelMapper) {
@@ -39,7 +37,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
         this.modelMapper = modelMapper;
     }
 
-    //TODO: Create a dto for the specific case here?
     @Override
     public RefreshToken createRefreshToken(String email) {
         LOGGER.info("Creating refresh token for email: {}", email);

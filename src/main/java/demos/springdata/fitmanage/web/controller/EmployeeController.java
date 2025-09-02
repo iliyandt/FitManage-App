@@ -3,8 +3,6 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.helper.TableHelper;
@@ -52,19 +50,5 @@ public class EmployeeController {
         response.setColumns(TableColumnBuilder.buildColumns(EmployeeTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;
-    }
-
-    private boolean isFilterEmpty(MemberFilterRequestDto filter) {
-        return filter.getId() == null &&
-                filter.getQrToken() == null &&
-                filter.getFirstName() == null &&
-                filter.getLastName() == null &&
-                filter.getGender() == null &&
-                filter.getEmployment() == null &&
-                filter.getBirthDate() == null &&
-                filter.getEmail() == null &&
-                filter.getSubscriptionStatus() == null &&
-                filter.getSubscriptionPlan() == null &&
-                filter.getPhone() == null;
     }
 }

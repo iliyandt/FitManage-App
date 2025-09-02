@@ -23,7 +23,6 @@ public class QrServiceImpl implements QrService {
         this.userService = userService;
     }
 
-
     @Override
     public String generateQrToken(User user) {
         if (user.getQrToken() == null) {

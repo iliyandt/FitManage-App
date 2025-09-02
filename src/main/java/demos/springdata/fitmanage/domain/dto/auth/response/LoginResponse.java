@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.responses;
+package demos.springdata.fitmanage.domain.dto.auth.response;
 
 import lombok.Builder;
 

@@ -35,7 +35,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -87,7 +86,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         );
     }
 
-
     @Override
     public EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
         return this.userRepository.findByEmail(userEmailRequestDto.getEmail())
@@ -98,7 +96,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 });
     }
 
-
     @Override
     public UserDetails authenticateUser(LoginRequestDto loginRequestDto) {
         LOGGER.info("Login attempt for email: {}", loginRequestDto.getEmail());
@@ -108,7 +105,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         LOGGER.info("Login successful for user: {}", loginRequestDto.getEmail());
         return authUser;
     }
-
 
     @Override
     public VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto) {
@@ -122,7 +118,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         return new VerificationResponseDto("Account verified successfully", true);
     }
-
 
     @Override
     public VerificationResponseDto resendUserVerificationCode(String email) {
@@ -221,6 +216,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 
+    //TODO: duplicate method
     private void validateCredentials(RegistrationRequestDto request) {
         Map<String, String> errors = new HashMap<>();
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {

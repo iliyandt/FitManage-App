@@ -11,6 +11,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.RoleUtils;
 import demos.springdata.fitmanage.util.UserSecurityUtils;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
@@ -21,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,7 +39,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository, TenantService tenantService, RoleService roleService, UserService userService, EmailService emailService, ModelMapper modelMapper, UserSecurityUtils securityUtils, BCryptPasswordEncoder passwordEncoder) {
+    public EmployeeServiceImpl
+            (
+                    EmployeeRepository employeeRepository,
+                    TenantService tenantService,
+                    RoleService roleService,
+                    UserService userService,
+                    EmailService emailService,
+                    ModelMapper modelMapper,
+                    UserSecurityUtils securityUtils,
+                    BCryptPasswordEncoder passwordEncoder
+            ) {
         this.employeeRepository = employeeRepository;
         this.tenantService = tenantService;
         this.roleService = roleService;
@@ -68,7 +78,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         LOGGER.info("Successfully added staff with ID {} to facility '{}'", user.getId(), tenant.getName());
 
         EmployeeResponseDto mappedStaff = modelMapper.map(user, EmployeeResponseDto.class);
-        mappedStaff.setRoles(extractRoleTypes(user));
+        mappedStaff.setRoles(RoleUtils.extractRoleTypes(user));
         modelMapper.map(employee, mappedStaff);
         mappedStaff.setEmployeeRole(requestDto.getEmployeeRole());
 
@@ -166,12 +176,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
             throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
         }
-    }
-
-    private Set<RoleType> extractRoleTypes(User user) {
-        return user.getRoles().stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet());
     }
 
     private EmployeeTableDto mapEmployeeToEmployeeTableDto(Employee employee) {
