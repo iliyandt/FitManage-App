@@ -1,4 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-public class NotificationServiceImpl {
+import demos.springdata.fitmanage.service.NotificationService;
+
+public class NotificationServiceImpl implements NotificationService {
 }
