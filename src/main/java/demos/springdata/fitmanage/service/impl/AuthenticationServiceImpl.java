@@ -1,9 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.auth.request.UserEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
@@ -30,11 +27,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -138,6 +138,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new VerificationResponseDto("New verification code successfully delivered", true);
     }
 
+    @Override
+    public VerificationResponseDto changePassword(ChangePasswordRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            return new VerificationResponseDto("Old password is incorrect", false);
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            return new VerificationResponseDto("New password cannot be the same as old password", false);
+        }
+
+        encryptUserPassword(user, request.getNewPassword());
+        userRepository.save(user);
+
+        LOGGER.debug("New Password {}", request.getNewPassword());
+        return new VerificationResponseDto("Password changed successfully", true);
+    }
+
     private void enableUserAccount(User user) {
         LOGGER.info("Enabling account for user: {}", user.getEmail());
         user.setEnabled(true);
@@ -206,7 +227,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .setGender(Gender.NOT_SPECIFIED)
                 .setCreatedAt(LocalDateTime.now())
                 .setUpdatedAt(LocalDateTime.now());
-        encryptUserPassword(user);
+        encryptUserPassword(user, requestDto.getPassword());
 
         Role gymAdminRole = roleService.findByName(RoleType.FACILITY_ADMIN);
         user.getRoles().add(gymAdminRole);
@@ -266,9 +287,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return String.valueOf(code);
     }
 
-    private void encryptUserPassword(User user) {
-        String encryptedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encryptedPassword);
+    private void encryptUserPassword(User user, String rawPassword) {
+        user.setPassword(passwordEncoder.encode(rawPassword));
     }
 
     private User mapUser(RegistrationRequestDto dto) {

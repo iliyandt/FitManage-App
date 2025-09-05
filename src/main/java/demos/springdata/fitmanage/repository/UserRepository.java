@@ -17,6 +17,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmailAndTenant_Id(String email, Long id);
     boolean existsByRoles_Name(RoleType roleType);
     List<User> findAll(Specification<User> spec);
-
     Optional<User> findByQrToken(String qrToken);
 }

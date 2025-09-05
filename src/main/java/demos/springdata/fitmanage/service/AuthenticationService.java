@@ -1,10 +1,7 @@
 package demos.springdata.fitmanage.service;
 
 
-import demos.springdata.fitmanage.domain.dto.auth.request.UserEmailRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.LoginRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.RegistrationRequestDto;
-import demos.springdata.fitmanage.domain.dto.auth.request.VerificationRequestDto;
+import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
@@ -19,5 +16,6 @@ public interface AuthenticationService {
     UserDetails authenticateUser(LoginRequestDto loginRequestDto);
     VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto);
     VerificationResponseDto resendUserVerificationCode(String email);
+    VerificationResponseDto changePassword(ChangePasswordRequest request);
 
 }

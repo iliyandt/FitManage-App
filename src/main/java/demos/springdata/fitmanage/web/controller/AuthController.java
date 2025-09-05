@@ -28,7 +28,6 @@ public class AuthController {
     private final AuthenticationService authenticationService;
     private final RefreshTokenService refreshTokenService;
     private final CustomUserDetailsService customUserDetailsService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
 
     public AuthController(JwtService jwtService, AuthenticationService authenticationService, RefreshTokenService refreshTokenService, CustomUserDetailsService customUserDetailsService) {
@@ -38,10 +37,15 @@ public class AuthController {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    @PostMapping(path = "/register")
+    @PostMapping( "/register")
     public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
         RegistrationResponseDto response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ApiResponse<VerificationResponseDto>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(authenticationService.changePassword(request)));
     }
 
     @PostMapping("/verify")
@@ -55,14 +59,13 @@ public class AuthController {
         return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), HttpStatus.CREATED);
     }
 
-
-    @PostMapping(path = "/validate_email")
+    @PostMapping("/validate_email")
     public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
         EmailResponseDto response = authenticationService.checkIfEmailIsAvailable(userEmailRequestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PostMapping(path = "/login")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
 
         UserDetails authenticatedUser = authenticationService.authenticateUser(loginRequestDto);

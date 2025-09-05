@@ -147,6 +147,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private void createAndSendInitialPasswordToUser(User user) {
         LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
         String initialPassword = securityUtils.generateDefaultPassword();
+        LOGGER.debug("Initial password {}", initialPassword);
         sendInitialPassword(user, initialPassword);
         user.setPassword(passwordEncoder.encode(initialPassword))
                 .setUpdatedAt(LocalDateTime.now());
