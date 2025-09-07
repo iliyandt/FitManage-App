@@ -9,6 +9,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.service.UserService;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import demos.springdata.fitmanage.util.RoleUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -30,22 +31,24 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final CurrentUserUtils currentUserUtils;
 
 
     @Autowired
     public UserServiceImpl
             (UserRepository userRepository,
-             ModelMapper modelMapper
-            ) {
+             ModelMapper modelMapper,
+             CurrentUserUtils currentUserUtils) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.currentUserUtils = currentUserUtils;
     }
 
 
     @Transactional
     @Override
     public UserProfileDto getUserProfileByEmail(String email) {
-        LOGGER.info("Fetching gym with email: {}", email);
+        LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
@@ -63,10 +66,12 @@ public class UserServiceImpl implements UserService {
         return mapBaseProfile(user, roles);
     }
 
+
     @Override
-    public UserProfileDto updateProfile(Long id, UserUpdateDto dto) {
-        LOGGER.info("Updating basic info for user with id: {}", id);
-        User user = findUserById(id);
+    public UserProfileDto updateProfile(UserUpdateDto dto) {
+        User user = currentUserUtils.getCurrentUser();
+
+        LOGGER.info("Updating basic info for user with id: {}", user.getId());
 
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(dto, user);

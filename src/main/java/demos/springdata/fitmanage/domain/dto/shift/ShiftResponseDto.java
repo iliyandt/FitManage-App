@@ -2,32 +2,43 @@ package demos.springdata.fitmanage.domain.dto.shift;
 
 import java.time.LocalDateTime;
 
-public class ShiftDto {
+public class ShiftResponseDto {
     private Long id;
-    private String employeeName;
+    private String firstName;
+    private String lastName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String role;
     private boolean approved;
+    private String notes;
 
-    public ShiftDto() {
+    public ShiftResponseDto() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public ShiftDto setId(Long id) {
+    public ShiftResponseDto setId(Long id) {
         this.id = id;
         return this;
     }
 
-    public String getEmployeeName() {
-        return employeeName;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public ShiftDto setEmployeeName(String employeeName) {
-        this.employeeName = employeeName;
+    public ShiftResponseDto setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public ShiftResponseDto setLastName(String lastName) {
+        this.lastName = lastName;
         return this;
     }
 
@@ -35,7 +46,7 @@ public class ShiftDto {
         return startTime;
     }
 
-    public ShiftDto setStartTime(LocalDateTime startTime) {
+    public ShiftResponseDto setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -44,7 +55,7 @@ public class ShiftDto {
         return endTime;
     }
 
-    public ShiftDto setEndTime(LocalDateTime endTime) {
+    public ShiftResponseDto setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
         return this;
     }
@@ -53,7 +64,7 @@ public class ShiftDto {
         return role;
     }
 
-    public ShiftDto setRole(String role) {
+    public ShiftResponseDto setRole(String role) {
         this.role = role;
         return this;
     }
@@ -62,8 +73,17 @@ public class ShiftDto {
         return approved;
     }
 
-    public ShiftDto setApproved(boolean approved) {
+    public ShiftResponseDto setApproved(boolean approved) {
         this.approved = approved;
+        return this;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public ShiftResponseDto setNotes(String notes) {
+        this.notes = notes;
         return this;
     }
 }

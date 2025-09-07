@@ -15,6 +15,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.support.MemberSpecification;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import demos.springdata.fitmanage.util.RoleUtils;
 import demos.springdata.fitmanage.util.UserSecurityUtils;
 import jakarta.mail.MessagingException;
@@ -38,13 +39,13 @@ public class MemberServiceImpl implements MemberService {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final TenantService tenantService;
     private final EmailService emailService;
     private final MembershipService membershipService;
     private final VisitService visitService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserSecurityUtils securityUtils;
+    private final CurrentUserUtils currentUserUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Autowired
@@ -52,34 +53,31 @@ public class MemberServiceImpl implements MemberService {
             (
                     UserService userService,
                     RoleService roleService,
-                    TenantService tenantService,
                     EmailService emailService,
                     ModelMapper modelMapper,
                     BCryptPasswordEncoder passwordEncoder,
                     UserSecurityUtils securityUtils,
                     MembershipService membershipService,
-                    VisitService visitService
+                    VisitService visitService, CurrentUserUtils currentUserUtils
             ) {
         this.userService = userService;
         this.roleService = roleService;
-        this.tenantService = tenantService;
         this.emailService = emailService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.securityUtils = securityUtils;
         this.membershipService = membershipService;
         this.visitService = visitService;
+        this.currentUserUtils = currentUserUtils;
     }
 
 
     @Transactional
     @Override
     public UserProfileDto createMember(UserCreateRequestDto requestDto) {
-        String userEmail = getAuthenticatedUserEmail();
-        Tenant tenant = getTenantByEmail(userEmail);
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         User user = buildMember(tenant, requestDto);
-
         validateCredentials(user, requestDto);
 
         createAndSendInitialPasswordToUser(user);
@@ -98,9 +96,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void removeMember(Long memberId) {
-        String adminEmail = getAuthenticatedUserEmail();
-        Tenant tenant = getTenantByEmail(adminEmail);
-
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
 
         LOGGER.info("Deleting member with ID {} from tenant {}", memberId, tenant.getName());
@@ -125,16 +121,15 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public UserProfileDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
-        return userService.updateProfile(memberId, updateRequest);
+    public UserProfileDto updateMemberDetails(MemberUpdateDto updateRequest) {
+        return userService.updateProfile(updateRequest);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<MemberTableDto> getAllMembersForTable() {
-        LOGGER.info("Fetching all members..");
-        String email = getAuthenticatedUserEmail();
-        Tenant tenant = getTenantByEmail(email);
+        LOGGER.info("Prepare list of all members for table view");
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
 
@@ -149,7 +144,7 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
         LOGGER.info("Search for users with filter: {}", filter);
 
-        Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         Specification<User> spec = MemberSpecification.build(filter)
                 .and((root, query, cb) -> cb.equal(root.get("tenant"), tenant));
@@ -184,17 +179,6 @@ public class MemberServiceImpl implements MemberService {
             dto.setRoles(RoleUtils.extractRoleTypes(user));
             return dto;
         }).toList();
-    }
-
-    public Tenant getTenantByEmail(String email) {
-        return tenantService.getTenantByEmail(email);
-    }
-
-    private String getAuthenticatedUserEmail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        LOGGER.info("Authenticated user email: {}", email);
-        return email;
     }
 
     private User buildMember(Tenant tenant, UserCreateRequestDto requestDto) {
@@ -276,7 +260,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private List<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
-        Tenant tenant = getTenantByEmail(getAuthenticatedUserEmail());
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         LOGGER.warn("Searching users with filter: {}", filter);
         LOGGER.warn("Tenant ID: {}", tenant.getId());

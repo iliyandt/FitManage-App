@@ -39,6 +39,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken createRefreshToken(String email) {
+
+
         LOGGER.info("Creating refresh token for email: {}", email);
         UserProfileDto userBaseResponseDto = userService.getUserProfileByEmail(email);
 

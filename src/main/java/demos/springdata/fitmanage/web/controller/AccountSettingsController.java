@@ -17,34 +17,20 @@ import java.util.Map;
 @PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
 public class AccountSettingsController {
     private final UserAccountSettingsService userAccountSettingsService;
-    private final UserService userService;
 
-    public AccountSettingsController(UserAccountSettingsService userAccountSettingsService, UserService userService) {
+    public AccountSettingsController(UserAccountSettingsService userAccountSettingsService) {
         this.userAccountSettingsService = userAccountSettingsService;
-        this.userService = userService;
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
-        String email = getCurrentGymEmail();
-        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(email);
-        AccountSettingsDto settings = userAccountSettingsService.getUserSettings(profile.getId());
+        AccountSettingsDto settings = userAccountSettingsService.getUserSettings();
         return ResponseEntity.ok(ApiResponse.success(settings));
     }
 
     @PutMapping("update/me")
     public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
-        String authenticatedEmail = getCurrentGymEmail();
-        UserBaseResponseDto profile = (UserBaseResponseDto) userService.getUserProfileByEmail(authenticatedEmail);
-
-        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(profile.getId(), newSettings);
-
+        AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(newSettings);
         return ResponseEntity.ok(ApiResponse.success(updatedSettings));
     }
-
-    private String getCurrentGymEmail() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
-
 }

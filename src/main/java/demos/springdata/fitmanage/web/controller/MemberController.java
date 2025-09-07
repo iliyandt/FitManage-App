@@ -67,9 +67,9 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserProfileDto>> updateMember(@PathVariable Long id, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        UserProfileDto userProfileDto = memberService.updateMemberDetails(id, memberUpdateDto);
+    @PatchMapping
+    public ResponseEntity<ApiResponse<UserProfileDto>> updateMember(@Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        UserProfileDto userProfileDto = memberService.updateMemberDetails(memberUpdateDto);
         return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 

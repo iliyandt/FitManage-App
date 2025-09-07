@@ -12,7 +12,7 @@ import java.util.List;
 public interface MemberService {
     UserProfileDto createMember(UserCreateRequestDto requestDto);
     void removeMember(Long memberId);
-    UserProfileDto updateMemberDetails(Long memberId, MemberUpdateDto memberUpdateDto);
+    UserProfileDto updateMemberDetails(MemberUpdateDto memberUpdateDto);
     UserProfileDto checkInMember(Long memberId);
     List<MemberTableDto> getAllMembersForTable();
     List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto memberFilterRequestDto);

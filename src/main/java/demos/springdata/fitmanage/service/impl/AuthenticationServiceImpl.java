@@ -20,6 +20,7 @@ import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.EmailService;
 import demos.springdata.fitmanage.service.RoleService;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -48,11 +49,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final CustomUserDetailsService customUserDetailsService;
+    private final CurrentUserUtils currentUserUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
 
     @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository) {
+    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository, CurrentUserUtils currentUserUtils) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -61,6 +63,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.emailService = emailService;
         this.customUserDetailsService = customUserDetailsService;
         this.tenantRepository = tenantRepository;
+        this.currentUserUtils = currentUserUtils;
     }
 
     @Transactional
@@ -140,9 +143,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public VerificationResponseDto changePassword(ChangePasswordRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+       User user = currentUserUtils.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             return new VerificationResponseDto("Old password is incorrect", false);

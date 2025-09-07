@@ -8,9 +8,9 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipPlanRepository;
 import demos.springdata.fitmanage.security.CustomUserDetails;
-import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.UserService;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,25 +26,28 @@ import java.util.List;
 public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     private final MembershipPlanRepository membershipPlanRepository;
-    private final ModelMapper modelMapper;
-    private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
     private final UserService userService;
+    private final ModelMapper modelMapper;
+    private final CurrentUserUtils currentUserUtils;
+    private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
+
 
     @Autowired
     public MembershipPlanServiceImpl
             (
-            MembershipPlanRepository membershipPlanRepository,
-            ModelMapper modelMapper,
-            UserService userService
+                    MembershipPlanRepository membershipPlanRepository,
+                    ModelMapper modelMapper,
+                    UserService userService, CurrentUserUtils currentUserUtils
             ) {
         this.membershipPlanRepository = membershipPlanRepository;
         this.modelMapper = modelMapper;
         this.userService = userService;
+        this.currentUserUtils = currentUserUtils;
     }
 
     @Override
-    public List<MembershipPlanDto> createPlans(Long id, List<MembershipPlanDto> plansDto) {
-        User user = userService.findUserById(id);
+    public List<MembershipPlanDto> createPlans(List<MembershipPlanDto> plansDto) {
+        User user = currentUserUtils.getCurrentUser();
 
         List<MembershipPlanDto> savedPlans = new ArrayList<>();
 
@@ -61,10 +64,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     @Override
     public List<MembershipPlanDto> getPlansAndPrices() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = principal.getId();
+        Long userId = currentUserUtils.getCurrentUser().getId();
         List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByUser_Id(userId);
 
         return plans.stream()

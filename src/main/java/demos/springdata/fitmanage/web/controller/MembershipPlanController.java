@@ -6,14 +6,11 @@ import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableD
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
 import demos.springdata.fitmanage.helper.TableHelper;
-import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,15 +31,9 @@ public class MembershipPlanController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<List<MembershipPlanDto>>> createPlans(@RequestBody List<MembershipPlanDto> plansDto) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        Long userId = principal.getId();
-
-        List<MembershipPlanDto> savedPlans = pricingService.createPlans(userId, plansDto);
+        List<MembershipPlanDto> savedPlans = pricingService.createPlans(plansDto);
         return ResponseEntity.ok(ApiResponse.success(savedPlans));
     }
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
@@ -68,6 +59,4 @@ public class MembershipPlanController {
         //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));
     }
-
-
 }

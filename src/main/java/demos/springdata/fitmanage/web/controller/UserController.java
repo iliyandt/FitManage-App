@@ -20,6 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    //todo: logic for authentication should be in the service layer
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserProfileDto>> authenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -27,10 +28,9 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
-    //todo: what is if the given id is from another user here? Can i change the details from another user without permission?
-    @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateDto dto) {
-        userService.updateProfile(id, dto);
+    @PatchMapping
+    public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
+        userService.updateProfile(dto);
         return ResponseEntity.ok(ApiResponse.success("User details updated successfully."));
     }
 }
