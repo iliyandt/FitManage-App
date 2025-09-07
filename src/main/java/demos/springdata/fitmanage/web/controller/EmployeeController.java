@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
@@ -18,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users/employee")
-@PreAuthorize("hasAuthority('FACILITY_ADMIN')")
 public class EmployeeController {
     private final EmployeeService staffProfileService;
     private final TableHelper tableHelper;
@@ -31,6 +31,7 @@ public class EmployeeController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('FACILITY_ADMIN')")
     public ResponseEntity<ApiResponse<UserProfileDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequestDto requestDto) {
         UserProfileDto responseDto = staffProfileService.createEmployee(requestDto);
         return ResponseEntity
@@ -39,9 +40,16 @@ public class EmployeeController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('FACILITY_ADMIN')")
     public ResponseEntity<ApiResponse<TableResponseDto>> getEmployees() {
         TableResponseDto response = buildTableResponse(employeeService.getAllEmployees());
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/names")
+    @PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
+    public ResponseEntity<ApiResponse<List<EmployeeName>>> getEmployeesFullNames() {
+        return ResponseEntity.ok(ApiResponse.success(employeeService.getEmployeesFullNames()));
     }
 
     private TableResponseDto buildTableResponse(List<EmployeeTableDto> members) {

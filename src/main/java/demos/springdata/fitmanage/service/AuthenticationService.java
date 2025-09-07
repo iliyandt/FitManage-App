@@ -8,8 +8,6 @@ import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseD
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
-
 public interface AuthenticationService {
     RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequestDto, TenantDto tenantDto);
     EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto);

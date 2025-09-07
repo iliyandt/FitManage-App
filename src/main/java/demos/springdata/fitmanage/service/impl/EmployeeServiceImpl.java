@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
@@ -10,7 +11,9 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
+import demos.springdata.fitmanage.security.CustomUserDetails;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import demos.springdata.fitmanage.util.RoleUtils;
 import demos.springdata.fitmanage.util.UserSecurityUtils;
 import jakarta.mail.MessagingException;
@@ -18,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmailService emailService;
     private final ModelMapper modelMapper;
     private final UserSecurityUtils securityUtils;
+    private final CurrentUserUtils currentUserUtils;
     private final BCryptPasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
@@ -48,6 +53,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     EmailService emailService,
                     ModelMapper modelMapper,
                     UserSecurityUtils securityUtils,
+                    CurrentUserUtils currentUserUtils,
                     BCryptPasswordEncoder passwordEncoder
             ) {
         this.employeeRepository = employeeRepository;
@@ -57,28 +63,29 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.emailService = emailService;
         this.modelMapper = modelMapper;
         this.securityUtils = securityUtils;
+        this.currentUserUtils = currentUserUtils;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     @Override
     public UserProfileDto createEmployee(EmployeeCreateRequestDto requestDto) {
-        String authenticatedUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        Tenant tenant = tenantService.getTenantByEmail(authenticatedUserEmail);
+        User user = currentUserUtils.getCurrentUser();
+        Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
-        User user = buildEmployee(tenant, requestDto);
-        validateCredentials(user, requestDto);
-        createAndSendInitialPasswordToUser(user);
+        User member = buildEmployee(tenant, requestDto);
+        validateCredentials(member, requestDto);
+        createAndSendInitialPasswordToUser(member);
 
-        Employee employee = createAndLinkStaffProfileToUser(tenant, user, requestDto);
+        Employee employee = createAndLinkStaffProfileToUser(tenant, member, requestDto);
 
-        userService.save(user);
+        userService.save(member);
         employeeRepository.save(employee);
 
-        LOGGER.info("Successfully added staff with ID {} to facility '{}'", user.getId(), tenant.getName());
+        LOGGER.info("Successfully added staff with ID {} to facility '{}'", member.getId(), tenant.getName());
 
-        EmployeeResponseDto mappedStaff = modelMapper.map(user, EmployeeResponseDto.class);
-        mappedStaff.setRoles(RoleUtils.extractRoleTypes(user));
+        EmployeeResponseDto mappedStaff = modelMapper.map(member, EmployeeResponseDto.class);
+        mappedStaff.setRoles(RoleUtils.extractRoleTypes(member));
         modelMapper.map(employee, mappedStaff);
         mappedStaff.setEmployeeRole(requestDto.getEmployeeRole());
 
@@ -89,8 +96,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeTableDto> getAllEmployees() {
         LOGGER.info("Fetching all members..");
-        String authenticatedUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        Tenant tenant = tenantService.getTenantByEmail(authenticatedUserEmail);
+        User user = currentUserUtils.getCurrentUser();
+        Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
+
         LOGGER.info("Tenant ID: {}", tenant.getId());
 
         List<Employee> employees = employeeRepository.findAllByTenant_Id(tenant.getId());
@@ -99,6 +107,33 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employees.stream()
                 .map(this::mapEmployeeToEmployeeTableDto)
                 .toList();
+    }
+
+    @Override
+    public List<EmployeeName> getEmployeesFullNames() {
+       User user = currentUserUtils.getCurrentUser();
+
+        return currentUserUtils.isFacilityAdmin(user)
+                ? getAllEmployeesForTenant(user.getTenant().getId())
+                : getSingleEmployeeForUser(user.getTenant().getId(), user.getId());
+    }
+
+    private List<EmployeeName> getAllEmployeesForTenant(Long tenantId) {
+        return employeeRepository.findAllByTenant_Id(tenantId)
+                .stream()
+                .map(this::mapToEmployeeName)
+                .toList();
+    }
+
+    private List<EmployeeName> getSingleEmployeeForUser(Long tenantId, Long userId) {
+        Employee employee = employeeRepository.findByTenant_IdAndUser_Id(tenantId, userId);
+        return List.of(mapToEmployeeName(employee));
+    }
+
+    private EmployeeName mapToEmployeeName(Employee employee) {
+        return new EmployeeName()
+                .setId(employee.getId())
+                .setName(employee.getUser().getFirstName() + " " + employee.getUser().getLastName());
     }
 
     private Employee createAndLinkStaffProfileToUser(Tenant tenant, User user, EmployeeCreateRequestDto requestDto) {

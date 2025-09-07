@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service;
 
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
@@ -10,4 +11,5 @@ import java.util.List;
 public interface EmployeeService {
     UserProfileDto createEmployee(EmployeeCreateRequestDto requestDto);
     List<EmployeeTableDto> getAllEmployees();
+    List<EmployeeName> getEmployeesFullNames();
 }
