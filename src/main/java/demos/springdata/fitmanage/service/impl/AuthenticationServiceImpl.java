@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
+import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
@@ -142,22 +143,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public VerificationResponseDto changePassword(ChangePasswordRequest request) {
+    public String changePassword(ChangePasswordRequest request) {
        User user = currentUserUtils.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            return new VerificationResponseDto("Old password is incorrect", false);
+            throw  new FitManageAppException("Old password is incorrect", ApiErrorCode.NOT_FOUND);
         }
 
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
-            return new VerificationResponseDto("New password cannot be the same as old password", false);
+            throw new FitManageAppException("New password cannot be the same as old password", ApiErrorCode.NOT_FOUND);
         }
 
         encryptUserPassword(user, request.getNewPassword());
         userRepository.save(user);
 
         LOGGER.debug("New Password {}", request.getNewPassword());
-        return new VerificationResponseDto("Password changed successfully", true);
+        return "Password changed successfully";
     }
 
     private void enableUserAccount(User user) {

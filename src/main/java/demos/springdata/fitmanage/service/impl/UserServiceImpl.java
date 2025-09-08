@@ -29,9 +29,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final CurrentUserUtils currentUserUtils;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-    private final CurrentUserUtils currentUserUtils;
 
 
     @Autowired

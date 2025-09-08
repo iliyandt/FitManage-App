@@ -44,7 +44,7 @@ public class AuthController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<ApiResponse<VerificationResponseDto>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         return ResponseEntity.ok(ApiResponse.success(authenticationService.changePassword(request)));
     }
 

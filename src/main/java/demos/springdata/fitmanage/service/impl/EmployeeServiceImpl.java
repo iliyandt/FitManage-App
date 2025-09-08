@@ -114,6 +114,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 : getSingleEmployeeForUser(user.getTenant().getId(), user.getId());
     }
 
+    @Override
+    public Employee getEmployeeById(Long id, Tenant tenant) {
+        return employeeRepository.findByIdAndTenant(id, tenant).orElseThrow(() -> new FitManageAppException("Employee not found", ApiErrorCode.NOT_FOUND));
+    }
+
     private List<EmployeeName> getAllEmployeesForTenant(Long tenantId) {
         return employeeRepository.findAllByTenant_Id(tenantId)
                 .stream()

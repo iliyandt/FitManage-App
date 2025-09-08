@@ -14,6 +14,6 @@ public interface AuthenticationService {
     UserDetails authenticateUser(LoginRequestDto loginRequestDto);
     VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto);
     VerificationResponseDto resendUserVerificationCode(String email);
-    VerificationResponseDto changePassword(ChangePasswordRequest request);
+    String changePassword(ChangePasswordRequest request);
 
 }

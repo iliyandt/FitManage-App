@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.domain.entity;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "shifts")
@@ -10,11 +10,8 @@ public class Shift extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private boolean approved;
     private String notes;
 
@@ -30,29 +27,20 @@ public class Shift extends BaseEntity{
         return this;
     }
 
-    public Tenant getTenant() {
-        return tenant;
-    }
-
-    public Shift setTenant(Tenant tenant) {
-        this.tenant = tenant;
-        return this;
-    }
-
-    public LocalDateTime getStartTime() {
+    public OffsetDateTime getStartTime() {
         return startTime;
     }
 
-    public Shift setStartTime(LocalDateTime startTime) {
+    public Shift setStartTime(OffsetDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public LocalDateTime getEndTime() {
+    public OffsetDateTime getEndTime() {
         return endTime;
     }
 
-    public Shift setEndTime(LocalDateTime endTime) {
+    public Shift setEndTime(OffsetDateTime endTime) {
         this.endTime = endTime;
         return this;
     }

@@ -2,11 +2,15 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.shift.ShiftCreateRequest;
 import demos.springdata.fitmanage.domain.dto.shift.ShiftResponseDto;
+import demos.springdata.fitmanage.domain.entity.Employee;
+import demos.springdata.fitmanage.domain.entity.Shift;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.repository.ShiftRepository;
+import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.service.ShiftService;
 import demos.springdata.fitmanage.util.CurrentUserUtils;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +22,17 @@ import java.util.List;
 public class ShiftServiceImpl implements ShiftService {
 
     private final ShiftRepository shiftRepository;
+    private final EmployeeService employeeService;
     private final CurrentUserUtils currentUserUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiftServiceImpl.class);
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ShiftServiceImpl(ShiftRepository shiftRepository, CurrentUserUtils currentUserUtils) {
+    public ShiftServiceImpl(ShiftRepository shiftRepository, EmployeeService employeeService, CurrentUserUtils currentUserUtils, ModelMapper modelMapper) {
         this.shiftRepository = shiftRepository;
+        this.employeeService = employeeService;
         this.currentUserUtils = currentUserUtils;
+        this.modelMapper = modelMapper;
     }
 
 
@@ -32,7 +40,21 @@ public class ShiftServiceImpl implements ShiftService {
     public ShiftResponseDto createShift(ShiftCreateRequest createRequest) {
         User user = currentUserUtils.getCurrentUser();
         Tenant tenant = user.getTenant();
-        return null;
+
+        Employee employee = employeeService.getEmployeeById(createRequest.getId(), tenant);
+
+        Shift shift = new Shift()
+                .setEmployee(employee)
+                .setStartTime(createRequest.getStartTime())
+                .setEndTime(createRequest.getEndTime())
+                .setNotes(createRequest.getNotes())
+                .setApproved(false);
+
+        Shift savedShift = shiftRepository.save(shift);
+        ShiftResponseDto mappedShift = modelMapper.map(savedShift, ShiftResponseDto.class);
+        return mappedShift.setFirstName(employee.getUser().getFirstName())
+                .setLastName(employee.getUser().getLastName())
+                .setRole(employee.getEmployeeRole().getDisplayName());
     }
 
     @Override

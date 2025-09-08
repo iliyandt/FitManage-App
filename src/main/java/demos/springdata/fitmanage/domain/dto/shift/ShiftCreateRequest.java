@@ -1,14 +1,25 @@
 package demos.springdata.fitmanage.domain.dto.shift;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class ShiftCreateRequest {
+    private Long id;
     private String name;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private String notes;
 
     public ShiftCreateRequest() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public ShiftCreateRequest setId(Long id) {
+        this.id = id;
+        return this;
     }
 
     public String getName() {
@@ -20,20 +31,20 @@ public class ShiftCreateRequest {
         return this;
     }
 
-    public LocalDateTime getStartTime() {
+    public OffsetDateTime getStartTime() {
         return startTime;
     }
 
-    public ShiftCreateRequest setStartTime(LocalDateTime startTime) {
+    public ShiftCreateRequest setStartTime(OffsetDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public LocalDateTime getEndTime() {
+    public OffsetDateTime getEndTime() {
         return endTime;
     }
 
-    public ShiftCreateRequest setEndTime(LocalDateTime endTime) {
+    public ShiftCreateRequest setEndTime(OffsetDateTime endTime) {
         this.endTime = endTime;
         return this;
     }

@@ -1,13 +1,14 @@
 package demos.springdata.fitmanage.domain.dto.shift;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public class ShiftResponseDto {
     private Long id;
     private String firstName;
     private String lastName;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private String role;
     private boolean approved;
     private String notes;
@@ -42,20 +43,20 @@ public class ShiftResponseDto {
         return this;
     }
 
-    public LocalDateTime getStartTime() {
+    public OffsetDateTime getStartTime() {
         return startTime;
     }
 
-    public ShiftResponseDto setStartTime(LocalDateTime startTime) {
+    public ShiftResponseDto setStartTime(OffsetDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
 
-    public LocalDateTime getEndTime() {
+    public OffsetDateTime getEndTime() {
         return endTime;
     }
 
-    public ShiftResponseDto setEndTime(LocalDateTime endTime) {
+    public ShiftResponseDto setEndTime(OffsetDateTime endTime) {
         this.endTime = endTime;
         return this;
     }
