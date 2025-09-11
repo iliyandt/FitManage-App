@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class ShiftServiceImpl implements ShiftService {
     private final ShiftRepository shiftRepository;
     private final EmployeeService employeeService;
     private final CurrentUserUtils currentUserUtils;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ShiftServiceImpl.class);
     private final ModelMapper modelMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ShiftServiceImpl.class);
 
     @Autowired
     public ShiftServiceImpl(ShiftRepository shiftRepository, EmployeeService employeeService, CurrentUserUtils currentUserUtils, ModelMapper modelMapper) {
@@ -58,8 +59,23 @@ public class ShiftServiceImpl implements ShiftService {
     }
 
     @Override
+    @Transactional
     public List<ShiftResponseDto> getShiftsForCurrentUser() {
         LOGGER.info("Get shifts information for current user");
-        return List.of();
+        User user = currentUserUtils.getCurrentUser();
+
+        List<Shift> employeeShifts = shiftRepository.findByEmployee_User(user);
+
+
+        return employeeShifts.stream().map(shift -> {
+            ShiftResponseDto currentShift = modelMapper.map(shift, ShiftResponseDto.class);
+            Employee employee = shift.getEmployee();
+
+            currentShift.setFirstName(user.getFirstName())
+                    .setLastName(user.getLastName())
+                    .setRole(employee.getEmployeeRole().getDisplayName());
+
+            return currentShift;
+        }).toList();
     }
 }
