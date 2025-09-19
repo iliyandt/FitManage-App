@@ -125,19 +125,24 @@ public class MemberServiceImpl implements MemberService {
         return userService.updateProfile(updateRequest);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     @Override
     public List<MemberTableDto> getAllMembersForTable() {
         LOGGER.info("Prepare list of all members for table view");
+
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
-        Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
+        List<User> list = tenant.getUsers();
+        LOGGER.info("Tenant users size: {}", tenant.getUsers().size());
 
-        return tenant.getUsers().stream()
-                .filter(user -> user.getRoles().contains(facilityMemberRole))
+        List<MemberTableDto> members = list.stream()
+                .filter(user -> user.getRoles().contains(roleService.findByName(RoleType.FACILITY_MEMBER)))
                 .map(this::mapUserToMemberTableDto)
                 .toList();
+
+        return members;
     }
+
 
     @Transactional
     @Override

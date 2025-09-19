@@ -1,9 +1,7 @@
 package demos.springdata.fitmanage.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,10 +25,10 @@ public class Tenant extends BaseEntity {
     @Column(name = "subscription_valid_until")
     private LocalDate subscriptionValidUntil;
 
-    @OneToMany(mappedBy = "tenant")
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.EAGER)
     private List<User> users = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tenant")
+    @OneToMany(mappedBy = "tenant", fetch = FetchType.EAGER)
     private Set<Membership> memberships = new HashSet<>();
 
 
