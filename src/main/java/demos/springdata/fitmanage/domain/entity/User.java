@@ -71,7 +71,7 @@ public class User extends BaseEntity implements UserDetails {
     private OffsetDateTime birthDate;
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private Set<Membership> memberships = new HashSet<>();
 
