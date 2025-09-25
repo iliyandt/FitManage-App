@@ -15,6 +15,5 @@ public interface MembershipPlanService {
     List<MembershipPlanDto> getPlansAndPricesAsPriceDto();
     MembershipPlanUpdateDto updatePlanPrices(Long planId, MembershipPlanUpdateDto dto);
     void deletePlan(Long planId);
-
     PlanPriceResponse getCurrentPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment);
 }

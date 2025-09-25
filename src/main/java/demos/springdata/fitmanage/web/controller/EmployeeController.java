@@ -19,7 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users/employee")
-public class EmployeeController {
+public class    EmployeeController {
     private final EmployeeService staffProfileService;
     private final TableHelper tableHelper;
     private final EmployeeService employeeService;

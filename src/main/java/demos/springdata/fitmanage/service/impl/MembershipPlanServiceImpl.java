@@ -104,7 +104,8 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     @Override
     public PlanPriceResponse getCurrentPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
-            BigDecimal specificPlanPrice = membershipPlanRepository.findPriceByTenantAndSubscriptionPlanAndEmployment(tenant, subscriptionPlan, employment);
-        return modelMapper.map(specificPlanPrice, PlanPriceResponse.class);
+        BigDecimal specificPlanPrice = membershipPlanRepository.findPriceByTenantAndSubscriptionPlanAndEmployment(tenant, subscriptionPlan, employment.name());
+        PlanPriceResponse planPriceResponse = new PlanPriceResponse();
+        return planPriceResponse.setPrice(specificPlanPrice);
     }
 }

@@ -30,6 +30,6 @@ public interface MembershipPlanRepository extends JpaRepository<MembershipPlan, 
     BigDecimal findPriceByTenantAndSubscriptionPlanAndEmployment(
             @Param("tenant") Tenant tenant,
             @Param("subscriptionPlan") SubscriptionPlan subscriptionPlan,
-            @Param("employment") Employment employment
+            @Param("employment") String employment
     );
 }
