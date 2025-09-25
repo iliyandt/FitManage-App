@@ -2,8 +2,12 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanPriceResponse;
 import demos.springdata.fitmanage.domain.entity.MembershipPlan;
+import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Employment;
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipPlanRepository;
@@ -19,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +31,6 @@ import java.util.List;
 public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     private final MembershipPlanRepository membershipPlanRepository;
-    private final UserService userService;
     private final ModelMapper modelMapper;
     private final CurrentUserUtils currentUserUtils;
     private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
@@ -37,23 +41,22 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
             (
                     MembershipPlanRepository membershipPlanRepository,
                     ModelMapper modelMapper,
-                    UserService userService, CurrentUserUtils currentUserUtils
+                    CurrentUserUtils currentUserUtils
             ) {
         this.membershipPlanRepository = membershipPlanRepository;
         this.modelMapper = modelMapper;
-        this.userService = userService;
         this.currentUserUtils = currentUserUtils;
     }
 
     @Override
     public List<MembershipPlanDto> createPlans(List<MembershipPlanDto> plansDto) {
-        User user = currentUserUtils.getCurrentUser();
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         List<MembershipPlanDto> savedPlans = new ArrayList<>();
 
         for (MembershipPlanDto planDto : plansDto) {
             MembershipPlan plan = modelMapper.map(planDto, MembershipPlan.class);
-            plan.setUser(user);
+            plan.setTenant(tenant);
             MembershipPlan saved = membershipPlanRepository.save(plan);
             savedPlans.add(modelMapper.map(saved, MembershipPlanDto.class));
         }
@@ -64,8 +67,8 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     @Override
     public List<MembershipPlanDto> getPlansAndPrices() {
-        Long userId = currentUserUtils.getCurrentUser().getId();
-        List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByUser_Id(userId);
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByTenant(tenant);
 
         return plans.stream()
                 .map(p -> modelMapper.map(p, MembershipPlanDto.class)).toList();
@@ -96,5 +99,12 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
         membershipPlanRepository.delete(currentPlan);
 
         LOGGER.info("Plan with ID {} deleted successfully", planId);
+    }
+
+    @Override
+    public PlanPriceResponse getCurrentPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+            BigDecimal specificPlanPrice = membershipPlanRepository.findPriceByTenantAndSubscriptionPlanAndEmployment(tenant, subscriptionPlan, employment);
+        return modelMapper.map(specificPlanPrice, PlanPriceResponse.class);
     }
 }

@@ -5,6 +5,9 @@ import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanPriceResponse;
+import demos.springdata.fitmanage.domain.enums.Employment;
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -45,6 +48,13 @@ public class MembershipPlanController {
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @GetMapping("/{subscriptionPlan}/{employment}")
+    public ResponseEntity<ApiResponse<PlanPriceResponse>> getCurrentPlanPrice(@PathVariable SubscriptionPlan subscriptionPlan, @PathVariable Employment employment) {
+        PlanPriceResponse currentPlanPrice = membershipPlanService.getCurrentPlanPrice(subscriptionPlan, employment);
+        return ResponseEntity.ok(ApiResponse.success(currentPlanPrice));
+    }
+
 
     @PatchMapping("/{planId}")
     public ResponseEntity<ApiResponse<MembershipPlanUpdateDto>> editPlanPrices(@PathVariable Long planId,

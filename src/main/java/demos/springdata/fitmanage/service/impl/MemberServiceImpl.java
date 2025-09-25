@@ -135,7 +135,6 @@ public class MemberServiceImpl implements MemberService {
         List<User> users = tenant.getUsers();
         LOGGER.info("Tenant users size: {}", tenant.getUsers().size());
 
-
         return users.stream()
                 .filter(user -> !user.getMemberships().isEmpty())
                 .map(this::mapUserToMemberTableDto).toList();
