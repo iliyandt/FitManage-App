@@ -3,7 +3,6 @@ package demos.springdata.fitmanage.domain.entity;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
 
-import java.util.Objects;
 
 @Entity
 @Table(name = "security_roles")
