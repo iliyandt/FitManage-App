@@ -4,12 +4,14 @@ import demos.springdata.fitmanage.domain.dto.payment.CheckoutResponse;
 import demos.springdata.fitmanage.domain.dto.payment.TerminalPaymentResponse;
 import demos.springdata.fitmanage.service.PaymentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/v1/payments")
+@PreAuthorize("hasAuthority('FACILITY_ADMIN')")
 public class PaymentController {
     private final PaymentService paymentService;
 

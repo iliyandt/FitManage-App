@@ -8,14 +8,11 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.service.AnalyticsService;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class AnalyticsServiceImpl implements AnalyticsService {
@@ -28,6 +25,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         this.membershipService = membershipService;
     }
 
+    //TODO: refactor method
     @Override
     public UserRatioAnalyticsDto calculateUserRatios() {
         Double totalUsers = userService.countAllUsersByTenant();
