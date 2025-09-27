@@ -1,9 +1,10 @@
 package demos.springdata.fitmanage.repository;
+import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByRoles_Name(RoleType roleType);
     List<User> findAll(Specification<User> spec);
     Optional<User> findByQrToken(String qrToken);
+
+    Double countByGender_AndTenant(Gender genderAfter, Tenant tenant);
+    Double countAllByTenant(Tenant tenant);
 }

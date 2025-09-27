@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
@@ -16,6 +17,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.MembershipRepository;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import demos.springdata.fitmanage.util.RoleUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -32,13 +34,15 @@ import java.util.stream.Collectors;
 @Service
 public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
+    private final CurrentUserUtils currentUserUtils;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(MembershipServiceImpl.class);
     private final UserService userService;
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, ModelMapper modelMapper, UserService userService) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, CurrentUserUtils currentUserUtils, ModelMapper modelMapper, UserService userService) {
         this.membershipRepository = membershipRepository;
+        this.currentUserUtils = currentUserUtils;
         this.modelMapper = modelMapper;
         this.userService = userService;
     }
@@ -101,6 +105,24 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public void save(Membership membership) {
         membershipRepository.save(membership);
+    }
+
+    @Override
+    public Double countByEmploymentForTenant(Employment employment) {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        return membershipRepository.countByEmployment_AndTenant(employment, tenant);
+    }
+
+    @Override
+    public Double countBySubscriptionStatusForTenant(SubscriptionStatus status) {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        return membershipRepository.countBySubscriptionStatus_AndTenant(status, tenant);
+    }
+
+    @Override
+    public Double countBySubscriptionPlanForTenant(SubscriptionPlan plan) {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        return membershipRepository.countBySubscriptionPlan_AndTenant(plan, tenant);
     }
 
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {

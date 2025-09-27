@@ -2,7 +2,9 @@ package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
+import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Gender;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -20,4 +22,9 @@ public interface UserService {
     boolean existsByEmailAndTenant(String email, Long tenantId);
     boolean existsByPhoneAndTenant(String phone, Long tenantId);
     void delete(User user);
+    Double countByGenderForTenant(Gender gender);
+
+    Double countAllUsersByTenant();
+
+
 }

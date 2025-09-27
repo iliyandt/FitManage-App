@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
+import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -24,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -104,6 +104,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(User user) {
         userRepository.delete(user);
+    }
+
+    @Override
+    public Double countByGenderForTenant(Gender gender) {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        return userRepository.countByGender_AndTenant(gender, tenant);
+    }
+
+    @Override
+    public Double countAllUsersByTenant() {
+        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        return userRepository.countAllByTenant(tenant);
     }
 
     @Override
