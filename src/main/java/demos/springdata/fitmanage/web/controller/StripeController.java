@@ -23,9 +23,10 @@ public class StripeController {
     }
 
     @PostMapping("/create-checkout-session")
-    public Map<String, String> createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException {
+    public CheckoutSessionResponse createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException {
         Session session = stripeService.createCheckoutSession(request);
-        return Map.of("url", session.getUrl(), "id", session.getId());
+        return new CheckoutSessionResponse(session.getId(), session.getUrl(), null);
+        //return Map.of("url", session.getUrl(), "id", session.getId());
     }
 
     @GetMapping("/session/{id}")
