@@ -1,15 +1,13 @@
 package demos.springdata.fitmanage.web.controller;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
+import com.stripe.model.checkout.Session;
+import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
+import demos.springdata.fitmanage.domain.dto.payment.CheckoutSessionResponse;
 import demos.springdata.fitmanage.service.StripeService;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -24,15 +22,15 @@ public class StripeController {
         this.stripeService = stripeService;
     }
 
-    @PostMapping("/create-payment-intent")
-    public Map<String, String> createPaymentIntent(@RequestBody Map<String, Object> data) throws StripeException {
-        Long amount = Long.parseLong(data.get("amount").toString());
-        String currency = data.get("currency").toString();
+    @PostMapping("/create-checkout-session")
+    public Map<String, String> createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException {
+        Session session = stripeService.createCheckoutSession(request);
+        return Map.of("url", session.getUrl(), "id", session.getId());
+    }
 
-        PaymentIntent paymentIntent = stripeService.createPaymentIntent(amount, currency);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("clientSecret", paymentIntent.getClientSecret());
-        return response;
+    @GetMapping("/session/{id}")
+    public CheckoutSessionResponse getSession(@PathVariable String id) throws StripeException {
+        Session session = stripeService.getSession(id);
+        return new CheckoutSessionResponse(session.getId(), session.getUrl(), session.getPaymentStatus());
     }
 }

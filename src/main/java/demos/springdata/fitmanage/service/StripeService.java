@@ -1,9 +1,10 @@
 package demos.springdata.fitmanage.service;
 
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
+import com.stripe.model.checkout.Session;
+import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 
 public interface StripeService {
-    void init();
-    PaymentIntent createPaymentIntent(Long amount, String currency) throws StripeException;
+    Session createCheckoutSession(CheckoutRequest checkoutRequest) throws StripeException;
+    Session getSession(String sessionId) throws StripeException;
 }
