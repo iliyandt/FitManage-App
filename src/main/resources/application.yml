@@ -81,6 +81,11 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+
+stripe:
+ api:
+  key: ${STRIPE_API_KEY}
+
 server:
   port: ${PORT:8080}
   error:
