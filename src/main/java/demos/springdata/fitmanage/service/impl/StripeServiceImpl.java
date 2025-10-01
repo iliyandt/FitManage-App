@@ -2,16 +2,13 @@ package demos.springdata.fitmanage.service.impl;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
-
 import com.stripe.param.checkout.SessionCreateParams;
 import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 import demos.springdata.fitmanage.service.StripeService;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Service
 public class StripeServiceImpl implements StripeService {
@@ -37,13 +34,17 @@ public class StripeServiceImpl implements StripeService {
                                                 .setUnitAmount(checkoutRequest.getAmount())
                                                 .setProductData(
                                                         SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                                                .setName("Your Product Name")
+                                                                .setName(checkoutRequest.getPlan() + " - " + checkoutRequest.getAbonnementDuration())
                                                                 .build()
                                                 )
                                                 .build()
                                 )
                                 .build()
                 )
+                .putMetadata("tenantId", checkoutRequest.getTenantId())
+                .putMetadata("plan", checkoutRequest.getPlan())
+                .putMetadata("price", checkoutRequest.getPlan())
+                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
                 .build();
 
         return Session.create(params);

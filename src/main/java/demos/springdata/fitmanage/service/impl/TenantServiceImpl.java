@@ -3,6 +3,10 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.entity.Tenant;
+import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.domain.enums.Abonnement;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import jakarta.transaction.Transactional;
@@ -13,6 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,5 +56,18 @@ public class TenantServiceImpl implements TenantService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = getTenantByEmail(email);
         return modelMapper.map(tenant, TenantDto.class);
+    }
+
+    @Override
+    public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
+        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
+
+        tenant.setAbonnement(planName);
+        if (duration.equals("yearly")) {
+            tenant.setSubscriptionValidUntil(LocalDate.now().plusDays(365));
+        } else if (duration.equals("monthly")) {
+            tenant.setSubscriptionValidUntil(LocalDate.now().plusDays(31));
+        }
+
     }
 }

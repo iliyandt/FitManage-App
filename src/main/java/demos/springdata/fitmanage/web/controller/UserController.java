@@ -29,8 +29,8 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<ApiResponse<String>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
-        userService.updateProfile(dto);
-        return ResponseEntity.ok(ApiResponse.success("User details updated successfully."));
+    public ResponseEntity<ApiResponse<UserProfileDto>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
+        UserProfileDto response = userService.updateProfile(dto);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

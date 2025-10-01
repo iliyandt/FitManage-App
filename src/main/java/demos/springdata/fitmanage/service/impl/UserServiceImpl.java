@@ -69,19 +69,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserProfileDto updateProfile(UserUpdateDto dto) {
-        User user = currentUserUtils.getCurrentUser();
+        //todo: only FACILITY_ADMINS and FACILITY_STAFF can change members infos
+        User currentlyLoggedUser = currentUserUtils.getCurrentUser();
 
-        LOGGER.info("Updating basic info for user with id: {}", user.getId());
+        LOGGER.info("Updating basic info for user with id: {}", currentlyLoggedUser.getId());
 
         modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(dto, user);
-        user.setUpdatedAt(LocalDateTime.now());
+        modelMapper.map(dto, currentlyLoggedUser);
+        currentlyLoggedUser.setUpdatedAt(LocalDateTime.now());
 
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(currentlyLoggedUser);
 
         UserBaseResponseDto response = modelMapper.map(savedUser, UserBaseResponseDto.class);
 
-        response.setRoles(RoleUtils.extractRoleTypes(user));
+        response.setRoles(RoleUtils.extractRoleTypes(currentlyLoggedUser));
 
         return response;
     }
