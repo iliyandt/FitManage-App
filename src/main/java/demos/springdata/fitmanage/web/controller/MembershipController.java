@@ -2,8 +2,8 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.MembershipService;
@@ -27,11 +27,11 @@ public class MembershipController {
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<UserProfileDto>> initializeSubscription(
+    public ResponseEntity<ApiResponse<MemberResponseDto>> initializeSubscription(
             @PathVariable Long memberId,
             @RequestBody @Valid MemberSubscriptionRequestDto dto) {
 
-        UserProfileDto response = membershipService.setupMembershipPlan(memberId, dto);
+        MemberResponseDto response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

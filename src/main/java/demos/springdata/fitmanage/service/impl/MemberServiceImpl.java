@@ -1,9 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
@@ -24,15 +22,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -74,7 +69,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public UserProfileDto createMember(UserCreateRequestDto requestDto) {
+    public MemberResponseDto createMember(UserCreateRequestDto requestDto) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
 
         User user = buildMember(tenant, requestDto);
@@ -88,7 +83,7 @@ public class MemberServiceImpl implements MemberService {
 
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        UserBaseResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(RoleUtils.extractRoleTypes(user));
+        MemberResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(RoleUtils.extractRoleTypes(user));
         modelMapper.map(membership, mappedMember);
 
         return mappedMember;
@@ -106,7 +101,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public UserProfileDto checkInMember(Long memberId) {
+    public MemberResponseDto checkInMember(Long memberId) {
         User user = userService.findUserById(memberId);
         Membership activeMembership = membershipService.getRequiredActiveMembership(user.getMemberships());
 
@@ -121,8 +116,26 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public UserProfileDto updateMemberDetails(MemberUpdateDto updateRequest) {
-        return userService.updateProfile(updateRequest);
+    public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
+        User authenticatedUser = currentUserUtils.getCurrentUser();
+        User member = userService.findUserById(memberId);
+
+        Membership membership = member.getMemberships().stream().findFirst().orElseThrow(() -> new FitManageAppException("Member has no membership created.", ApiErrorCode.CONFLICT));
+
+        modelMapper.map(updateRequest, member);
+        userService.save(member);
+
+        MemberResponseDto response = modelMapper.map(member, MemberResponseDto.class);
+
+        return response.setSubscriptionPlan(membership.getSubscriptionPlan())
+                .setAllowedVisits(membership.getAllowedVisits())
+                .setRemainingVisits(membership.getRemainingVisits())
+                .setSubscriptionStatus(membership.getSubscriptionStatus())
+                .setSubscriptionStartDate(membership.getSubscriptionStartDate())
+                .setSubscriptionEndDate(membership.getSubscriptionEndDate())
+                .setEmployment(membership.getEmployment())
+                .setLastCheckInAt(membership.getLastCheckInAt())
+                .setRoles(RoleUtils.extractRoleTypes(authenticatedUser));
     }
 
     @Transactional

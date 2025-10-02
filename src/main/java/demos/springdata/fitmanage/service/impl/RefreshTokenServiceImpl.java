@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -42,7 +42,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
 
         LOGGER.info("Creating refresh token for email: {}", email);
-        UserProfileDto userBaseResponseDto = userService.getUserProfileByEmail(email);
+        UserResponseDto userBaseResponseDto = userService.getUserProfileByEmail(email);
 
         User user = modelMapper.map(userBaseResponseDto, User.class);
 

@@ -3,9 +3,10 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -32,8 +33,8 @@ public class    EmployeeController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('FACILITY_ADMIN')")
-    public ResponseEntity<ApiResponse<UserProfileDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequestDto requestDto) {
-        UserProfileDto responseDto = staffProfileService.createEmployee(requestDto);
+    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequestDto requestDto) {
+        EmployeeResponseDto responseDto = staffProfileService.createEmployee(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));

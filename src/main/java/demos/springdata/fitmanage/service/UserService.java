@@ -1,8 +1,7 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
-import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    UserProfileDto getUserProfileByEmail(String email);
-    UserProfileDto updateProfile(UserUpdateDto dto);
+    UserResponseDto getUserProfileByEmail(String email);
+    UserResponseDto updateProfile(UserUpdateDto dto);
     List<User> findMembersByFilter(Specification<User> spec);
     List<User> findFirstMemberByFilter(Specification<User> spec);
     Optional<User> findByQrToken(String qrToken);

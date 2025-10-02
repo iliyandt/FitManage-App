@@ -1,15 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
-import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Employment;
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -28,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -50,7 +45,7 @@ public class MembershipServiceImpl implements MembershipService {
     //TODO: when plan is single visit should it be automatically checkedIn or no? if yes the visit should be at the same day/hour, if not it can be used other time.
     @Transactional
     @Override
-    public UserProfileDto setupMembershipPlan(Long memberId, MemberSubscriptionRequestDto requestDto) {
+    public MemberResponseDto setupMembershipPlan(Long memberId, MemberSubscriptionRequestDto requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 

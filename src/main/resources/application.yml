@@ -84,7 +84,9 @@ spring:
 
 stripe:
  api:
-  key: ${STRIPE_API_KEY}
+   key: ${STRIPE_API_KEY}
+ webhook:
+   secret: ${STRIPE_WEBHOOK_SECRET}
 
 server:
   port: ${PORT:8080}

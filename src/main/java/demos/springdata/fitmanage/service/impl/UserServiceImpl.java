@@ -47,30 +47,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserProfileDto getUserProfileByEmail(String email) {
+    public UserResponseDto getUserProfileByEmail(String email) {
         LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
         Set<RoleType> roles = RoleUtils.extractRoleTypes(user);
 
-        if (roles.contains(RoleType.FACILITY_MEMBER)) {
-            return mapMemberProfile(user, roles);
-        }
-
-        if (roles.contains(RoleType.FACILITY_STAFF)) {
-            Employee employee1 = user.getEmployees().stream().findFirst().filter(employee -> employee.getUser().getId().equals(user.getId())).orElse(null);
-            return mapStaffProfile(user, roles, employee1);
-        }
-
         return mapBaseProfile(user, roles);
     }
 
 
     @Override
-    public UserProfileDto updateProfile(UserUpdateDto dto) {
-        //todo: only FACILITY_ADMINS and FACILITY_STAFF can change members infos
+    public UserResponseDto updateProfile(UserUpdateDto dto) {
+
         User currentlyLoggedUser = currentUserUtils.getCurrentUser();
+
 
         LOGGER.info("Updating basic info for user with id: {}", currentlyLoggedUser.getId());
 
@@ -80,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(currentlyLoggedUser);
 
-        UserBaseResponseDto response = modelMapper.map(savedUser, UserBaseResponseDto.class);
+        UserResponseDto response = modelMapper.map(savedUser, UserResponseDto.class);
 
         response.setRoles(RoleUtils.extractRoleTypes(currentlyLoggedUser));
 
@@ -146,8 +138,8 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByQrToken(qrToken);
     }
 
-    private UserBaseResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
-        UserBaseResponseDto dto = modelMapper.map(user, UserBaseResponseDto.class);
+    private UserResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
+        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getActualUsername());
         dto.setRoles(roles);

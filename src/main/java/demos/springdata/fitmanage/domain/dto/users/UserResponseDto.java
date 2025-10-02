@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public non-sealed class UserBaseResponseDto implements UserProfileDto {
+public class UserResponseDto  {
     private Long id;
     private String firstName;
     private String lastName;
@@ -23,14 +23,14 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
     private String address;
     private String city;
 
-    public UserBaseResponseDto() {
+    public UserResponseDto() {
     }
 
     public Long getId() {
         return id;
     }
 
-    public UserBaseResponseDto setId(Long id) {
+    public UserResponseDto setId(Long id) {
         this.id = id;
         return this;
     }
@@ -39,7 +39,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return firstName;
     }
 
-    public UserBaseResponseDto setFirstName(String firstName) {
+    public UserResponseDto setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
@@ -48,7 +48,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return lastName;
     }
 
-    public UserBaseResponseDto setLastName(String lastName) {
+    public UserResponseDto setLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
@@ -57,7 +57,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return username;
     }
 
-    public UserBaseResponseDto setUsername(String username) {
+    public UserResponseDto setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -66,7 +66,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return email;
     }
 
-    public UserBaseResponseDto setEmail(String email) {
+    public UserResponseDto setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -75,7 +75,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return gender;
     }
 
-    public UserBaseResponseDto setGender(Gender gender) {
+    public UserResponseDto setGender(Gender gender) {
         this.gender = gender;
         return this;
     }
@@ -84,7 +84,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return roles;
     }
 
-    public UserBaseResponseDto setRoles(Set<RoleType> roles) {
+    public UserResponseDto setRoles(Set<RoleType> roles) {
         this.roles = roles;
         return this;
     }
@@ -93,7 +93,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return birthDate;
     }
 
-    public UserBaseResponseDto setBirthDate(OffsetDateTime birthDate) {
+    public UserResponseDto setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }
@@ -102,7 +102,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return createdAt;
     }
 
-    public UserBaseResponseDto setCreatedAt(LocalDateTime createdAt) {
+    public UserResponseDto setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
@@ -111,7 +111,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return updatedAt;
     }
 
-    public UserBaseResponseDto setUpdatedAt(LocalDateTime updatedAt) {
+    public UserResponseDto setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }
@@ -120,7 +120,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return phone;
     }
 
-    public UserBaseResponseDto setPhone(String phone) {
+    public UserResponseDto setPhone(String phone) {
         this.phone = phone;
         return this;
     }
@@ -129,7 +129,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return address;
     }
 
-    public UserBaseResponseDto setAddress(String address) {
+    public UserResponseDto setAddress(String address) {
         this.address = address;
         return this;
     }
@@ -138,7 +138,7 @@ public non-sealed class UserBaseResponseDto implements UserProfileDto {
         return city;
     }
 
-    public UserBaseResponseDto setCity(String city) {
+    public UserResponseDto setCity(String city) {
         this.city = city;
         return this;
     }

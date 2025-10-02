@@ -1,8 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
-import com.google.zxing.WriterException;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.service.QrService;
@@ -49,11 +48,11 @@ public class QrController {
     }
 
     @PostMapping("/qr")
-    public ResponseEntity<ApiResponse<UserProfileDto>> checkInByQr(@RequestParam String qrToken) {
+    public ResponseEntity<ApiResponse<MemberResponseDto>> checkInByQr(@RequestParam String qrToken) {
         User user = userService.findByQrToken(qrToken)
                 .orElseThrow(() -> new RuntimeException("Invalid QR code"));
 
-        UserProfileDto response = memberService.checkInMember(user.getId());
+        MemberResponseDto response = memberService.checkInMember(user.getId());
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

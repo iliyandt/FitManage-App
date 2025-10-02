@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
 import demos.springdata.fitmanage.service.UserService;
 import jakarta.validation.Valid;
@@ -22,15 +22,15 @@ public class UserController {
 
     //todo: logic for authentication should be in the service layer
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<UserProfileDto>> authenticatedUser() {
+    public ResponseEntity<ApiResponse<UserResponseDto>> authenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
-        UserProfileDto user = userService.getUserProfileByEmail(email);
+        UserResponseDto user = userService.getUserProfileByEmail(email);
         return ResponseEntity.ok(ApiResponse.success(user));
     }
 
     @PatchMapping
-    public ResponseEntity<ApiResponse<UserProfileDto>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
-        UserProfileDto response = userService.updateProfile(dto);
+    public ResponseEntity<ApiResponse<UserResponseDto>> updateUser(@Valid @RequestBody UserUpdateDto dto) {
+        UserResponseDto response = userService.updateProfile(dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

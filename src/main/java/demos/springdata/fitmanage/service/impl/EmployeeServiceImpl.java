@@ -65,7 +65,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public UserProfileDto createEmployee(EmployeeCreateRequestDto requestDto) {
+    public EmployeeResponseDto createEmployee(EmployeeCreateRequestDto requestDto) {
         User user = currentUserUtils.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 

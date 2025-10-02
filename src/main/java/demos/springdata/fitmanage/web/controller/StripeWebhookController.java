@@ -6,7 +6,6 @@ import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
-import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;

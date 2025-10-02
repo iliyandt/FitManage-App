@@ -2,7 +2,6 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserProfileDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
@@ -51,25 +50,25 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserProfileDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
-        UserProfileDto responseDto = memberService.createMember(requestDto);
+    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
+        MemberResponseDto responseDto = memberService.createMember(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
     }
 
     @PostMapping("/{memberId}/check-in")
-    public ResponseEntity<ApiResponse<UserProfileDto>> checkInMember(
+    public ResponseEntity<ApiResponse<MemberResponseDto>> checkInMember(
             @PathVariable Long memberId) {
 
-        UserProfileDto result = memberService.checkInMember(memberId);
+        MemberResponseDto result = memberService.checkInMember(memberId);
 
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @PatchMapping()
-    public ResponseEntity<ApiResponse<UserProfileDto>> updateMember(@Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        UserProfileDto userProfileDto = memberService.updateMemberDetails(memberUpdateDto);
+    @PatchMapping("/{memberId}")
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
+        MemberResponseDto userProfileDto = memberService.updateMemberDetails(memberId, memberUpdateDto);
         return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 

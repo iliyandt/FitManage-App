@@ -1,9 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
-import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.Tenant;
-import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -14,14 +13,11 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TenantServiceImpl implements TenantService {
@@ -43,11 +39,11 @@ public class TenantServiceImpl implements TenantService {
 
     @Transactional
     @Override
-    public List<UserBaseResponseDto> getAllTenants() {
+    public List<UserResponseDto> getAllTenants() {
         LOGGER.info("Retrieving all tenants..");
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> this.modelMapper.map(tenant, UserBaseResponseDto.class))
+                .map(tenant -> this.modelMapper.map(tenant, UserResponseDto.class))
                 .toList();
     }
 

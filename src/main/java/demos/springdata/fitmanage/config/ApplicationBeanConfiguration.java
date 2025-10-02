@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserBaseResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,26 +28,33 @@ public class ApplicationBeanConfiguration {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+
+        modelMapper.getConfiguration()
+                .setPropertyCondition(Conditions.isNotNull());
+
         modelMapper.typeMap(Membership.class, MemberResponseDto.class)
                 .addMappings(mapper -> {
                     mapper.skip(MemberResponseDto::setId);
-                });
+                })
+                .setPropertyCondition(Conditions.isNotNull());
         modelMapper.typeMap(Membership.class, MemberTableDto.class)
                 .addMappings(mapper -> {
                     mapper.skip(MemberTableDto::setId);
-                });
+                })
+                .setPropertyCondition(Conditions.isNotNull());
 
         modelMapper.typeMap(User.class, EmployeeResponseDto.class).addMappings(mapper ->
                 mapper.map(User::getActualUsername, EmployeeResponseDto::setUsername)
-        );
+        ).setPropertyCondition(Conditions.isNotNull());
 
         configureUserMapper(modelMapper);
         return modelMapper;
     }
 
     private void configureUserMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(User.class, UserBaseResponseDto.class)
-                .addMappings(mapper -> mapper.map(User::getUsername, UserBaseResponseDto::setUsername));
+        modelMapper.typeMap(User.class, UserResponseDto.class)
+                .addMappings(mapper -> mapper.map(User::getUsername, UserResponseDto::setUsername))
+                .setPropertyCondition(Conditions.isNotNull());
     }
 
 
