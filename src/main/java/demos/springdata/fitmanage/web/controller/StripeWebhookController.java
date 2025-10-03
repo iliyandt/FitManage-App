@@ -27,6 +27,10 @@ public class StripeWebhookController {
 
     @Value("${STRIPE_WEBHOOK_SECRET}")
     private String endpointSecret;
+
+    @Value("${stripe.api.key}")
+    private String apiKey;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookController.class);
     private final TenantService tenantService;
 
@@ -37,6 +41,7 @@ public class StripeWebhookController {
 
     @PostMapping
     public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
+        Stripe.apiKey = apiKey;
         String sigHeader = request.getHeader("Stripe-Signature");
 
         Event event;
@@ -49,8 +54,10 @@ public class StripeWebhookController {
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
 
-            if (session != null) {
 
+            if (session != null) {
+                session = Session.retrieve(session.getId());
+                LOGGER.info("SESSION info JSON {}", session.toJson());
                 String tenantId = session.getMetadata().get("tenantId");
                 Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
                 String abonnementDuration = session.getMetadata().get("abonnementDuration");
