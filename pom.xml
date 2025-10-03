@@ -181,10 +181,11 @@
             <version>5.1.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.stripe/stripe-java -->
+        <!-- https://mvnrepository.com/artifact/com.stripe/stripe-java -->
         <dependency>
             <groupId>com.stripe</groupId>
             <artifactId>stripe-java</artifactId>
-            <version>29.5.0</version>
+            <version>30.0.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.google.zxing/core -->
         <dependency>

@@ -1,13 +1,16 @@
 package demos.springdata.fitmanage.web.controller;
 
 
+import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
+import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.EventDataObjectDeserializer;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.service.TenantService;
-import demos.springdata.fitmanage.service.impl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +36,7 @@ public class StripeWebhookController {
 
 
     @PostMapping
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) {
+    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
         String sigHeader = request.getHeader("Stripe-Signature");
 
         Event event;
@@ -42,8 +45,6 @@ public class StripeWebhookController {
         } catch (SignatureVerificationException e) {
             return ResponseEntity.badRequest().body("Invalid signature");
         }
-
-        LOGGER.info("Event type: {}", event.getType());
 
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
@@ -54,8 +55,6 @@ public class StripeWebhookController {
                 Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
                 String abonnementDuration = session.getMetadata().get("abonnementDuration");
 
-
-                //todo: create tenant subscription
                 tenantService.createAbonnement(Long.valueOf(tenantId), planName, abonnementDuration);
             }
         }

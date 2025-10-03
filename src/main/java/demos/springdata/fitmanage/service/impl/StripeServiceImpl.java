@@ -6,6 +6,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 import demos.springdata.fitmanage.service.StripeService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class StripeServiceImpl implements StripeService {
 
     @Value("${stripe.api.key}")
     private String apiKey;
+
 
     @Override
     public Session createCheckoutSession(CheckoutRequest checkoutRequest) throws StripeException {
@@ -43,7 +45,6 @@ public class StripeServiceImpl implements StripeService {
                 )
                 .putMetadata("tenantId", checkoutRequest.getTenantId())
                 .putMetadata("planName", checkoutRequest.getPlan())
-                .putMetadata("price", checkoutRequest.getPlan())
                 .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
                 .build();
 
