@@ -42,7 +42,7 @@ public class StripeServiceImpl implements StripeService {
                                 .build()
                 )
                 .putMetadata("tenantId", checkoutRequest.getTenantId())
-                .putMetadata("plan", checkoutRequest.getPlan())
+                .putMetadata("planName", checkoutRequest.getPlan())
                 .putMetadata("price", checkoutRequest.getPlan())
                 .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
                 .build();

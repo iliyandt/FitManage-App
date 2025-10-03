@@ -7,7 +7,10 @@ import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.service.TenantService;
+import demos.springdata.fitmanage.service.impl.EmployeeServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +24,7 @@ public class StripeWebhookController {
 
     @Value("${STRIPE_WEBHOOK_SECRET}")
     private String endpointSecret;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookController.class);
     private final TenantService tenantService;
 
     public StripeWebhookController(TenantService tenantService) {
@@ -31,7 +34,6 @@ public class StripeWebhookController {
 
     @PostMapping
     public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) {
-
         String sigHeader = request.getHeader("Stripe-Signature");
 
         Event event;
@@ -40,6 +42,8 @@ public class StripeWebhookController {
         } catch (SignatureVerificationException e) {
             return ResponseEntity.badRequest().body("Invalid signature");
         }
+
+        LOGGER.info("Event type: {}", event.getType());
 
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
