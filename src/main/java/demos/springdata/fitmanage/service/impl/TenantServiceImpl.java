@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -60,10 +61,11 @@ public class TenantServiceImpl implements TenantService {
 
         tenant.setAbonnement(planName);
         if (duration.equals("yearly")) {
-            tenant.setSubscriptionValidUntil(LocalDate.now().plusDays(365));
+            tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
         } else if (duration.equals("monthly")) {
-            tenant.setSubscriptionValidUntil(LocalDate.now().plusDays(31));
+            tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
         }
 
+        tenantRepository.save(tenant);
     }
 }
