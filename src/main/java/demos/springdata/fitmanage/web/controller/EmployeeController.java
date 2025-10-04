@@ -20,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users/employee")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF') and @accessGuard.hasValidSubscriptionForEmployees()")
 public class    EmployeeController {
     private final EmployeeService staffProfileService;
     private final TableHelper tableHelper;
@@ -32,7 +33,6 @@ public class    EmployeeController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAuthority('FACILITY_ADMIN')")
     public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequestDto requestDto) {
         EmployeeResponseDto responseDto = staffProfileService.createEmployee(requestDto);
         return ResponseEntity
@@ -41,14 +41,12 @@ public class    EmployeeController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('FACILITY_ADMIN')")
     public ResponseEntity<ApiResponse<TableResponseDto>> getEmployees() {
         TableResponseDto response = buildTableResponse(employeeService.getAllEmployees());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/names")
-    @PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
     public ResponseEntity<ApiResponse<List<EmployeeName>>> getEmployeesFullNames() {
         return ResponseEntity.ok(ApiResponse.success(employeeService.getEmployeesFullNames()));
     }
