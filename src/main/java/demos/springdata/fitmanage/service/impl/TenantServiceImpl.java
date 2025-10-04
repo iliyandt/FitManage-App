@@ -2,12 +2,16 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
+import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
+import demos.springdata.fitmanage.util.CurrentUserUtils;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -24,12 +28,14 @@ import java.util.List;
 public class TenantServiceImpl implements TenantService {
 
     private final TenantRepository tenantRepository;
+    private final CurrentUserUtils currentUserUtils;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(TenantServiceImpl.class);
 
     @Autowired
-    public TenantServiceImpl(TenantRepository tenantRepository, ModelMapper modelMapper) {
+    public TenantServiceImpl(TenantRepository tenantRepository, CurrentUserUtils currentUserUtils, ModelMapper modelMapper) {
         this.tenantRepository = tenantRepository;
+        this.currentUserUtils = currentUserUtils;
         this.modelMapper = modelMapper;
     }
 
@@ -50,10 +56,19 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public TenantDto getTenantDtoByEmail() {
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = getTenantByEmail(email);
-        return modelMapper.map(tenant, TenantDto.class);
+
+        Long countUsersWithRoleMember = tenant.getUsers().stream()
+                .filter(user -> currentUserUtils.hasRole(user, RoleType.FACILITY_MEMBER))
+                .count();
+
+        return modelMapper.map(tenant, TenantDto.class)
+                .setAbonnement(tenant.getAbonnement().name())
+                .setMembersCount(countUsersWithRoleMember);
     }
+
 
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {

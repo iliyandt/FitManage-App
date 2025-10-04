@@ -8,7 +8,9 @@ public class TenantDto {
     private String businessEmail;
     private String address;
     private String city;
+    private String abonnement;
     private LocalDate subscriptionValidUntil;
+    private Long membersCount;
 
     public TenantDto() {
     }
@@ -58,12 +60,30 @@ public class TenantDto {
         return this;
     }
 
+    public String getAbonnement() {
+        return abonnement;
+    }
+
+    public TenantDto setAbonnement(String abonnement) {
+        this.abonnement = abonnement;
+        return this;
+    }
+
     public LocalDate getSubscriptionValidUntil() {
         return subscriptionValidUntil;
     }
 
     public TenantDto setSubscriptionValidUntil(LocalDate subscriptionValidUntil) {
         this.subscriptionValidUntil = subscriptionValidUntil;
+        return this;
+    }
+
+    public Long getMembersCount() {
+        return membersCount;
+    }
+
+    public TenantDto setMembersCount(Long membersCount) {
+        this.membersCount = membersCount;
         return this;
     }
 }
