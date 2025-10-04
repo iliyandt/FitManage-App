@@ -64,9 +64,13 @@ public class TenantServiceImpl implements TenantService {
                 .filter(user -> currentUserUtils.hasRole(user, RoleType.FACILITY_MEMBER))
                 .count();
 
-        return modelMapper.map(tenant, TenantDto.class)
-                .setAbonnement(tenant.getAbonnement().name())
-                .setMembersCount(countUsersWithRoleMember);
+        TenantDto dto = modelMapper.map(tenant, TenantDto.class).setMembersCount(countUsersWithRoleMember);
+
+        if (tenant.getAbonnement() != null) {
+            dto.setAbonnement(tenant.getAbonnement().name());
+        }
+
+        return dto;
     }
 
 

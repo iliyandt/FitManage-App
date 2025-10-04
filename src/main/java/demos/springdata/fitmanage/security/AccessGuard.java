@@ -6,6 +6,8 @@ import demos.springdata.fitmanage.util.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+
 @Component
 public class AccessGuard {
     private final CurrentUserUtils currentUserUtils;
@@ -15,10 +17,9 @@ public class AccessGuard {
         this.currentUserUtils = currentUserUtils;
     }
 
-    public boolean hasValidSubscriptionForEmployees() {
+    public boolean hasValidSubscription(String abonnement) {
         User user = currentUserUtils.getCurrentUser();
         Abonnement subscription = user.getTenant().getAbonnement();
-
-        return subscription == Abonnement.GROWTH;
+        return subscription == Abonnement.valueOf(abonnement);
     }
 }

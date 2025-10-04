@@ -20,7 +20,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users/employee")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF') and @accessGuard.hasValidSubscriptionForEmployees()")
+@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF') " +
+        "and (@accessGuard.hasValidSubscription('GROWTH') " +
+        "or @accessGuard.hasValidSubscription('PRO'))")
 public class    EmployeeController {
     private final EmployeeService staffProfileService;
     private final TableHelper tableHelper;
