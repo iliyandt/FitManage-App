@@ -78,6 +78,7 @@ public class TenantServiceImpl implements TenantService {
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
 
+
         tenant.setAbonnement(planName);
         if (duration.equals("yearly")) {
             tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
