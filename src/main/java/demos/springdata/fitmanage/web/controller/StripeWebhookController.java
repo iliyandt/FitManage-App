@@ -55,7 +55,7 @@ public class StripeWebhookController {
 
             if (session != null) {
                 session = Session.retrieve(session.getId());
-
+                LOGGER.info("session is not null");
                 String tenantId = session.getMetadata().get("tenantId");
                 Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
                 String abonnementDuration = session.getMetadata().get("abonnementDuration");

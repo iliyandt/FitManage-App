@@ -69,7 +69,7 @@ public class TenantServiceImpl implements TenantService {
 
         if (tenant.getAbonnement() != null) {
             dto.setAbonnement(tenant.getAbonnement().name());
-            dto.setAbonnementDuration(tenant.getAbonnementDuration().getDisplayName());
+            dto.setAbonnementDuration(tenant.getAbonnementDuration().name());
         }
 
         return dto;
@@ -79,7 +79,7 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
-
+        LOGGER.info("tenant found");
         tenant.setAbonnement(planName);
         tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
 
@@ -88,6 +88,8 @@ public class TenantServiceImpl implements TenantService {
             case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
         }
 
+
         tenantRepository.save(tenant);
+        LOGGER.info("Abonnement saved");
     }
 }
