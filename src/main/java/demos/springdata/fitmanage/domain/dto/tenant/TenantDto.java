@@ -9,6 +9,7 @@ public class TenantDto {
     private String address;
     private String city;
     private String abonnement;
+    private String abonnementDuration;
     private LocalDate subscriptionValidUntil;
     private Long membersCount;
 
@@ -66,6 +67,15 @@ public class TenantDto {
 
     public TenantDto setAbonnement(String abonnement) {
         this.abonnement = abonnement;
+        return this;
+    }
+
+    public String getAbonnementDuration() {
+        return abonnementDuration;
+    }
+
+    public TenantDto setAbonnementDuration(String abonnementDuration) {
+        this.abonnementDuration = abonnementDuration;
         return this;
     }
 

@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
+import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -68,6 +69,7 @@ public class TenantServiceImpl implements TenantService {
 
         if (tenant.getAbonnement() != null) {
             dto.setAbonnement(tenant.getAbonnement().name());
+            dto.setAbonnementDuration(tenant.getAbonnementDuration().getDisplayName());
         }
 
         return dto;
@@ -78,12 +80,12 @@ public class TenantServiceImpl implements TenantService {
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
 
-
         tenant.setAbonnement(planName);
-        if (duration.equals("yearly")) {
-            tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
-        } else if (duration.equals("monthly")) {
-            tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
+        tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
+
+        switch (tenant.getAbonnementDuration()) {
+            case MONTHLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
+            case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
         }
 
         tenantRepository.save(tenant);

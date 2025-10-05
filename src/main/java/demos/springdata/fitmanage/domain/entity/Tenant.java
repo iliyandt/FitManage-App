@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.entity;
 
 import demos.springdata.fitmanage.domain.enums.Abonnement;
+import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,6 +26,9 @@ public class Tenant extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Abonnement abonnement;
+
+    @Enumerated(EnumType.STRING)
+    private AbonnementDuration abonnementDuration;
 
     @Column(name = "subscription_valid_until")
     private LocalDate subscriptionValidUntil;
@@ -73,6 +77,15 @@ public class Tenant extends BaseEntity {
 
     public Tenant setCity(String city) {
         this.city = city;
+        return this;
+    }
+
+    public AbonnementDuration getAbonnementDuration() {
+        return abonnementDuration;
+    }
+
+    public Tenant setAbonnementDuration(AbonnementDuration abonnementDuration) {
+        this.abonnementDuration = abonnementDuration;
         return this;
     }
 
