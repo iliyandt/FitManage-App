@@ -42,98 +42,102 @@ public class StripeWebhookController {
     }
 
 
-//    @PostMapping
-//    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
-//        Stripe.apiKey = apiKey;
-//        String sigHeader = request.getHeader("Stripe-Signature");
-//
-//        Event event;
-//        try {
-//            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-//        } catch (SignatureVerificationException e) {
-//            return ResponseEntity.badRequest().body("Invalid signature");
-//        }
-//
-//        if ("checkout.session.completed".equals(event.getType())) {
-//            Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
-//
-//
-//            if (session != null) {
-//                session = Session.retrieve(session.getId());
-//
-//                String tenantId = session.getMetadata().get("tenantId");
-//                Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
-//                String abonnementDuration = session.getMetadata().get("abonnementDuration");
-//
-//                tenantService.createAbonnement(Long.valueOf(tenantId), planName, abonnementDuration);
-//            }
-//        }
-//
-//        return ResponseEntity.ok("Success");
-//    }
-
-
     @PostMapping
-    public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request, @RequestBody String payload) {
+    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
         Stripe.apiKey = apiKey;
-
         String sigHeader = request.getHeader("Stripe-Signature");
+
         Event event;
-
-        LOGGER.info("Stripe-Signature header: {}", sigHeader);
-        LOGGER.info("Payload: {}", payload);
-
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
-            LOGGER.error("Invalid Stripe signature", e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
+            return ResponseEntity.badRequest().body("Invalid signature");
         }
 
+        if ("checkout.session.completed".equals(event.getType())) {
+            Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
 
-        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-        StripeObject stripeObject = dataObjectDeserializer.getObject().orElse(null);
+            if (session == null) {
+                LOGGER.warn("Unable to deserialize Stripe object");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
+            }
 
-        if (stripeObject == null) {
-            LOGGER.warn("Unable to deserialize Stripe object");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
-        }
+            if (session != null) {
+                session = Session.retrieve(session.getId());
 
-        switch (event.getType()) {
-            case "checkout.session.completed":
-                handleCheckoutSessionCompleted((Session) stripeObject);
-                break;
+                String tenantId = session.getMetadata().get("tenantId");
+                Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
+                String abonnementDuration = session.getMetadata().get("abonnementDuration");
 
-            case "payment_intent.succeeded":
-                LOGGER.info("PaymentIntent succeeded");
-                break;
-
-            default:
-                LOGGER.info("Unhandled event type: {}", event.getType());
-                break;
+                tenantService.createAbonnement(Long.valueOf(tenantId), planName, abonnementDuration);
+            }
         }
 
         return ResponseEntity.ok("Success");
     }
 
 
-    private void handleCheckoutSessionCompleted(Session session) {
-        LOGGER.info("Checkout session completed: {}", session.getId());
-
-        try {
-            Session fullSession = Session.retrieve(session.getId());
-
-            Map<String, String> metadata = fullSession.getMetadata();
-            String tenantId = metadata.get("tenantId");
-            String planName = metadata.get("planName");
-            String duration = metadata.get("abonnementDuration");
-
-            LOGGER.info("Tenant ID: {}, Plan: {}, Duration: {}", tenantId, planName, duration);
-            tenantService.createAbonnement(Long.valueOf(tenantId), Abonnement.valueOf(planName), duration);
-
-        } catch (StripeException e) {
-            LOGGER.error("Failed to retrieve full session from Stripe", e);
-        }
-    }
+//    @PostMapping
+//    public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request, @RequestBody String payload) {
+//        Stripe.apiKey = apiKey;
+//
+//        String sigHeader = request.getHeader("Stripe-Signature");
+//        Event event;
+//
+//        LOGGER.info("Stripe-Signature header: {}", sigHeader);
+//        LOGGER.info("Payload: {}", payload);
+//
+//        try {
+//            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+//        } catch (SignatureVerificationException e) {
+//            LOGGER.error("Invalid Stripe signature", e);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
+//        }
+//
+//
+//        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+//        StripeObject stripeObject = dataObjectDeserializer.getObject().orElse(null);
+//
+//        if (stripeObject == null) {
+//            LOGGER.warn("Unable to deserialize Stripe object");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
+//        }
+//
+//        switch (event.getType()) {
+//            case "checkout.session.completed":
+//                handleCheckoutSessionCompleted((Session) stripeObject);
+//                break;
+//
+//            case "payment_intent.succeeded":
+//                LOGGER.info("PaymentIntent succeeded");
+//                break;
+//
+//            default:
+//                LOGGER.info("Unhandled event type: {}", event.getType());
+//                break;
+//        }
+//
+//        return ResponseEntity.ok("Success");
+//    }
+//
+//
+//    private void handleCheckoutSessionCompleted(Session session) {
+//        LOGGER.info("Checkout session completed: {}", session.getId());
+//
+//        try {
+//            Session fullSession = Session.retrieve(session.getId());
+//
+//            Map<String, String> metadata = fullSession.getMetadata();
+//            String tenantId = metadata.get("tenantId");
+//            String planName = metadata.get("planName");
+//            String duration = metadata.get("abonnementDuration");
+//
+//            LOGGER.info("Tenant ID: {}, Plan: {}, Duration: {}", tenantId, planName, duration);
+//            tenantService.createAbonnement(Long.valueOf(tenantId), Abonnement.valueOf(planName), duration);
+//
+//        } catch (StripeException e) {
+//            LOGGER.error("Failed to retrieve full session from Stripe", e);
+//        }
+//    }
 }
 
