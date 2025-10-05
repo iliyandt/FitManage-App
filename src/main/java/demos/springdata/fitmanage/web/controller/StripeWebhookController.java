@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.IOException;
+
 
 @RestController
 @RequestMapping("api/v1/stripe/webhook")
@@ -43,8 +45,21 @@ public class StripeWebhookController {
 
 
     @PostMapping
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
+    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException {
         Stripe.apiKey = apiKey;
+
+
+        StringBuilder payload = new StringBuilder();
+        try (BufferedReader reader = request.getReader()) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                payload.append(line);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         String sigHeader = request.getHeader("Stripe-Signature");
 
         Event event;
@@ -139,5 +154,6 @@ public class StripeWebhookController {
 //            LOGGER.error("Failed to retrieve full session from Stripe", e);
 //        }
 //    }
+
 }
 
