@@ -31,7 +31,7 @@ public class StripeWebhookController {
     @Value("${STRIPE_WEBHOOK_SECRET}")
     private String endpointSecret;
 
-    @Value("${stripe.api.key}")
+    @Value("${STRIPE_API_KEY}")
     private String apiKey;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookController.class);
