@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+import java.util.Scanner;
+
 @RestController
 @RequestMapping("api/v1/stripe/webhook")
 public class StripeWebhookController {
@@ -38,9 +41,17 @@ public class StripeWebhookController {
 
 
     @PostMapping
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request, @RequestBody String payload) throws StripeException {
+    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException {
         Stripe.apiKey = apiKey;
         String sigHeader = request.getHeader("Stripe-Signature");
+
+        String payload;
+        try (Scanner scanner = new Scanner(request.getInputStream(), "UTF-8")) {
+            payload = scanner.useDelimiter("\\A").hasNext() ? scanner.next() : "";
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Failed to read payload");
+        }
+
 
         Event event;
         try {
