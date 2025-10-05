@@ -80,6 +80,9 @@ public class StripeWebhookController {
         String sigHeader = request.getHeader("Stripe-Signature");
         Event event;
 
+        LOGGER.info("Stripe-Signature header: {}", sigHeader);
+        LOGGER.info("Payload: {}", payload);
+
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
