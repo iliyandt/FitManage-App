@@ -12,5 +12,4 @@ public interface TenantService {
     TenantDto getTenantDtoByEmail();
     List<UserResponseDto> getAllTenants();
     void createAbonnement(Long tenantId, Abonnement planName, String duration);
-
 }

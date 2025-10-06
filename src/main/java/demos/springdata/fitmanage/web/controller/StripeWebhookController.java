@@ -59,6 +59,7 @@ public class StripeWebhookController {
             throw new RuntimeException(e);
         }
 
+        LOGGER.info("Payload: {}", payload);
 
         String sigHeader = request.getHeader("Stripe-Signature");
 
