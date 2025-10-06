@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 @RestController
@@ -45,27 +46,20 @@ public class StripeWebhookController {
 
 
     @PostMapping
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException {
+    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException, IOException {
         Stripe.apiKey = apiKey;
 
-        StringBuilder payload = new StringBuilder();
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                payload.append(line);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
+        byte[] payloadBytes = request.getInputStream().readAllBytes();
         String sigHeader = request.getHeader("Stripe-Signature");
 
+        String payload = new String(payloadBytes, StandardCharsets.UTF_8);
         LOGGER.info("Payload: {}", payload);
         LOGGER.info("Stripe-Signature: {}", sigHeader);
 
         Event event;
         try {
-            event = Webhook.constructEvent(String.valueOf(payload), sigHeader, endpointSecret);
+            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
             return ResponseEntity.badRequest().body("Invalid signature");
         }
