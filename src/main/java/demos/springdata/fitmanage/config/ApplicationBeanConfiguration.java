@@ -1,5 +1,7 @@
 package demos.springdata.fitmanage.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
@@ -23,6 +25,13 @@ public class ApplicationBeanConfiguration {
 
 
     public ApplicationBeanConfiguration() {
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        return mapper;
     }
 
     @Bean
