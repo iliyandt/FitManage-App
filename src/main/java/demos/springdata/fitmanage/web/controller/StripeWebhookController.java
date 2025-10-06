@@ -79,12 +79,6 @@ public class StripeWebhookController {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
 
             if (session == null) {
-                LOGGER.warn("Unable to deserialize Stripe object");
-
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
-            }
-
-            if (session == null) {
                 LOGGER.warn("Unable to deserialize Stripe Session object automatically. Trying manual deserialization...");
 
                 StripeObject rawData = event.getData().getObject();
