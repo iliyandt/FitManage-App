@@ -48,7 +48,6 @@ public class StripeWebhookController {
     public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException {
         Stripe.apiKey = apiKey;
 
-
         StringBuilder payload = new StringBuilder();
         try (BufferedReader reader = request.getReader()) {
             String line;
@@ -59,9 +58,10 @@ public class StripeWebhookController {
             throw new RuntimeException(e);
         }
 
-        LOGGER.info("Payload: {}", payload);
-
         String sigHeader = request.getHeader("Stripe-Signature");
+
+        LOGGER.info("Payload: {}", payload);
+        LOGGER.info("Stripe-Signature: {}", sigHeader);
 
         Event event;
         try {
