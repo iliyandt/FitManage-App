@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -97,13 +98,23 @@ public class StripeServiceImpl implements StripeService {
         LOGGER.info("Event received: {}", event.getType());
 
         if (event.getType().equals("checkout.session.completed")) {
-            try {
-                StripeObject stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
-                if (!(stripeObject instanceof Session session)) {
-                    LOGGER.error("Webhook did not contain a Session object.");
-                    return;
-                }
+            Optional<StripeObject> stripeObjectOptional = event.getDataObjectDeserializer().getObject();
+            if (stripeObjectOptional.isEmpty()) {
+                LOGGER.error("No StripeObject present in event data object deserializer");
+                LOGGER.error("Payload: {}", payload);
+                return;
+            }
 
+            StripeObject stripeObject = stripeObjectOptional.get();
+            LOGGER.info("Stripe object class: {}", stripeObject.getClass().getName());
+            LOGGER.info("Stripe object content: {}", stripeObject);
+
+            if (!(stripeObject instanceof Session session)) {
+                LOGGER.error("Webhook did not contain a Session object.");
+                return;
+            }
+
+            try {
                 Map<String, String> metadata = session.getMetadata();
                 Long tenantId = Long.valueOf(metadata.get("tenantId"));
                 String planName = metadata.get("planName");
@@ -114,8 +125,10 @@ public class StripeServiceImpl implements StripeService {
 
             } catch (Exception ex) {
                 LOGGER.error("Error processing webhook event", ex);
+                LOGGER.error("Payload causing error: {}", payload);
                 throw new FitManageAppException("Error processing webhook event", ApiErrorCode.INTERNAL_ERROR);
             }
+
         } else {
             LOGGER.warn("Unhandled event type: {}", event.getType());
         }
