@@ -1,165 +1,31 @@
 package demos.springdata.fitmanage.web.controller;
-
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.stripe.Stripe;
-import com.stripe.exception.SignatureVerificationException;
-import com.stripe.exception.StripeException;
-import com.stripe.model.Event;
-import com.stripe.model.EventDataObjectDeserializer;
-import com.stripe.model.StripeObject;
-import com.stripe.model.checkout.Session;
-import com.stripe.net.ApiResource;
-import com.stripe.net.Webhook;
-import demos.springdata.fitmanage.domain.enums.Abonnement;
-import demos.springdata.fitmanage.service.TenantService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import demos.springdata.fitmanage.service.StripeService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("api/v1/stripe/webhook")
+@RequestMapping("api/v1")
 public class StripeWebhookController {
 
-    @Value("${STRIPE_WEBHOOK_SECRET}")
-    private String endpointSecret;
+    private final StripeService stripeService;
 
-    @Value("${STRIPE_API_KEY}")
-    private String apiKey;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(StripeWebhookController.class);
-    private final TenantService tenantService;
-
-    public StripeWebhookController(TenantService tenantService) {
-        this.tenantService = tenantService;
+    public StripeWebhookController(StripeService stripeService) {
+        this.stripeService = stripeService;
     }
 
+    @PostMapping(value = "/stripe/webhook")
+    public ResponseEntity<String> webhook(
+            @RequestBody String payload,
+            @RequestHeader HttpHeaders headers) {
 
-    @PostMapping
-    public ResponseEntity<String> handleStripeEvent(HttpServletRequest request) throws StripeException, IOException {
-        Stripe.apiKey = apiKey;
-
-
-        byte[] payloadBytes = request.getInputStream().readAllBytes();
-        String sigHeader = request.getHeader("Stripe-Signature");
-
-        String payload = new String(payloadBytes, StandardCharsets.UTF_8);
-        LOGGER.info("Payload: {}", payload);
-        LOGGER.info("Stripe-Signature: {}", sigHeader);
-
-        Event event;
-        try {
-            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-
-            LOGGER.info("Received Stripe event:");
-            LOGGER.info("  - ID: {}", event.getId());
-            LOGGER.info("  - Type: {}", event.getType());
-            LOGGER.info("  - API Version: {}", event.getApiVersion());
-            LOGGER.info("  - Data Object (raw): {}", event.getData().getObject().toString());
-
-        } catch (SignatureVerificationException e) {
-            return ResponseEntity.badRequest().body("Invalid signature");
-        }
-
-        LOGGER.info("Event: {}", event);
-
-        if ("checkout.session.completed".equals(event.getType())) {
-            Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
-
-            if (session == null) {
-                LOGGER.warn("Unable to deserialize Stripe Session object automatically. Trying manual deserialization...");
-
-                StripeObject rawData = event.getData().getObject();
-                String json = rawData.toString();
-                LOGGER.info("Raw JSON for manual deserialization: {}", json);
-
-                session = ApiResource.GSON.fromJson(json, Session.class);
-
-                if (session == null) {
-                    LOGGER.error("Manual deserialization of Stripe Session failed. Raw JSON: {}", json);
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
-                }
-            }
-        }
-
+        String signatureHeader = headers.getFirst("Stripe-Signature");
+        stripeService.webhookEvent(payload, signatureHeader);
         return ResponseEntity.ok("Success");
     }
-
-
-//    @PostMapping
-//    public ResponseEntity<String> handleStripeWebhook(HttpServletRequest request, @RequestBody String payload) {
-//        Stripe.apiKey = apiKey;
-//
-//        String sigHeader = request.getHeader("Stripe-Signature");
-//        Event event;
-//
-//        LOGGER.info("Stripe-Signature header: {}", sigHeader);
-//        LOGGER.info("Payload: {}", payload);
-//
-//        try {
-//            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
-//        } catch (SignatureVerificationException e) {
-//            LOGGER.error("Invalid Stripe signature", e);
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
-//        }
-//
-//
-//        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
-//        StripeObject stripeObject = dataObjectDeserializer.getObject().orElse(null);
-//
-//        if (stripeObject == null) {
-//            LOGGER.warn("Unable to deserialize Stripe object");
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
-//        }
-//
-//        switch (event.getType()) {
-//            case "checkout.session.completed":
-//                handleCheckoutSessionCompleted((Session) stripeObject);
-//                break;
-//
-//            case "payment_intent.succeeded":
-//                LOGGER.info("PaymentIntent succeeded");
-//                break;
-//
-//            default:
-//                LOGGER.info("Unhandled event type: {}", event.getType());
-//                break;
-//        }
-//
-//        return ResponseEntity.ok("Success");
-//    }
-//
-//
-//    private void handleCheckoutSessionCompleted(Session session) {
-//        LOGGER.info("Checkout session completed: {}", session.getId());
-//
-//        try {
-//            Session fullSession = Session.retrieve(session.getId());
-//
-//            Map<String, String> metadata = fullSession.getMetadata();
-//            String tenantId = metadata.get("tenantId");
-//            String planName = metadata.get("planName");
-//            String duration = metadata.get("abonnementDuration");
-//
-//            LOGGER.info("Tenant ID: {}, Plan: {}, Duration: {}", tenantId, planName, duration);
-//            tenantService.createAbonnement(Long.valueOf(tenantId), Abonnement.valueOf(planName), duration);
-//
-//        } catch (StripeException e) {
-//            LOGGER.error("Failed to retrieve full session from Stripe", e);
-//        }
-//    }
 
 }
 
