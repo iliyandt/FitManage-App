@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -8,6 +9,7 @@ import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
+import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.service.TenantService;
@@ -60,6 +62,13 @@ public class StripeWebhookController {
         Event event;
         try {
             event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+
+            LOGGER.info("Received Stripe event:");
+            LOGGER.info("  - ID: {}", event.getId());
+            LOGGER.info("  - Type: {}", event.getType());
+            LOGGER.info("  - API Version: {}", event.getApiVersion());
+            LOGGER.info("  - Data Object (raw): {}", event.getData().getObject().toString());
+
         } catch (SignatureVerificationException e) {
             return ResponseEntity.badRequest().body("Invalid signature");
         }
@@ -71,17 +80,23 @@ public class StripeWebhookController {
 
             if (session == null) {
                 LOGGER.warn("Unable to deserialize Stripe object");
+
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
             }
 
-            if (session != null) {
-                session = Session.retrieve(session.getId());
+            if (session == null) {
+                LOGGER.warn("Unable to deserialize Stripe Session object automatically. Trying manual deserialization...");
 
-                String tenantId = session.getMetadata().get("tenantId");
-                Abonnement planName = Abonnement.valueOf(session.getMetadata().get("planName"));
-                String abonnementDuration = session.getMetadata().get("abonnementDuration");
+                StripeObject rawData = event.getData().getObject();
+                String json = rawData.toString();
+                LOGGER.info("Raw JSON for manual deserialization: {}", json);
 
-                tenantService.createAbonnement(Long.valueOf(tenantId), planName, abonnementDuration);
+                session = ApiResource.GSON.fromJson(json, Session.class);
+
+                if (session == null) {
+                    LOGGER.error("Manual deserialization of Stripe Session failed. Raw JSON: {}", json);
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid payload");
+                }
             }
         }
 
