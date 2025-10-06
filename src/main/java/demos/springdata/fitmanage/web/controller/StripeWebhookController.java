@@ -70,6 +70,8 @@ public class StripeWebhookController {
             return ResponseEntity.badRequest().body("Invalid signature");
         }
 
+        LOGGER.info("Event: {}", event);
+
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
 
