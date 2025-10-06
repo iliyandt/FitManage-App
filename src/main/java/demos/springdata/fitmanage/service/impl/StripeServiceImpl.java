@@ -6,6 +6,7 @@ import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
@@ -42,8 +43,6 @@ public class StripeServiceImpl implements StripeService {
 
     @Value("${stripe.api.key}")
     private String apiKey;
-
-
 
 
     @Override
@@ -87,8 +86,6 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public void webhookEvent(String payload, String signatureHeader) {
-        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-
         Event event;
         try {
             event = Webhook.constructEvent(payload, signatureHeader, endpointSecret);
@@ -97,42 +94,32 @@ public class StripeServiceImpl implements StripeService {
             throw new FitManageAppException("Failed signature verification", ApiErrorCode.CONFLICT);
         }
 
-
-        Map<String, Object> props = objectMapper.convertValue(event.getData(), Map.class);
-        Object dataMap = props.get("object");
-
-        Map<String, Object> om = objectMapper.convertValue(dataMap, Map.class);
         LOGGER.info("Event received: {}", event.getType());
 
-        switch (event.getType()) {
-            case "checkout.session.completed":
-                try {
-
-                    Session session = objectMapper.convertValue(event.getDataObjectDeserializer().getObject().orElse(null), Session.class);
-                    if (session == null) {
-                        LOGGER.error("Failed to deserialize Stripe session");
-                        return;
-                    }
-
-
-                    Map<String, String> metadata = session.getMetadata();
-
-                    Long tenantId = Long.valueOf(metadata.get("tenantId"));
-                    String planName = metadata.get("planName");
-                    String duration = metadata.get("abonnementDuration");
-
-
-                    tenantService.createAbonnement(tenantId, Abonnement.valueOf(planName), duration);
-
-                    LOGGER.info("Abonnement created for tenantId={}", tenantId);
-
-                } catch (Exception ex) {
-                    LOGGER.error("Error processing webhook event", ex);
-                    throw new FitManageAppException("Error processing webhook event", ApiErrorCode.INTERNAL_ERROR);
+        if (event.getType().equals("checkout.session.completed")) {
+            try {
+                StripeObject stripeObject = event.getDataObjectDeserializer().getObject().orElse(null);
+                if (!(stripeObject instanceof Session session)) {
+                    LOGGER.error("Webhook did not contain a Session object.");
+                    return;
                 }
-                break;
-        }
 
+                Map<String, String> metadata = session.getMetadata();
+                Long tenantId = Long.valueOf(metadata.get("tenantId"));
+                String planName = metadata.get("planName");
+                String duration = metadata.get("abonnementDuration");
+
+                tenantService.createAbonnement(tenantId, Abonnement.valueOf(planName), duration);
+                LOGGER.info("Abonnement created for tenantId={}", tenantId);
+
+            } catch (Exception ex) {
+                LOGGER.error("Error processing webhook event", ex);
+                throw new FitManageAppException("Error processing webhook event", ApiErrorCode.INTERNAL_ERROR);
+            }
+        } else {
+            LOGGER.warn("Unhandled event type: {}", event.getType());
+        }
     }
+
 }
 
