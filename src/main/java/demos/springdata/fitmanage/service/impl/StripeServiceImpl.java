@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -86,6 +87,8 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public void webhookEvent(String payload, String signatureHeader) {
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
         Event event;
         try {
             event = Webhook.constructEvent(payload, signatureHeader, endpointSecret);
