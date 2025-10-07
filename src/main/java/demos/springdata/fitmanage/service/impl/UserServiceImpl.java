@@ -100,9 +100,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Double countByGenderForTenant(Gender gender) {
+    public Long countByGenderForTenant(Gender gender) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
-        return userRepository.countByGender_AndTenant(gender, tenant);
+        List<User> users = userRepository.findByGender_AndTenant(gender, tenant);
+
+        return users.stream()
+                .filter(user -> {
+                    Set<RoleType> roleTypes = RoleUtils.extractRoleTypes(user);
+                    return roleTypes.contains(RoleType.FACILITY_MEMBER);
+                })
+                .count();
     }
 
     @Override

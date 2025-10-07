@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Employment;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
@@ -117,6 +118,8 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public Double countBySubscriptionPlanForTenant(SubscriptionPlan plan) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+
+
         return membershipRepository.countBySubscriptionPlan_AndTenant(plan, tenant);
     }
 

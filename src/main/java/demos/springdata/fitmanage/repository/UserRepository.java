@@ -19,7 +19,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByRoles_Name(RoleType roleType);
     List<User> findAll(Specification<User> spec);
     Optional<User> findByQrToken(String qrToken);
-
-    Double countByGender_AndTenant(Gender genderAfter, Tenant tenant);
+    List<User> findByGender_AndTenant(Gender genderAfter, Tenant tenant);
     Double countAllByTenant(Tenant tenant);
 }

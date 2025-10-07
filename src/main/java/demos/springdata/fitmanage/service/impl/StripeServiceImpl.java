@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -97,7 +96,7 @@ public class StripeServiceImpl implements StripeService {
 
         LOGGER.info("Event received: {}", event.getType());
 
-        if (event.getType().equals("checkout.session.completed")) {
+        if ("checkout.session.completed".equals(event.getType())) {
             Optional<StripeObject> stripeObjectOptional = event.getDataObjectDeserializer().getObject();
             if (stripeObjectOptional.isEmpty()) {
                 LOGGER.error("No StripeObject present in event data object deserializer");

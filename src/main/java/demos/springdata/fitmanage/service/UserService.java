@@ -21,8 +21,7 @@ public interface UserService {
     boolean existsByEmailAndTenant(String email, Long tenantId);
     boolean existsByPhoneAndTenant(String phone, Long tenantId);
     void delete(User user);
-    Double countByGenderForTenant(Gender gender);
-
+    Long countByGenderForTenant(Gender gender);
     Double countAllUsersByTenant();
 
 
