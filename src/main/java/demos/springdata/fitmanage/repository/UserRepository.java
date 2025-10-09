@@ -1,14 +1,18 @@
 package demos.springdata.fitmanage.repository;
+import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -20,5 +24,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAll(Specification<User> spec);
     Optional<User> findByQrToken(String qrToken);
     List<User> findByGender_AndTenant(Gender genderAfter, Tenant tenant);
-    Double countAllByTenant(Tenant tenant);
+
+    @Query("SELECT COUNT(u) FROM User u JOIN u.roles r WHERE u.tenant = :tenant AND r.name = :roleType")
+    Long countByTenantAndRoleType(@Param("tenant") Tenant tenant, @Param("roleType") RoleType roleType);
+
 }

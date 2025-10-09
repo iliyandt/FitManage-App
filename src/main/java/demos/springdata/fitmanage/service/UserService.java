@@ -22,7 +22,7 @@ public interface UserService {
     boolean existsByPhoneAndTenant(String phone, Long tenantId);
     void delete(User user);
     Long countByGenderForTenant(Gender gender);
-    Double countAllUsersByTenant();
+    Long countAllUsersByTenant();
 
 
 }

@@ -113,9 +113,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Double countAllUsersByTenant() {
+    public Long countAllUsersByTenant() {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
-        return userRepository.countAllByTenant(tenant);
+        return userRepository.countByTenantAndRoleType(tenant, RoleType.FACILITY_MEMBER);
     }
 
     @Override
