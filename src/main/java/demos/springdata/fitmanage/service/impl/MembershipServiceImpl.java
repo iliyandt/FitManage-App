@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 
@@ -66,7 +67,7 @@ public class MembershipServiceImpl implements MembershipService {
     @Transactional
     public Membership checkIn(Membership membership) {
         if (membership.getSubscriptionPlan().isTimeBased()) {
-            if (membership.getSubscriptionEndDate().isBefore(LocalDateTime.now())) {
+            if (membership.getSubscriptionEndDate().isBefore(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS))) {
                 membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE)
                         .setSubscriptionPlan(null)
                         .setSubscriptionStartDate(null)
@@ -84,7 +85,6 @@ public class MembershipServiceImpl implements MembershipService {
                 int remaining = membership.getRemainingVisits() - 1;
                 membership.setRemainingVisits(remaining);
             }
-
         }
 
         return membershipRepository.save(membership);
@@ -118,8 +118,6 @@ public class MembershipServiceImpl implements MembershipService {
     @Override
     public Double countBySubscriptionPlanForTenant(SubscriptionPlan plan) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
-
-
         return membershipRepository.countBySubscriptionPlan_AndTenant(plan, tenant);
     }
 
@@ -136,7 +134,7 @@ public class MembershipServiceImpl implements MembershipService {
                 .setEmployment(requestDto.getEmployment())
                 .setAllowedVisits(allowedVisits)
                 .setRemainingVisits(allowedVisits)
-                .setSubscriptionStartDate(LocalDateTime.now())
+                .setSubscriptionStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS))
                 .setSubscriptionEndDate(null);
     }
 
@@ -145,8 +143,8 @@ public class MembershipServiceImpl implements MembershipService {
         LocalDateTime now = LocalDateTime.now();
         membership
                 .setSubscriptionStatus(SubscriptionStatus.ACTIVE)
-                .setSubscriptionStartDate(now)
-                .setSubscriptionEndDate(calculateEndDate(now, membership.getSubscriptionPlan()));
+                .setSubscriptionStartDate(now.truncatedTo(ChronoUnit.DAYS))
+                .setSubscriptionEndDate(calculateEndDate(now.truncatedTo(ChronoUnit.DAYS), membership.getSubscriptionPlan()));
     }
 
     private LocalDateTime calculateEndDate(LocalDateTime start, SubscriptionPlan subscriptionPlan) {
@@ -190,7 +188,8 @@ public class MembershipServiceImpl implements MembershipService {
         if (currentPlan == newPlan) return;
 
         if (currentPlan != null && currentPlan.isTimeBased()) {
-            if (membership.getSubscriptionEndDate() != null && LocalDateTime.now().isBefore(membership.getSubscriptionEndDate())) {
+            LocalDateTime now = LocalDateTime.now();
+            if (membership.getSubscriptionEndDate() != null && now.truncatedTo(ChronoUnit.DAYS).isBefore(membership.getSubscriptionEndDate())) {
                 throw new FitManageAppException(
                         "Cannot change time-based plan before current period ends.",
                         ApiErrorCode.UNAUTHORIZED

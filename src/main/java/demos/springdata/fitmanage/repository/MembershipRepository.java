@@ -15,7 +15,6 @@ import java.util.Optional;
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
     Optional<Membership> findByUserAndTenant(User user, Tenant tenant);
     List<Membership> findAllBySubscriptionStatus(SubscriptionStatus status);
-
     Double countByEmployment_AndTenant(Employment employment, Tenant tenant);
     Double countBySubscriptionStatus_AndTenant(SubscriptionStatus status, Tenant tenant);
     Double countBySubscriptionPlan_AndTenant(SubscriptionPlan subscriptionPlan, Tenant tenant);
