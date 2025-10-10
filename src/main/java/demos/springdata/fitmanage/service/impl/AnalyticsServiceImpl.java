@@ -10,6 +10,9 @@ import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,12 +39,11 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         if (totalUsers == 0) {
             Arrays.stream(Gender.values()).forEach(gender -> gendersCount.put(gender.name(), 0.0));
         } else {
-            Arrays.stream(Gender.values()).forEach(gender ->
-                    gendersCount.put(
-                            gender.name(),
-                            Double.valueOf(String.format("%.2f",
-                                    userService.countByGenderForTenant(gender) * 100.0 / totalUsers))
-                    ));
+            Arrays.stream(Gender.values()).forEach(gender -> {
+                double percentage = userService.countByGenderForTenant(gender) * 100.0 / totalUsers;
+                double rounded = Math.round(percentage);
+                gendersCount.put(gender.name(), rounded);
+            });
         }
 
         Map<String, Double> employmentCount = calculatePercentages(
@@ -68,7 +70,6 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     }
 
 
-
     private <T extends Enum<T>> Map<String, Double> calculatePercentages(T[] values, Function<T, Double> counter) {
         Map<String, Double> result = new HashMap<>();
 
@@ -88,7 +89,9 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 Double count = counter.apply(value);
                 double safeCount = count != null ? count : 0.0;
                 double percentage = safeCount * 100.0 / total;
-                result.put(value.name(), Double.valueOf(String.format("%.2f", percentage)));
+
+                double rounded = Math.round(percentage);
+                result.put(value.name(), rounded);
             }
         }
 
