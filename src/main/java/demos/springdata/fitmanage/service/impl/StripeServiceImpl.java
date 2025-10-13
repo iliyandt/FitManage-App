@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
@@ -9,10 +8,14 @@ import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
+import demos.springdata.fitmanage.domain.enums.Employment;
+import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.StripeService;
 import demos.springdata.fitmanage.service.TenantService;
 import org.slf4j.Logger;
@@ -30,12 +33,12 @@ public class StripeServiceImpl implements StripeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeServiceImpl.class);
     private final TenantService tenantService;
-    private final ObjectMapper objectMapper;
+    private final MembershipService membershipService;
 
     @Autowired
-    public StripeServiceImpl(TenantService tenantService, ObjectMapper objectMapper) {
+    public StripeServiceImpl(TenantService tenantService, MembershipService membershipService) {
         this.tenantService = tenantService;
-        this.objectMapper = objectMapper;
+        this.membershipService = membershipService;
     }
 
     @Value("${STRIPE_WEBHOOK_SECRET}")
@@ -50,7 +53,7 @@ public class StripeServiceImpl implements StripeService {
 
         Stripe.apiKey = apiKey;
 
-        SessionCreateParams params = SessionCreateParams.builder()
+        SessionCreateParams.Builder params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl("https://dam-il.netlify.app/success?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl("https://dam-il.netlify.app/cancel")
@@ -72,10 +75,14 @@ public class StripeServiceImpl implements StripeService {
                 )
                 .putMetadata("tenantId", checkoutRequest.getTenantId())
                 .putMetadata("planName", checkoutRequest.getPlan())
-                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
-                .build();
+                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration());
 
-        return Session.create(params);
+        if (checkoutRequest.getMemberId() != null) {
+            params.putMetadata("memberId", String.valueOf(checkoutRequest.getMemberId()));
+            params.putMetadata("employment", String.valueOf(checkoutRequest.getEmployment()));
+        }
+
+        return Session.create(params.build());
     }
 
     @Override
@@ -115,12 +122,23 @@ public class StripeServiceImpl implements StripeService {
 
             try {
                 Map<String, String> metadata = session.getMetadata();
+                String memberIdStr = metadata.get("memberId");
+
                 Long tenantId = Long.valueOf(metadata.get("tenantId"));
                 String planName = metadata.get("planName");
                 String duration = metadata.get("abonnementDuration");
 
-                tenantService.createAbonnement(tenantId, Abonnement.valueOf(planName), duration);
-                LOGGER.info("Abonnement created for tenantId={}", tenantId);
+                if (memberIdStr != null) {
+                    Long memberId = Long.valueOf(memberIdStr);
+                    Employment employment = Employment.valueOf(metadata.get("employment"));
+                    MemberSubscriptionRequestDto requestDto = handleMemberStripeSubscription(planName, duration, employment);
+                    membershipService.setupMembershipPlan(memberId, requestDto);
+                    LOGGER.info("Abonnement created for memberId={} in tenant with id={}", memberId, tenantId);
+                } else {
+                    tenantService.createAbonnement(tenantId, Abonnement.valueOf(planName), duration);
+                    LOGGER.info("Abonnement created for tenantId={}", tenantId);
+                }
+
 
             } catch (Exception ex) {
                 LOGGER.error("Error processing webhook event", ex);
@@ -131,6 +149,20 @@ public class StripeServiceImpl implements StripeService {
         } else {
             LOGGER.warn("Unhandled event type: {}", event.getType());
         }
+    }
+
+    private MemberSubscriptionRequestDto handleMemberStripeSubscription(String subscriptionPlan, String allowedVisits, Employment employment) {
+        MemberSubscriptionRequestDto dto = new MemberSubscriptionRequestDto();
+
+        SubscriptionPlan plan = SubscriptionPlan.valueOf(subscriptionPlan.toUpperCase());
+        dto.setSubscriptionPlan(plan);
+        dto.setEmployment(employment);
+
+        if (plan.isVisitBased()) {
+            dto.setAllowedVisits(Integer.valueOf(allowedVisits));
+        }
+
+        return dto;
     }
 
 }

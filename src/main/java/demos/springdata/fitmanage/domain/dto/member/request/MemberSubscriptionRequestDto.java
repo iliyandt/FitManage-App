@@ -10,7 +10,6 @@ public class MemberSubscriptionRequestDto {
     public MemberSubscriptionRequestDto() {
     }
 
-
     public Integer getAllowedVisits() {
         return allowedVisits;
     }

@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantNonAuthInfoDto;
 import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -13,6 +14,7 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.util.CurrentUserUtils;
+import demos.springdata.fitmanage.util.RoleUtils;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -47,11 +49,28 @@ public class TenantServiceImpl implements TenantService {
 
     @Transactional
     @Override
-    public List<UserResponseDto> getAllTenants() {
+    public List<TenantDto> getAllTenants() {
         LOGGER.info("Retrieving all tenants..");
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> this.modelMapper.map(tenant, UserResponseDto.class))
+                .map(tenant -> {
+                    TenantDto dto = this.modelMapper.map(tenant, TenantDto.class);
+                    if (tenant.getAbonnement() != null) {
+                         dto
+                                 .setAbonnement(tenant.getAbonnement().name())
+                                 .setAbonnementDuration(tenant.getSubscriptionValidUntil().toString())
+                                 .setMembersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant));
+                    }
+                    return dto;
+                }).toList();
+
+    }
+
+    @Override
+    public List<TenantNonAuthInfoDto> getShortInfoForAllTenants() {
+        return this.tenantRepository.findAll()
+                .stream()
+                .map(tenant -> this.modelMapper.map(tenant, TenantNonAuthInfoDto.class))
                 .toList();
     }
 
@@ -61,9 +80,7 @@ public class TenantServiceImpl implements TenantService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = getTenantByEmail(email);
 
-        Long countUsersWithRoleMember = tenant.getUsers().stream()
-                .filter(user -> currentUserUtils.hasRole(user, RoleType.FACILITY_MEMBER))
-                .count();
+        Long countUsersWithRoleMember = getCountOfUsersWithRoleMemberWithinATenant(tenant);
 
         TenantDto dto = modelMapper.map(tenant, TenantDto.class).setMembersCount(countUsersWithRoleMember);
 
@@ -73,6 +90,12 @@ public class TenantServiceImpl implements TenantService {
         }
 
         return dto;
+    }
+
+    private Long getCountOfUsersWithRoleMemberWithinATenant(Tenant tenant) {
+        return tenant.getUsers().stream()
+                .filter(user -> currentUserUtils.hasRole(user, RoleType.FACILITY_MEMBER))
+                .count();
     }
 
 

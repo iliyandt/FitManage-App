@@ -1,14 +1,28 @@
 package demos.springdata.fitmanage.domain.dto.payment;
 
+
+import demos.springdata.fitmanage.domain.enums.Employment;
+
 public class CheckoutRequest {
+    private String memberId;
     private String tenantId;
     private String plan;
     private Long amount;
     private String currency;
+    private Employment employment;
     private String abonnementDuration;
 
 
     public CheckoutRequest() {
+    }
+
+    public String getMemberId() {
+        return memberId;
+    }
+
+    public CheckoutRequest setMemberId(String memberId) {
+        this.memberId = memberId;
+        return this;
     }
 
     public String getTenantId() {
@@ -44,6 +58,15 @@ public class CheckoutRequest {
 
     public CheckoutRequest setCurrency(String currency) {
         this.currency = currency;
+        return this;
+    }
+
+    public Employment getEmployment() {
+        return employment;
+    }
+
+    public CheckoutRequest setEmployment(Employment employment) {
+        this.employment = employment;
         return this;
     }
 

@@ -44,7 +44,7 @@ public class MembershipServiceImpl implements MembershipService {
         this.userService = userService;
     }
 
-    //TODO: when plan is single visit should it be automatically checkedIn or no? if yes the visit should be at the same day/hour, if not it can be used other time.
+
     @Transactional
     @Override
     public MemberResponseDto setupMembershipPlan(Long memberId, MemberSubscriptionRequestDto requestDto) {
