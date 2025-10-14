@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -119,6 +120,11 @@ public class MembershipServiceImpl implements MembershipService {
     public Double countBySubscriptionPlanForTenant(SubscriptionPlan plan) {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
         return membershipRepository.countBySubscriptionPlan_AndTenant(plan, tenant);
+    }
+
+    @Override
+    public Optional<Membership> getMembershipById(Long membershipId) {
+        return membershipRepository.getMembershipById(membershipId);
     }
 
     private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {

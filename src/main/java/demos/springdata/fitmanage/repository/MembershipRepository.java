@@ -18,4 +18,5 @@ public interface MembershipRepository extends JpaRepository<Membership, Long> {
     Double countByEmployment_AndTenant(Employment employment, Tenant tenant);
     Double countBySubscriptionStatus_AndTenant(SubscriptionStatus status, Tenant tenant);
     Double countBySubscriptionPlan_AndTenant(SubscriptionPlan subscriptionPlan, Tenant tenant);
+    Optional<Membership> getMembershipById(Long membershipId);
 }

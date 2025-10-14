@@ -6,7 +6,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
 
-public class MemberCreateRequestDto {
+public class    MemberCreateRequestDto {
 
     @NotBlank(message = "First name must not be blank")
     @Size(min = 2, max = 15, message = "First Name must be between 2 and 30 characters")

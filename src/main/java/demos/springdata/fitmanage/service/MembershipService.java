@@ -7,6 +7,7 @@ import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface MembershipService {
@@ -21,4 +22,6 @@ public interface MembershipService {
     Double countByEmploymentForTenant(Employment employment);
     Double countBySubscriptionStatusForTenant(SubscriptionStatus status);
     Double countBySubscriptionPlanForTenant(SubscriptionPlan plan);
+
+    Optional<Membership> getMembershipById(Long membershipId);
 }

@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.domain.enums.Abonnement;
 import java.util.List;
 
 public interface TenantService {
+    Tenant getTenantById(Long tenantId);
     Tenant getTenantByEmail(String email);
     TenantDto getTenantDtoByEmail();
     List<TenantDto> getAllTenants();

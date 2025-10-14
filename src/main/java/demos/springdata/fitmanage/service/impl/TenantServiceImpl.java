@@ -43,6 +43,11 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
+    public Tenant getTenantById(Long tenantId) {
+        return this.tenantRepository.findById(tenantId).orElseThrow(()-> new FitManageAppException("Tenant not found", ApiErrorCode.NOT_FOUND));
+    }
+
+    @Override
     public Tenant getTenantByEmail(String email) {
         return tenantRepository.findTenantByUserEmail(email);
     }
@@ -102,7 +107,7 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
-        LOGGER.info("tenant found");
+        LOGGER.info("Tenant found");
         tenant.setAbonnement(planName);
         tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
 
