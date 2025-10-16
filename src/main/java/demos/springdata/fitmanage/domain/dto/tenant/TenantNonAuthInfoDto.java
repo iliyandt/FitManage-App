@@ -1,11 +1,21 @@
 package demos.springdata.fitmanage.domain.dto.tenant;
 
 public class TenantNonAuthInfoDto {
+    private Long tenantId;
     private String name;
     private String city;
     private String address;
 
     public TenantNonAuthInfoDto() {
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public TenantNonAuthInfoDto setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+        return this;
     }
 
     public String getName() {
