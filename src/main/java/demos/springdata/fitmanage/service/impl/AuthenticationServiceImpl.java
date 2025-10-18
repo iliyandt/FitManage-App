@@ -1,5 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Account;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
@@ -17,16 +20,14 @@ import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.CustomUserDetails;
-import demos.springdata.fitmanage.service.AuthenticationService;
-import demos.springdata.fitmanage.service.CustomUserDetailsService;
-import demos.springdata.fitmanage.service.EmailService;
-import demos.springdata.fitmanage.service.RoleService;
+import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.CurrentUserUtils;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,13 +50,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
+    private final StripeConnectService stripeConnectService;
     private final CustomUserDetailsService customUserDetailsService;
     private final CurrentUserUtils currentUserUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
 
 
+    @Value("${stripe.api.key}")
+    private String apiKey;
+
+
     @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository, CurrentUserUtils currentUserUtils) {
+    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository, StripeConnectService stripeConnectService, CurrentUserUtils currentUserUtils) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -64,12 +70,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.emailService = emailService;
         this.customUserDetailsService = customUserDetailsService;
         this.tenantRepository = tenantRepository;
+        this.stripeConnectService = stripeConnectService;
         this.currentUserUtils = currentUserUtils;
     }
 
     @Transactional
     @Override
     public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
+        Stripe.apiKey = apiKey;
         LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
         validateCredentials(registrationRequest);
 
@@ -80,6 +88,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = initializeNewUser(registrationRequest);
         user.setTenant(tenant);
+
+        createTenantStripeAccount(user, tenant);
 
         userRepository.save(user);
         LOGGER.info("Registration successful for user: {}", user.getEmail());
@@ -295,5 +305,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private User mapUser(RegistrationRequestDto dto) {
         return modelMapper.map(dto, User.class);
+    }
+
+    private void createTenantStripeAccount(User user, Tenant tenant) {
+        try {
+            Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant().getBusinessEmail());
+            tenant.setStripeAccountId(stripeAccount.getId());
+        } catch (StripeException e) {
+            throw new RuntimeException("Unsuccessful creation of stripe account: " + e.getMessage(), e);
+        }
     }
 }

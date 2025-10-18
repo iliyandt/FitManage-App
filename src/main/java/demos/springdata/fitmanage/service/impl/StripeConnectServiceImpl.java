@@ -4,6 +4,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
 import com.stripe.model.checkout.Session;
+import com.stripe.param.AccountCreateParams;
 import demos.springdata.fitmanage.service.StripeConnectService;
 import org.springframework.stereotype.Service;
 
@@ -11,8 +12,27 @@ import org.springframework.stereotype.Service;
 public class StripeConnectServiceImpl implements StripeConnectService {
 
     @Override
-    public Account createConnectedAccount() throws StripeException {
-        return null;
+    public Account createConnectedAccount(String tenantEmail) throws StripeException {
+        AccountCreateParams.Capabilities capabilities =
+                AccountCreateParams.Capabilities.builder()
+                        .setCardPayments(
+                                AccountCreateParams.Capabilities.CardPayments.builder().setRequested(true).build()
+                        )
+                        .setTransfers(
+                                AccountCreateParams.Capabilities.Transfers.builder().setRequested(true).build()
+                        )
+                        .build();
+
+
+        AccountCreateParams params =
+                AccountCreateParams.builder()
+                        .setType(AccountCreateParams.Type.EXPRESS)
+                        .setCountry("BG")
+                        .setEmail(tenantEmail)
+                        .setCapabilities(capabilities)
+                        .build();
+
+        return Account.create(params);
     }
 
     @Override

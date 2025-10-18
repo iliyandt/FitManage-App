@@ -6,7 +6,7 @@ import com.stripe.model.AccountLink;
 import com.stripe.model.checkout.Session;
 
 public interface StripeConnectService {
-    Account createConnectedAccount() throws StripeException;
+    Account createConnectedAccount(String tenantEmail) throws StripeException;
     AccountLink createAccountLink(String connectedAccountId) throws StripeException;
     Session createCheckoutSession(String connectedAccountId) throws StripeException;
 }

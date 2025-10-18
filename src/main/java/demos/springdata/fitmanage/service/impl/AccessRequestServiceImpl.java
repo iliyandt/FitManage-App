@@ -97,9 +97,13 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public MemberResponseDto processAccessRequest(Long membershipId, boolean approve) {
-        Membership membership = membershipService.getMembershipById(membershipId).orElseThrow(()-> new FitManageAppException("Membership not found", ApiErrorCode.NOT_FOUND));
-        User member = membership.getUser();
+    public MemberResponseDto processAccessRequest(Long userId, boolean approve) {
+        //Membership membership = membershipService.getMembershipById(membershipId).orElseThrow(()-> new FitManageAppException("Membership not found", ApiErrorCode.NOT_FOUND));
+        //User member = membership.getUser();
+
+        User member = userService.findUserById(userId);
+
+        Membership membership = member.getMemberships().stream().findFirst().get();
 
         if (membership.getSubscriptionStatus() != SubscriptionStatus.PENDING) {
             throw new FitManageAppException("Membership request already processed.", ApiErrorCode.BAD_REQUEST);

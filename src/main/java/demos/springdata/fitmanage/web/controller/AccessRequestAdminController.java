@@ -21,19 +21,19 @@ public class AccessRequestAdminController {
         this.accessRequestService = accessRequestService;
     }
 
-    @PatchMapping("/{membershipId}/approve")
+    @PatchMapping("/{userId}/approve")
     public ResponseEntity<ApiResponse<MemberResponseDto>> approveAccess(
-            @PathVariable Long membershipId) {
+            @PathVariable Long userId) {
 
-        MemberResponseDto response = accessRequestService.processAccessRequest(membershipId, true);
+        MemberResponseDto response = accessRequestService.processAccessRequest(userId, true);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PatchMapping("/{membershipId}/reject")
+    @PatchMapping("/{userId}/reject")
     public ResponseEntity<ApiResponse<MemberResponseDto>> rejectAccess(
-            @PathVariable Long membershipId) {
+            @PathVariable Long userId) {
 
-        MemberResponseDto response = accessRequestService.processAccessRequest(membershipId, false);
+        MemberResponseDto response = accessRequestService.processAccessRequest(userId, false);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

@@ -39,6 +39,7 @@ public class Tenant extends BaseEntity {
     @OneToMany(mappedBy = "tenant", fetch = FetchType.EAGER)
     private Set<Membership> memberships = new HashSet<>();
 
+    private String stripeAccountId;
 
     public Tenant() {
     }
@@ -122,6 +123,15 @@ public class Tenant extends BaseEntity {
 
     public Tenant setMemberships(Set<Membership> memberships) {
         this.memberships = memberships;
+        return this;
+    }
+
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public Tenant setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
         return this;
     }
 }
