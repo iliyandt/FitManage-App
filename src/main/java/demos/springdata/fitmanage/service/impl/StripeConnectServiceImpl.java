@@ -44,7 +44,6 @@ public class StripeConnectServiceImpl implements StripeConnectService {
                                         .builder()
                                         .setName("Set current tenant name") //TODO: set current tenant name
                                         .setProductDescription("Subscription")
-                                        .setSupportEmail(tenantEmail)
                                         .setMcc("7941") //TODO: check if the mcc is correct
                                         .build()
                         )

@@ -57,7 +57,7 @@ public class StripeServiceImpl implements StripeService {
                 .setMode(SessionCreateParams.Mode.PAYMENT)//recurring??
                 .setSuccessUrl("https://damilsoft.com/success?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl("https://damilsoft.com/cancel")
-                .setCustomerEmail(checkoutRequest.getTenantEmail())
+                .setCustomerEmail(checkoutRequest.getBusinessEmail())
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
