@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.enums.Employment;
 public class CheckoutRequest {
     private String memberId;
     private String tenantId;
+    private String tenantEmail;
     private String plan;
     private Long amount;
     private String currency;
@@ -31,6 +32,15 @@ public class CheckoutRequest {
 
     public CheckoutRequest setTenantId(String tenantId) {
         this.tenantId = tenantId;
+        return this;
+    }
+
+    public String getTenantEmail() {
+        return tenantEmail;
+    }
+
+    public CheckoutRequest setTenantEmail(String tenantEmail) {
+        this.tenantEmail = tenantEmail;
         return this;
     }
 

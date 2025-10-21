@@ -106,18 +106,24 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
+
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
         LOGGER.info("Tenant found");
-        tenant.setAbonnement(planName);
-        tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
 
-        switch (tenant.getAbonnementDuration()) {
-            case MONTHLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
-            case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
+        if (tenant.getAbonnement() != null) {
+            throw new FitManageAppException("Tenant already has active subscription", ApiErrorCode.CONFLICT);
+        } else {
+            tenant.setAbonnement(planName);
+            tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
+
+            switch (tenant.getAbonnementDuration()) {
+                case MONTHLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
+                case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
+            }
+
+            tenantRepository.save(tenant);
+            LOGGER.info("Abonnement saved");
         }
 
-
-        tenantRepository.save(tenant);
-        LOGGER.info("Abonnement saved");
     }
 }

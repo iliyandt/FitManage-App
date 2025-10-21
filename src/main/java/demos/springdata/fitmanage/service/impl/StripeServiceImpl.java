@@ -54,9 +54,10 @@ public class StripeServiceImpl implements StripeService {
         Stripe.apiKey = apiKey;
 
         SessionCreateParams.Builder params = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("https://dam-il.netlify.app/success?session_id={CHECKOUT_SESSION_ID}")
-                .setCancelUrl("https://dam-il.netlify.app/cancel")
+                .setMode(SessionCreateParams.Mode.PAYMENT)//recurring??
+                .setSuccessUrl("https://damilsoft.com/success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl("https://damilsoft.com/cancel")
+                .setCustomerEmail(checkoutRequest.getTenantEmail())
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
@@ -97,23 +98,17 @@ public class StripeServiceImpl implements StripeService {
         try {
             event = Webhook.constructEvent(payload, signatureHeader, endpointSecret);
         } catch (SignatureVerificationException e) {
-            LOGGER.error("SignatureVerificationException (webhook)", e);
             throw new FitManageAppException("Failed signature verification", ApiErrorCode.CONFLICT);
         }
-
-        LOGGER.info("Event received: {}", event.getType());
 
         if ("checkout.session.completed".equals(event.getType())) {
             Optional<StripeObject> stripeObjectOptional = event.getDataObjectDeserializer().getObject();
             if (stripeObjectOptional.isEmpty()) {
                 LOGGER.error("No StripeObject present in event data object deserializer");
-                LOGGER.error("Payload: {}", payload);
                 return;
             }
 
             StripeObject stripeObject = stripeObjectOptional.get();
-            LOGGER.info("Stripe object class: {}", stripeObject.getClass().getName());
-            LOGGER.info("Stripe object content: {}", stripeObject);
 
             if (!(stripeObject instanceof Session session)) {
                 LOGGER.error("Webhook did not contain a Session object.");
@@ -122,14 +117,13 @@ public class StripeServiceImpl implements StripeService {
 
             try {
                 Map<String, String> metadata = session.getMetadata();
-                String memberIdStr = metadata.get("memberId");
-
+                String memberIdMetadata = metadata.get("memberId");
                 Long tenantId = Long.valueOf(metadata.get("tenantId"));
                 String planName = metadata.get("planName");
                 String duration = metadata.get("abonnementDuration");
 
-                if (memberIdStr != null) {
-                    Long memberId = Long.valueOf(memberIdStr);
+                if (memberIdMetadata != null) {
+                    Long memberId = Long.valueOf(memberIdMetadata);
                     Employment employment = Employment.valueOf(metadata.get("employment"));
                     MemberSubscriptionRequestDto requestDto = handleMemberStripeSubscription(planName, duration, employment);
                     membershipService.setupMembershipPlan(memberId, requestDto);
@@ -139,13 +133,14 @@ public class StripeServiceImpl implements StripeService {
                     LOGGER.info("Abonnement created for tenantId={}", tenantId);
                 }
 
-
             } catch (Exception ex) {
                 LOGGER.error("Error processing webhook event", ex);
                 LOGGER.error("Payload causing error: {}", payload);
                 throw new FitManageAppException("Error processing webhook event", ApiErrorCode.INTERNAL_ERROR);
             }
 
+        } else if ("customer.subscription.updated".equals(event.getType())){
+            //TODO:
         } else {
             LOGGER.warn("Unhandled event type: {}", event.getType());
         }
