@@ -76,7 +76,8 @@ public class StripeServiceImpl implements StripeService {
                 )
                 .putMetadata("tenantId", checkoutRequest.getTenantId())
                 .putMetadata("planName", checkoutRequest.getPlan())
-                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration());
+                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
+                .putMetadata("businessEmail", checkoutRequest.getBusinessEmail());
 
         if (checkoutRequest.getMemberId() != null) {
             params.putMetadata("memberId", String.valueOf(checkoutRequest.getMemberId()));

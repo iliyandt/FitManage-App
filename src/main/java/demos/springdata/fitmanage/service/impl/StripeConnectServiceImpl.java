@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
@@ -10,14 +11,16 @@ import demos.springdata.fitmanage.domain.dto.payment.AccountLinkResponse;
 import demos.springdata.fitmanage.service.StripeConnectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StripeConnectServiceImpl implements StripeConnectService {
 
+    @Value("${stripe.api.key}")
+    private String apiKey;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeConnectServiceImpl.class);
-
 
     @Override
     public Account createConnectedAccount(String tenantEmail) throws StripeException {
@@ -55,6 +58,9 @@ public class StripeConnectServiceImpl implements StripeConnectService {
 
     @Override
     public AccountLinkResponse createAccountLink(String connectedAccountId, String returnUrl, String refreshUrl) throws StripeException {
+
+        Stripe.apiKey = apiKey;
+
         AccountLinkCreateParams params =
                 AccountLinkCreateParams.builder()
                         .setAccount(connectedAccountId)
