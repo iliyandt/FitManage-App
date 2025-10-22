@@ -68,7 +68,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     List<String> roles = jwtService.extractClaim(jwt, claims -> {
                         List<String> jwtRoles = claims.get("roles", List.class);
-                        return jwtRoles != null ? jwtRoles : List.of(); // return empty list if null
+                        return jwtRoles != null ? jwtRoles : List.of();
                     });
 
                     List<SimpleGrantedAuthority> authorities = roles.stream()
