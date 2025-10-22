@@ -118,8 +118,8 @@ public class TenantServiceImpl implements TenantService {
             tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));
 
             switch (tenant.getAbonnementDuration()) {
-                case MONTHLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
-                case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
+                case MONTHLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusMonths(1));
+                case ANNUALLY -> tenant.setSubscriptionValidUntil(LocalDate.now().plusYears(1));
             }
 
             tenantRepository.save(tenant);

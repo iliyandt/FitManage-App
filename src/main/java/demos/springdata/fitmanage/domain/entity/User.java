@@ -29,9 +29,7 @@ public class User extends BaseEntity implements UserDetails {
 
     private String firstName;
     private String lastName;
-
     private String username;
-
     private String email;
 
     @Column(nullable = false)
@@ -55,6 +53,12 @@ public class User extends BaseEntity implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private AccountSettings accountSettings;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
 
     private String phone;
     private String address;
@@ -153,6 +157,24 @@ public class User extends BaseEntity implements UserDetails {
 
     public User setTenant(Tenant tenant) {
         this.tenant = tenant;
+        return this;
+    }
+
+    public AccountSettings getAccountSettings() {
+        return accountSettings;
+    }
+
+    public User setAccountSettings(AccountSettings accountSettings) {
+        this.accountSettings = accountSettings;
+        return this;
+    }
+
+    public RefreshToken getRefreshToken() {
+        return refreshToken;
+    }
+
+    public User setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
         return this;
     }
 

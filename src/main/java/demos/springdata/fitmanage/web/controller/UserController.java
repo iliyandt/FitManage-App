@@ -20,7 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    //todo: logic for authentication should be in the service layer
+    //todo: logic for authentication should be in the service layer?
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserResponseDto>> authenticatedUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
