@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -38,15 +39,15 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
+    @Transactional
     public RefreshToken createRefreshToken(String email) {
 
-
         LOGGER.info("Creating refresh token for email: {}", email);
-        UserResponseDto userBaseResponseDto = userService.getUserProfileByEmail(email);
 
-        User user = modelMapper.map(userBaseResponseDto, User.class);
+        User user = userService.findByEmail(email);
 
-        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+        int deletedCount = refreshTokenRepository.nativeDeleteByUserId(user.getId());
+        LOGGER.warn("Deleted existing tokens via Native Query: {}", deletedCount);
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)

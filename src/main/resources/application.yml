@@ -37,8 +37,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+#        show_sql: true
         jdbc.lob.non_contextual_creation: true
-        default_schema: app
+        default_schema: public
+
 
   #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -102,6 +104,7 @@ security:
 
 logging:
   level:
+ #   org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     demos.springdata.fitmanage: DEBUG
     org.hibernate: ERROR
     org.springframework.web: INFO

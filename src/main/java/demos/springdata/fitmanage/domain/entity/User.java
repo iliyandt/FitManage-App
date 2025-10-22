@@ -54,10 +54,10 @@ public class User extends BaseEntity implements UserDetails {
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private AccountSettings accountSettings;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
 
     private String phone;

@@ -23,6 +23,7 @@ public interface UserService {
     void delete(User user);
     Long countByGenderForTenant(Gender gender);
     Long countAllUsersByTenant();
+    User findByEmail(String email);
 
 
 }
