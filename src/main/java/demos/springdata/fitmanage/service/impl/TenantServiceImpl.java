@@ -87,7 +87,8 @@ public class TenantServiceImpl implements TenantService {
 
         Long countUsersWithRoleMember = getCountOfUsersWithRoleMemberWithinATenant(tenant);
 
-        TenantDto dto = modelMapper.map(tenant, TenantDto.class).setMembersCount(countUsersWithRoleMember);
+        TenantDto dto = modelMapper.map(tenant, TenantDto.class)
+                .setMembersCount(countUsersWithRoleMember);
 
         if (tenant.getAbonnement() != null) {
             dto.setAbonnement(tenant.getAbonnement().name());

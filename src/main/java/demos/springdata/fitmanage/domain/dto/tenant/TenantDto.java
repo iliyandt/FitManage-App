@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 public class TenantDto {
     private Long id;
+    private String stripeAccountId;
     private String name;
     private String businessEmail;
     private String address;
@@ -22,6 +23,15 @@ public class TenantDto {
 
     public TenantDto setId(Long id) {
         this.id = id;
+        return this;
+    }
+
+    public String getStripeAccountId() {
+        return stripeAccountId;
+    }
+
+    public TenantDto setStripeAccountId(String stripeAccountId) {
+        this.stripeAccountId = stripeAccountId;
         return this;
     }
 
