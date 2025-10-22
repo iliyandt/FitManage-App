@@ -63,7 +63,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
 
         analytics.put("gender", gendersCount);
         analytics.put("employment", employmentCount);
-        analytics.put("status", subscriptionStatus);
+        analytics.put("subscriptionStatus", subscriptionStatus);
         analytics.put("plan", subscriptionPlan);
 
         return new UserRatioAnalyticsDto().setRatios(analytics);
