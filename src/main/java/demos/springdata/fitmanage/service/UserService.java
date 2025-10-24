@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserService {
     UserResponseDto getUserProfileByEmail(String email);
@@ -26,4 +27,5 @@ public interface UserService {
     User findByEmail(String email);
 
 
+    List<User> findAllUserFromCollectionOfIds(Set<Long> recipientsIds);
 }

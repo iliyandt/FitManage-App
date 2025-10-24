@@ -124,6 +124,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findAllUserFromCollectionOfIds(Set<Long> recipientsIds) {
+        return userRepository.findAllById(recipientsIds);
+    }
+
+    @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
         return userRepository.findByIdAndTenantId(memberId, tenantId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
@@ -144,6 +149,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
     }
+
 
     @Override
     public Optional<User> findByQrToken(String qrToken) {

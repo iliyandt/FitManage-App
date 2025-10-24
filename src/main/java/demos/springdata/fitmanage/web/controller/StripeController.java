@@ -1,7 +1,5 @@
 package demos.springdata.fitmanage.web.controller;
-
 import com.stripe.exception.StripeException;
-import com.stripe.model.AccountLink;
 import com.stripe.model.checkout.Session;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.payment.AccountLinkRequest;
@@ -13,8 +11,6 @@ import demos.springdata.fitmanage.service.StripeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/stripe")
@@ -48,5 +44,13 @@ public class StripeController {
         AccountLinkResponse response = stripeConnectService.createAccountLink(request.getConnectedAccountId(), request.getReturnUrl(), request.getRefreshUrl());
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+
+    @DeleteMapping("/{connectedAccountId}")
+    public ResponseEntity<ApiResponse<Void>> deleteStripeConnectedAccount(@PathVariable String connectedAccountId) throws StripeException {
+        stripeConnectService.deleteStripeConnectedAccount(connectedAccountId);
+
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

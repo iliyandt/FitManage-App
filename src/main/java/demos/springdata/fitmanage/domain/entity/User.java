@@ -82,6 +82,12 @@ public class User extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "user")
     private List<Employee> employees = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "recipients")
+    private Set<News> targetedNews = new HashSet<>();
+
+    @OneToMany(mappedBy = "author")
+    private Set<News> authoredNews = new HashSet<>();
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -279,6 +285,24 @@ public class User extends BaseEntity implements UserDetails {
 
     public User setEmployees(List<Employee> employees) {
         this.employees = employees;
+        return this;
+    }
+
+    public Set<News> getTargetedNews() {
+        return targetedNews;
+    }
+
+    public User setTargetedNews(Set<News> targetedNews) {
+        this.targetedNews = targetedNews;
+        return this;
+    }
+
+    public Set<News> getAuthoredNews() {
+        return authoredNews;
+    }
+
+    public User setAuthoredNews(Set<News> authoredNews) {
+        this.authoredNews = authoredNews;
         return this;
     }
 

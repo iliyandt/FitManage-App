@@ -1,18 +1,18 @@
 package demos.springdata.fitmanage.service.impl;
 
+import com.google.gson.JsonSyntaxException;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
+import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
+import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import com.stripe.param.checkout.SessionCreateParams;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
 import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
-import demos.springdata.fitmanage.domain.enums.Employment;
-import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.service.MembershipService;
@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -33,12 +31,11 @@ public class StripeServiceImpl implements StripeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeServiceImpl.class);
     private final TenantService tenantService;
-    private final MembershipService membershipService;
+
 
     @Autowired
-    public StripeServiceImpl(TenantService tenantService, MembershipService membershipService) {
+    public StripeServiceImpl(TenantService tenantService) {
         this.tenantService = tenantService;
-        this.membershipService = membershipService;
     }
 
     @Value("${STRIPE_WEBHOOK_SECRET}")
@@ -79,11 +76,6 @@ public class StripeServiceImpl implements StripeService {
                 .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
                 .putMetadata("businessEmail", checkoutRequest.getBusinessEmail());
 
-        if (checkoutRequest.getMemberId() != null) {
-            params.putMetadata("memberId", String.valueOf(checkoutRequest.getMemberId()));
-            params.putMetadata("employment", String.valueOf(checkoutRequest.getEmployment()));
-        }
-
         return Session.create(params.build());
     }
 
@@ -96,69 +88,58 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public void webhookEvent(String payload, String signatureHeader) {
         Event event;
+
         try {
-            event = Webhook.constructEvent(payload, signatureHeader, endpointSecret);
-        } catch (SignatureVerificationException e) {
-            throw new FitManageAppException("Failed signature verification", ApiErrorCode.CONFLICT);
+          event = ApiResource.GSON.fromJson(payload, Event.class);
+        } catch (JsonSyntaxException ex) {
+            LOGGER.warn("Invalid payload: {}", payload);
+            throw new FitManageAppException("Invalid payload", ApiErrorCode.BAD_REQUEST);
         }
 
-        if ("checkout.session.completed".equals(event.getType())) {
-            Optional<StripeObject> stripeObjectOptional = event.getDataObjectDeserializer().getObject();
-            if (stripeObjectOptional.isEmpty()) {
-                LOGGER.error("No StripeObject present in event data object deserializer");
-                return;
-            }
+        if (signatureHeader == null || endpointSecret == null) {
+            LOGGER.warn("Webhook signature or secret is missing.");
+            throw new FitManageAppException("Missing webhook signature/secret", ApiErrorCode.BAD_REQUEST);
+        }
 
-            StripeObject stripeObject = stripeObjectOptional.get();
+        try {
+            event = Webhook.constructEvent(
+                    payload, signatureHeader, endpointSecret
+            );
 
-            if (!(stripeObject instanceof Session session)) {
-                LOGGER.error("Webhook did not contain a Session object.");
-                return;
-            }
+        } catch (SignatureVerificationException ex) {
+            LOGGER.warn("Webhook error while validating signature.", ex);
+            throw new FitManageAppException("Invalid signature", ApiErrorCode.BAD_REQUEST);
+        }
 
-            try {
-                Map<String, String> metadata = session.getMetadata();
-                String memberIdMetadata = metadata.get("memberId");
-                Long tenantId = Long.valueOf(metadata.get("tenantId"));
-                String planName = metadata.get("planName");
-                String duration = metadata.get("abonnementDuration");
 
-                if (memberIdMetadata != null) {
-                    Long memberId = Long.valueOf(memberIdMetadata);
-                    Employment employment = Employment.valueOf(metadata.get("employment"));
-                    MemberSubscriptionRequestDto requestDto = handleMemberStripeSubscription(planName, duration, employment);
-                    membershipService.setupMembershipPlan(memberId, requestDto);
-                    LOGGER.info("Abonnement created for memberId={} in tenant with id={}", memberId, tenantId);
-                } else {
-                    tenantService.createAbonnement(tenantId, Abonnement.valueOf(planName), duration);
-                    LOGGER.info("Abonnement created for tenantId={}", tenantId);
-                }
+        EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+        StripeObject stripeObject = null;
 
-            } catch (Exception ex) {
-                LOGGER.error("Error processing webhook event", ex);
-                LOGGER.error("Payload causing error: {}", payload);
-                throw new FitManageAppException("Error processing webhook event", ApiErrorCode.INTERNAL_ERROR);
-            }
-
-        } else if ("customer.subscription.updated".equals(event.getType())){
-            //TODO:
+        if (dataObjectDeserializer.getObject().isPresent()) {
+            stripeObject = dataObjectDeserializer.getObject().get();
         } else {
-            LOGGER.warn("Unhandled event type: {}", event.getType());
-        }
-    }
-
-    private MemberSubscriptionRequestDto handleMemberStripeSubscription(String subscriptionPlan, String allowedVisits, Employment employment) {
-        MemberSubscriptionRequestDto dto = new MemberSubscriptionRequestDto();
-
-        SubscriptionPlan plan = SubscriptionPlan.valueOf(subscriptionPlan.toUpperCase());
-        dto.setSubscriptionPlan(plan);
-        dto.setEmployment(employment);
-
-        if (plan.isVisitBased()) {
-            dto.setAllowedVisits(Integer.valueOf(allowedVisits));
+            LOGGER.error("Failed to deserialize event data object. API version mismatch? Event ID: {}", event.getId());
+            throw new FitManageAppException("Event deserialization failed", ApiErrorCode.INTERNAL_ERROR);
         }
 
-        return dto;
+        LOGGER.info("Handling Stripe event: {} ({})", event.getType(), event.getId());
+        switch (event.getType()) {
+            case "checkout.session.completed":
+                Session session = (Session) stripeObject;
+                LOGGER.info("Payment for {} succeeded.", session.getAmountTotal());
+                tenantService.createAbonnement
+                        (
+                                Long.valueOf(session.getMetadata().get("tenantId")),
+                                Abonnement.valueOf(session.getMetadata().get("planName")),
+                                session.getMetadata().get("abonnementDuration")
+                        );
+
+                LOGGER.info("Abonnement {} created for tenant with ID: {}", session.getMetadata().get("planName"), session.getMetadata().get("tenantId"));
+                break;
+            //case "":
+            default:
+                LOGGER.warn("Unhandled event type: {}", event.getType());
+        }
     }
 
 }

@@ -10,4 +10,5 @@ public interface StripeConnectService {
     Account createConnectedAccount(String tenantEmail) throws StripeException;
     AccountLinkResponse createAccountLink(String connectedAccountId, String returnUrl, String refreshUrl) throws StripeException;
     Session createCheckoutSession(String connectedAccountId) throws StripeException;
+    void deleteStripeConnectedAccount(String connectedAccountId) throws StripeException;
 }

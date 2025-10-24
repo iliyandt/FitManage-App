@@ -88,4 +88,11 @@ public class StripeConnectServiceImpl implements StripeConnectService {
     public Session createCheckoutSession(String connectedAccountId) throws StripeException {
         return null;
     }
+
+    @Override
+    public void deleteStripeConnectedAccount(String connectedAccountId) throws StripeException {
+        Stripe.apiKey = apiKey;
+        Account resource = Account.retrieve(connectedAccountId);
+        resource.delete();
+    }
 }
