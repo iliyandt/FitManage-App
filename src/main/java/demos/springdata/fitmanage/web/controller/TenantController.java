@@ -32,10 +32,10 @@ public class TenantController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<TenantDto>>> getAllTenants() {
         List<TenantDto> tenants = tenantService.getAllTenants();
-        return ResponseEntity.ok(ApiResponse.success(tenants));
+        return ResponseEntity.ok(ApiResponse.success(tenants));ç
     }
 
-    @PreAuthorize("hasAnyAuthority('FACILITY_MEMBER', 'FACILITY_STAFF', 'FACILITY_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('MEMBER', 'STAFF', 'ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<TenantDto>> getTenantForCurrentMember() {
         return ResponseEntity.ok(ApiResponse.success(tenantService.getTenantDtoByEmail()));
