@@ -32,7 +32,7 @@ public class TenantController {
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<TenantDto>>> getAllTenants() {
         List<TenantDto> tenants = tenantService.getAllTenants();
-        return ResponseEntity.ok(ApiResponse.success(tenants));ç
+        return ResponseEntity.ok(ApiResponse.success(tenants));
     }
 
     @PreAuthorize("hasAnyAuthority('MEMBER', 'STAFF', 'ADMIN')")
