@@ -29,9 +29,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Long countByTenantAndRoleType(@Param("tenant") Tenant tenant, @Param("roleType") RoleType roleType);
 
     @Query("SELECT DISTINCT u FROM User u " +
-                  "LEFT JOIN u.roles r " +
-                  "WHERE u.id IN :ids OR r.name IN :roleTypes")
-    Set<User> findAllByIdsOrRoleTypes(@Param("ids") Set<Long> ids, @Param("roleTypes") Set<RoleType> roles);
+            "LEFT JOIN u.roles r " +
+            "WHERE u.tenant.id = :tenantId " +
+            "AND (" +
+            "    u.id IN :ids OR r.name IN :roleTypes" +
+            ")")
+    Set<User> findAllByIdsOrRoleTypesAndTenant
+            (@Param("ids") Set<Long> ids,
+             @Param("roleTypes") Set<RoleType> roles,
+             @Param("tenantId") Long tenantId);
 
     Set<Long> id(Long id);
 }

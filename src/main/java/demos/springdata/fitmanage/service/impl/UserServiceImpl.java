@@ -121,8 +121,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles) {
-        return userRepository.findAllByIdsOrRoleTypes(ids, targetRoles);
+    public Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId) {
+        return userRepository.findAllByIdsOrRoleTypesAndTenant(ids, targetRoles, tenantId);
     }
 
 

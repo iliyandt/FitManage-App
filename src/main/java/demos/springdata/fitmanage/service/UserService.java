@@ -27,6 +27,6 @@ public interface UserService {
     Long countAllUsersByTenant();
     User findByEmail(String email);
 
-    Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles);
+    Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId);
 
 }

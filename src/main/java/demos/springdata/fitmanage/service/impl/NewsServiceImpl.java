@@ -68,8 +68,10 @@ public class NewsServiceImpl implements NewsService {
     public List<NewsResponse> getNewsForUser() {
 
         User user = currentUser.getCurrentUser();
+        boolean isAdmin = user.getRoles().stream()
+                .anyMatch(role -> role.getName() == RoleType.ADMIN);
 
-        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId());
+        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId(), isAdmin);
 
         return news.stream()
                 .map(this::mapToDto)
@@ -108,7 +110,7 @@ public class NewsServiceImpl implements NewsService {
 
         if (request.getPublicationType() == PublicationType.TARGETED) {
 
-            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, targetRoles);
+            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, targetRoles, news.getAuthor().getTenant().getId());
 
             news.setRecipients(targetedUsers);
 
