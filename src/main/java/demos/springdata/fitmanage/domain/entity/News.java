@@ -26,6 +26,8 @@ public class News extends BaseEntity {
     @Column(name = "published_at", nullable = false)
     private Instant publishedAt;
 
+    private boolean targetSpecific;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "news_status", nullable = false)
     private NewsStatus status;
@@ -37,6 +39,7 @@ public class News extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "importance")
     private NewsImportance importance;
+
 
     @ManyToMany
     @JoinTable(
@@ -82,6 +85,15 @@ public class News extends BaseEntity {
 
     public News setPublishedAt(Instant publishedAt) {
         this.publishedAt = publishedAt;
+        return this;
+    }
+
+    public boolean isTargetSpecific() {
+        return targetSpecific;
+    }
+
+    public News setTargetSpecific(boolean targetSpecific) {
+        this.targetSpecific = targetSpecific;
         return this;
     }
 

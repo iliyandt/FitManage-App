@@ -47,7 +47,8 @@ public class NewsServiceImpl implements NewsService {
                 .setPublishedAt(Instant.now())
                 .setStatus(NewsStatus.PUBLISHED)
                 .setPublicationType(request.getPublicationType())
-                .setImportance(request.getImportance());
+                .setImportance(request.getImportance())
+                .setTargetSpecific(request.isTargetSpecific());
 
         Set<Long> recipientsIds = request.getRecipientsIds();
         Set<RoleType> targetRoles = request.getTargetRoles();

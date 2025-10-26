@@ -12,6 +12,8 @@ public class NewsRequest {
     private Set<Long> recipientsIds;
     private PublicationType publicationType;
     private NewsImportance importance;
+    private boolean targetSpecific;
+
 
     public NewsRequest() {
     }
@@ -67,6 +69,15 @@ public class NewsRequest {
 
     public NewsRequest setImportance(NewsImportance importance) {
         this.importance = importance;
+        return this;
+    }
+
+    public boolean isTargetSpecific() {
+        return targetSpecific;
+    }
+
+    public NewsRequest setTargetSpecific(boolean targetSpecific) {
+        this.targetSpecific = targetSpecific;
         return this;
     }
 }
