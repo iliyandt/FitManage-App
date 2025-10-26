@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Set;
 
 public class NewsResponse {
+    private Long newsId;
     private String title;
     private String content;
     private Long authorId;
@@ -22,6 +23,15 @@ public class NewsResponse {
     private Instant expiresOn;
 
     public NewsResponse() {
+    }
+
+    public Long getNewsId() {
+        return newsId;
+    }
+
+    public NewsResponse setNewsId(Long newsId) {
+        this.newsId = newsId;
+        return this;
     }
 
     public String getTitle() {

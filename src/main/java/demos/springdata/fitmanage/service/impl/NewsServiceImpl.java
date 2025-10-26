@@ -42,7 +42,6 @@ public class NewsServiceImpl implements NewsService {
     public NewsResponse createNews(NewsRequest request) {
 
         User user = currentUser.getCurrentUser();
-
         News news = new News()
                 .setTitle(request.getTitle())
                 .setContent(request.getContent())
@@ -54,6 +53,55 @@ public class NewsServiceImpl implements NewsService {
                 .setImportance(request.getImportance())
                 .setTargetSpecific(request.isTargetSpecific())
                 .setExpiresOn(request.getExpiresOn());
+
+        News targetedNews = getTargetedUsers(request, news);
+
+        newsRepository.save(targetedNews);
+        return mapToDto(targetedNews);
+    }
+
+
+
+
+    @Override
+    @Transactional
+    public List<NewsResponse> getNewsForUser() {
+
+        User user = currentUser.getCurrentUser();
+
+        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId());
+
+        return news.stream()
+                .map(this::mapToDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional
+    public NewsResponse delete(Long newsId) {
+        News newsToDelete = newsRepository.getNewsById(newsId);
+        newsRepository.delete(newsToDelete);
+        return mapToDto(newsToDelete);
+    }
+
+    @Override
+    @Transactional
+    public NewsResponse update(Long newsId, NewsRequest request) {
+        News newsToUpdate = newsRepository.getNewsById(newsId);
+        newsToUpdate
+                .setTitle(request.getTitle())
+                .setContent(request.getContent())
+                .setPublicationType(request.getPublicationType())
+                .setImportance(request.getImportance())
+                .setTargetSpecific(request.isTargetSpecific())
+                .setExpiresOn(request.getExpiresOn());
+
+
+        News updated = getTargetedUsers(request, newsToUpdate);
+        return mapToDto(updated);
+    }
+
+    private News getTargetedUsers(NewsRequest request, News news) {
 
         Set<Long> recipientsIds = request.getRecipientsIds();
         Set<RoleType> targetRoles = request.getTargetRoles();
@@ -68,27 +116,11 @@ public class NewsServiceImpl implements NewsService {
             throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);
         }
 
-        newsRepository.save(news);
-
-        return mapToDto(news, user.getId());
+        return news;
     }
 
 
-    @Override
-    @Transactional
-    public List<NewsResponse> getNewsForUser() {
-
-        User user = currentUser.getCurrentUser();
-
-        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId());
-
-        return news.stream()
-                .map(post -> mapToDto(post, user.getId()))
-                .toList();
-    }
-
-
-    private NewsResponse mapToDto(News news, Long authorId) {
+    private NewsResponse mapToDto(News news) {
 
         Set<User> recipients = news.getRecipients();
 
@@ -106,9 +138,10 @@ public class NewsServiceImpl implements NewsService {
         }
 
         return  new NewsResponse()
+                .setNewsId(news.getId())
                 .setTitle(news.getTitle())
                 .setContent(news.getContent())
-                .setAuthorId(authorId)
+                .setAuthorId(news.getAuthor().getId())
                 .setPublishedAt(news.getPublishedAt())
                 .setStatus(news.getStatus())
                 .setPublicationType(news.getPublicationType())

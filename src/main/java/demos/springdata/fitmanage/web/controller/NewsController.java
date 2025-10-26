@@ -34,4 +34,16 @@ public class NewsController {
         List<NewsResponse> news = newsService.getNewsForUser();
         return ResponseEntity.ok(ApiResponse.success(news));
     }
+
+
+    @PutMapping("/{newsId}")
+    public ResponseEntity<ApiResponse<NewsResponse>> editNews(@PathVariable Long newsId, @RequestBody NewsRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(newsService.update(newsId, request)));
+    }
+
+
+    @DeleteMapping("/{newsId}")
+    public ResponseEntity<ApiResponse<NewsResponse>> deleteNews(@PathVariable Long newsId) {
+        return ResponseEntity.ok(ApiResponse.success(newsService.delete(newsId)));
+    }
 }

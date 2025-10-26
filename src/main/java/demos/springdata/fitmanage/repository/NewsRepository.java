@@ -26,4 +26,6 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findAllPublishedForUser(@Param("userId") Long userId,
                                        @Param("status") NewsStatus status,
                                        @Param("tenantId") Long tenantId);;
+
+    News getNewsById(Long id);
 }
