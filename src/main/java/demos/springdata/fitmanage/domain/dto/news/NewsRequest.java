@@ -3,6 +3,7 @@ import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 
+import java.time.Instant;
 import java.util.Set;
 
 public class NewsRequest {
@@ -13,6 +14,7 @@ public class NewsRequest {
     private PublicationType publicationType;
     private NewsImportance importance;
     private boolean targetSpecific;
+    private Instant expiresOn;
 
 
     public NewsRequest() {
@@ -78,6 +80,15 @@ public class NewsRequest {
 
     public NewsRequest setTargetSpecific(boolean targetSpecific) {
         this.targetSpecific = targetSpecific;
+        return this;
+    }
+
+    public Instant getExpiresOn() {
+        return expiresOn;
+    }
+
+    public NewsRequest setExpiresOn(Instant expiresOn) {
+        this.expiresOn = expiresOn;
         return this;
     }
 }

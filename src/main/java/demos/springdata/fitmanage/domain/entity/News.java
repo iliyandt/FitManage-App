@@ -28,6 +28,8 @@ public class News extends BaseEntity {
 
     private boolean targetSpecific;
 
+    private Instant expiresOn;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "news_status", nullable = false)
     private NewsStatus status;
@@ -94,6 +96,15 @@ public class News extends BaseEntity {
 
     public News setTargetSpecific(boolean targetSpecific) {
         this.targetSpecific = targetSpecific;
+        return this;
+    }
+
+    public Instant getExpiresOn() {
+        return expiresOn;
+    }
+
+    public News setExpiresOn(Instant expiresOn) {
+        this.expiresOn = expiresOn;
         return this;
     }
 

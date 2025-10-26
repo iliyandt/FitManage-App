@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.service.impl;
 import demos.springdata.fitmanage.domain.dto.news.NewsRequest;
 import demos.springdata.fitmanage.domain.dto.news.NewsResponse;
 import demos.springdata.fitmanage.domain.entity.News;
+import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
@@ -15,6 +16,8 @@ import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.util.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +51,8 @@ public class NewsServiceImpl implements NewsService {
                 .setStatus(NewsStatus.PUBLISHED)
                 .setPublicationType(request.getPublicationType())
                 .setImportance(request.getImportance())
-                .setTargetSpecific(request.isTargetSpecific());
+                .setTargetSpecific(request.isTargetSpecific())
+                .setExpiresOn(request.getExpiresOn());
 
         Set<Long> recipientsIds = request.getRecipientsIds();
         Set<RoleType> targetRoles = request.getTargetRoles();
@@ -70,6 +74,7 @@ public class NewsServiceImpl implements NewsService {
 
 
     @Override
+    @Transactional
     public List<NewsResponse> getNewsForUser() {
 
         User user = currentUser.getCurrentUser();
@@ -88,7 +93,12 @@ public class NewsServiceImpl implements NewsService {
 
         Set<Long> recipientIds = new HashSet<>();
 
-        if (recipients != null && !recipients.isEmpty()) {
+        Set<RoleType> targetedRoles = recipients.stream()
+                .flatMap(user -> user.getRoles().stream())
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        if (!recipients.isEmpty()) {
             recipientIds = recipients.stream()
                     .map(User::getId)
                     .collect(Collectors.toSet());
@@ -102,6 +112,9 @@ public class NewsServiceImpl implements NewsService {
                 .setStatus(news.getStatus())
                 .setPublicationType(news.getPublicationType())
                 .setRecipientsIds(recipientIds)
-                .setImportance(news.getImportance());
+                .setImportance(news.getImportance())
+                .setExpiresOn(news.getExpiresOn())
+                .setTargetSpecific(news.isTargetSpecific())
+                .setTargetRoles(targetedRoles);
     }
 }

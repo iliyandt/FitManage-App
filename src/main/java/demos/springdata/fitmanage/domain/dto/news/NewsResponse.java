@@ -3,6 +3,8 @@ package demos.springdata.fitmanage.domain.dto.news;
 import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
+import demos.springdata.fitmanage.domain.enums.RoleType;
+
 import java.time.Instant;
 import java.util.Set;
 
@@ -14,8 +16,10 @@ public class NewsResponse {
     private NewsStatus status;
     private PublicationType publicationType;
     private Set<Long> recipientsIds;
+    private Set<RoleType> targetRoles;
     private NewsImportance importance;
     private boolean targetSpecific;
+    private Instant expiresOn;
 
     public NewsResponse() {
     }
@@ -98,6 +102,25 @@ public class NewsResponse {
 
     public NewsResponse setTargetSpecific(boolean targetSpecific) {
         this.targetSpecific = targetSpecific;
+        return this;
+    }
+
+    public Instant getExpiresOn() {
+        return expiresOn;
+    }
+
+    public NewsResponse setExpiresOn(Instant expiresOn) {
+        this.expiresOn = expiresOn;
+        return this;
+    }
+
+
+    public Set<RoleType> getTargetRoles() {
+        return targetRoles;
+    }
+
+    public NewsResponse setTargetRoles(Set<RoleType> targetRoles) {
+        this.targetRoles = targetRoles;
         return this;
     }
 }
