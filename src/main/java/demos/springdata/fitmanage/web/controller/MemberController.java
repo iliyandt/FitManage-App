@@ -20,7 +20,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping(path = "/api/v1/users/members")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 public class MemberController {
     private final MemberService memberService;
     private final TableHelper tableHelper;

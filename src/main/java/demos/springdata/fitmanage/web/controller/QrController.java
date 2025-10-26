@@ -17,7 +17,6 @@ import java.io.ByteArrayOutputStream;
 
 @RestController
 @RequestMapping("/api/v1/qr")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF')")
 public class QrController {
     private final UserService userService;
     private final MemberService memberService;
@@ -31,7 +30,7 @@ public class QrController {
     }
 
     @GetMapping(value = "/{userId}", produces = MediaType.IMAGE_PNG_VALUE)
-    @PreAuthorize("hasAuthority('FACILITY_MEMBER')")
+    @PreAuthorize("hasAuthority('MEMBER')")
     public ResponseEntity<byte[]> getQr(@PathVariable Long userId) throws Exception {
         User user = userService.findUserById(userId);
         String qrToken = qrService.generateQrToken(user);

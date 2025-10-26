@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/membership-plans")
-@PreAuthorize("hasAuthority('FACILITY_ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class MembershipPlanController {
     private final MembershipPlanService pricingService;
     private final MembershipPlanService membershipPlanService;

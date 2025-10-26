@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users/employee")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF') " +
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF') " +
         "and (@accessGuard.hasValidSubscription('GROWTH') " +
         "or @accessGuard.hasValidSubscription('PRO'))")
 public class    EmployeeController {

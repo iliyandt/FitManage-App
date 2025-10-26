@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/members")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_MEMBER')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'MEMBER')")
 public class VisitController {
     private final VisitService visitService;
     private final TableHelper tableHelper;

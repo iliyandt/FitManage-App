@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/stripe")
-@PreAuthorize("hasAuthority('FACILITY_ADMIN')")
+@PreAuthorize("hasAuthority('ADMIN')")
 public class StripeController {
 
     private final StripeService stripeService;

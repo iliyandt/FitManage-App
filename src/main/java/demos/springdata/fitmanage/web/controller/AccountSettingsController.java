@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/users/settings")
-@PreAuthorize("hasAnyAuthority('FACILITY_ADMIN', 'FACILITY_STAFF', 'FACILITY_MEMBER')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'MEMBER')")
 public class AccountSettingsController {
     private final UserAccountSettingsService userAccountSettingsService;
 
