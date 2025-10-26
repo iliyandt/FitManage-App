@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
+import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import jakarta.persistence.*;
@@ -32,6 +33,10 @@ public class News extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "publication_type", nullable = false)
     private PublicationType publicationType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "importance")
+    private NewsImportance importance;
 
     @ManyToMany
     @JoinTable(
@@ -95,6 +100,15 @@ public class News extends BaseEntity {
 
     public News setPublicationType(PublicationType publicationType) {
         this.publicationType = publicationType;
+        return this;
+    }
+
+    public NewsImportance getImportance() {
+        return importance;
+    }
+
+    public News setImportance(NewsImportance importance) {
+        this.importance = importance;
         return this;
     }
 

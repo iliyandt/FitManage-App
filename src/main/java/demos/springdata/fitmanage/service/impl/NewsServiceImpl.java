@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.entity.News;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.NewsRepository;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class NewsServiceImpl implements NewsService {
@@ -44,19 +46,20 @@ public class NewsServiceImpl implements NewsService {
                 .setAuthor(user)
                 .setPublishedAt(Instant.now())
                 .setStatus(NewsStatus.PUBLISHED)
-                .setPublicationType(request.getPublicationType());
+                .setPublicationType(request.getPublicationType())
+                .setImportance(request.getImportance());
 
         Set<Long> recipientsIds = request.getRecipientsIds();
-        if (request.getPublicationType() == PublicationType.TARGETED &&
-                recipientsIds != null &&
-                !recipientsIds.isEmpty()) {
+        Set<RoleType> targetRoles = request.getTargetRoles();
 
-            List<User> targetedRecipients = userService.findAllUserFromCollectionOfIds(recipientsIds);
+        if (request.getPublicationType() == PublicationType.TARGETED) {
 
-            news.setRecipients(new HashSet<>(targetedRecipients));
+            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, targetRoles);
 
-        } else if (request.getPublicationType() == PublicationType.TARGETED && recipientsIds == null) {
-            throw new FitManageAppException("Targeted news must specify at least one recipient ID.", ApiErrorCode.CONFLICT);
+            news.setRecipients(targetedUsers);
+
+        } else if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null || recipientsIds == null)) {
+            throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);
         }
 
         newsRepository.save(news);
@@ -79,12 +82,25 @@ public class NewsServiceImpl implements NewsService {
 
 
     private NewsResponse mapToDto(News news, Long authorId) {
+
+        Set<User> recipients = news.getRecipients();
+
+        Set<Long> recipientIds = new HashSet<>();
+
+        if (recipients != null && !recipients.isEmpty()) {
+            recipientIds = recipients.stream()
+                    .map(User::getId)
+                    .collect(Collectors.toSet());
+        }
+
         return  new NewsResponse()
                 .setTitle(news.getTitle())
                 .setContent(news.getContent())
                 .setAuthorId(authorId)
                 .setPublishedAt(news.getPublishedAt())
                 .setStatus(news.getStatus())
-                .setPublicationType(news.getPublicationType());
+                .setPublicationType(news.getPublicationType())
+                .setRecipientsIds(recipientIds)
+                .setImportance(news.getImportance());
     }
 }

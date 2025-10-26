@@ -1,8 +1,10 @@
 package demos.springdata.fitmanage.domain.dto.news;
 
+import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import java.time.Instant;
+import java.util.Set;
 
 public class NewsResponse {
     private String title;
@@ -11,6 +13,8 @@ public class NewsResponse {
     private Instant publishedAt;
     private NewsStatus status;
     private PublicationType publicationType;
+    private Set<Long> recipientsIds;
+    private NewsImportance importance;
 
     public NewsResponse() {
     }
@@ -66,6 +70,24 @@ public class NewsResponse {
 
     public NewsResponse setPublicationType(PublicationType publicationType) {
         this.publicationType = publicationType;
+        return this;
+    }
+
+    public Set<Long> getRecipientsIds() {
+        return recipientsIds;
+    }
+
+    public NewsResponse setRecipientsIds(Set<Long> recipientsIds) {
+        this.recipientsIds = recipientsIds;
+        return this;
+    }
+
+    public NewsImportance getImportance() {
+        return importance;
+    }
+
+    public NewsResponse setImportance(NewsImportance importance) {
+        this.importance = importance;
         return this;
     }
 }

@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdateDto;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Gender;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
@@ -26,6 +27,6 @@ public interface UserService {
     Long countAllUsersByTenant();
     User findByEmail(String email);
 
+    Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles);
 
-    List<User> findAllUserFromCollectionOfIds(Set<Long> recipientsIds);
 }

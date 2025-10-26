@@ -124,9 +124,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllUserFromCollectionOfIds(Set<Long> recipientsIds) {
-        return userRepository.findAllById(recipientsIds);
+    public Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles) {
+        return userRepository.findAllByIdsOrRoleTypes(ids, targetRoles);
     }
+
 
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
@@ -163,28 +164,4 @@ public class UserServiceImpl implements UserService {
         dto.setRoles(roles);
         return dto;
     }
-
-//    private EmployeeResponseDto mapStaffProfile(User user, Set<RoleType> roles, Employee employee) {
-//        EmployeeResponseDto dto = modelMapper.map(user, EmployeeResponseDto.class);
-//        dto.setBirthDate(user.getBirthDate());
-//        dto.setUsername(user.getActualUsername());
-//        dto.setRoles(roles);
-//        dto.setMembersCount(user.getMemberships().size());
-//        dto.setEmployeeRole(employee.getEmployeeRole());
-//        return dto;
-//    }
-//
-//    private MemberResponseDto mapMemberProfile(User user, Set<RoleType> roles) {
-//        MemberResponseDto dto = modelMapper.map(user, MemberResponseDto.class);
-//        dto.setBirthDate(user.getBirthDate());
-//        dto.setUsername(user.getActualUsername());
-//        dto.setRoles(roles);
-//
-//        Membership membership = user.getMemberships().stream()
-//                .max(Comparator.comparing(Membership::getCreatedAt))
-//                .orElseThrow(() -> new IllegalStateException("User has no memberships"));
-//
-//        modelMapper.map(membership, dto);
-//        return dto;
-//    }
 }
