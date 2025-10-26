@@ -13,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Component
 @Order(2)
 public class SuperAdminDataInitializer implements ApplicationRunner {
@@ -41,8 +39,8 @@ public class SuperAdminDataInitializer implements ApplicationRunner {
     @Transactional
     @Override
     public void run(ApplicationArguments args) {
-        if (!userRepository.existsByRoles_Name(RoleType.SYSTEM_ADMIN)) {
-            Role role = roleService.findByName(RoleType.SYSTEM_ADMIN);
+        if (!userRepository.existsByRoles_Name(RoleType.ADMINISTRATOR)) {
+            Role role = roleService.findByName(RoleType.ADMINISTRATOR);
             User admin = new User();
 
             admin

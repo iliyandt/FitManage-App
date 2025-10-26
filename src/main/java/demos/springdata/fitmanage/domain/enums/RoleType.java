@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum RoleType {
-    SYSTEM_ADMIN("System Admin"),
-    FACILITY_ADMIN("Facility Admin"),
-    FACILITY_MEMBER("Facility Member"),
-    FACILITY_STAFF("Facility Staff");
+    ADMINISTRATOR("Administrator"),
+    ADMIN("Admin"),
+    MEMBER("Member"),
+    STAFF("Staff");
 
     private final String displayName;
 

@@ -70,7 +70,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .setEnabled(false);
 
 
-        Role role = roleService.findByName(RoleType.FACILITY_MEMBER);
+        Role role = roleService.findByName(RoleType.MEMBER);
         member.getRoles().add(role);
 
         Membership membership = new Membership()
@@ -90,7 +90,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
         LOGGER.info("Access request created for user {} in facility {}", member.getEmail(), tenant.getName());
         MemberResponseDto responseDto = modelMapper.map(member, MemberResponseDto.class);
-        responseDto.getRoles().add(RoleType.FACILITY_MEMBER);
+        responseDto.getRoles().add(RoleType.MEMBER);
 
         return responseDto;
     }

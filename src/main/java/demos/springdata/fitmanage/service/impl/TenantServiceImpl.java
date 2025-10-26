@@ -2,10 +2,7 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantNonAuthInfoDto;
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
-import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
-import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -14,7 +11,6 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.util.CurrentUserUtils;
-import demos.springdata.fitmanage.util.RoleUtils;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -24,7 +20,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -100,7 +95,7 @@ public class TenantServiceImpl implements TenantService {
 
     private Long getCountOfUsersWithRoleMemberWithinATenant(Tenant tenant) {
         return tenant.getUsers().stream()
-                .filter(user -> currentUserUtils.hasRole(user, RoleType.FACILITY_MEMBER))
+                .filter(user -> currentUserUtils.hasRole(user, RoleType.MEMBER))
                 .count();
     }
 

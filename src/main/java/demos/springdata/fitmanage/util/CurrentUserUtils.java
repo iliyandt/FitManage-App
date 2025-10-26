@@ -23,6 +23,6 @@ public class CurrentUserUtils {
     }
 
     public boolean isFacilityAdmin(User user) {
-        return hasRole(user, RoleType.FACILITY_ADMIN);
+        return hasRole(user, RoleType.ADMIN);
     }
 }

@@ -1,7 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.Gender;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -107,7 +104,7 @@ public class UserServiceImpl implements UserService {
         return users.stream()
                 .filter(user -> {
                     Set<RoleType> roleTypes = RoleUtils.extractRoleTypes(user);
-                    return roleTypes.contains(RoleType.FACILITY_MEMBER);
+                    return roleTypes.contains(RoleType.MEMBER);
                 })
                 .count();
     }
@@ -115,7 +112,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long countAllUsersByTenant() {
         Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
-        return userRepository.countByTenantAndRoleType(tenant, RoleType.FACILITY_MEMBER);
+        return userRepository.countByTenantAndRoleType(tenant, RoleType.MEMBER);
     }
 
     @Override

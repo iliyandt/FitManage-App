@@ -155,7 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .setUpdatedAt(LocalDateTime.now())
                 .setEnabled(true);
 
-        Role role = roleService.findByName(RoleType.FACILITY_STAFF);
+        Role role = roleService.findByName(RoleType.EMPLOYEE);
         user.getRoles().add(role);
 
         return user;

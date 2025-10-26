@@ -169,7 +169,7 @@ public class MemberServiceImpl implements MemberService {
         if (memberList.isEmpty())
             throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
 
-        Role facilityMemberRole = roleService.findByName(RoleType.FACILITY_MEMBER);
+        Role facilityMemberRole = roleService.findByName(RoleType.MEMBER);
 
         return memberList
                 .stream()
@@ -204,7 +204,7 @@ public class MemberServiceImpl implements MemberService {
                 .setUpdatedAt(LocalDateTime.now())
                 .setEnabled(true);
 
-        Role role = roleService.findByName(RoleType.FACILITY_MEMBER);
+        Role role = roleService.findByName(RoleType.MEMBER);
         user.getRoles().add(role);
 
         return user;
