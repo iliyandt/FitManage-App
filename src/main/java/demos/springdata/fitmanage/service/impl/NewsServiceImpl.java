@@ -46,6 +46,7 @@ public class NewsServiceImpl implements NewsService {
         News news = new News()
                 .setTitle(request.getTitle())
                 .setContent(request.getContent())
+                .setTenantId(user.getTenant().getId())
                 .setAuthor(user)
                 .setPublishedAt(Instant.now())
                 .setStatus(NewsStatus.PUBLISHED)
@@ -79,7 +80,7 @@ public class NewsServiceImpl implements NewsService {
 
         User user = currentUser.getCurrentUser();
 
-        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED);
+        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId());
 
         return news.stream()
                 .map(post -> mapToDto(post, user.getId()))

@@ -13,6 +13,9 @@ import java.util.Set;
 @Entity
 public class News extends BaseEntity {
 
+    @Column(name = "tenant_id")
+    private Long tenantId;
+
     @Column(nullable = false, length = 255)
     private String title;
 
@@ -52,6 +55,15 @@ public class News extends BaseEntity {
     private Set<User> recipients = new HashSet<>();
 
     public News() {
+    }
+
+    public Long getTenantId() {
+        return tenantId;
+    }
+
+    public News setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
+        return this;
     }
 
     public String getTitle() {

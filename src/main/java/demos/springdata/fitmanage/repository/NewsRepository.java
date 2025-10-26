@@ -12,12 +12,18 @@ import java.util.List;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
 
-    @Query("SELECT n FROM News n " +
+    @Query(
+            "SELECT n FROM News n " +
             "LEFT JOIN n.recipients r " +
-            "WHERE n.status = :status AND (" +
+            "WHERE n.status = :status " +
+            "AND n.tenantId = :tenantId " +
+            "AND (" +
             "    n.publicationType = 'ALL' OR " +
             "    (n.publicationType = 'TARGETED' AND r.id = :userId)" +
-            ")")
+            ")" +
+            "GROUP BY n"
+    )
     List<News> findAllPublishedForUser(@Param("userId") Long userId,
-                                       @Param("status")NewsStatus status);
+                                       @Param("status") NewsStatus status,
+                                       @Param("tenantId") Long tenantId);;
 }
