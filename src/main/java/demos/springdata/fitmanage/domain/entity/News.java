@@ -45,7 +45,6 @@ public class News extends BaseEntity {
     @Column(name = "importance")
     private NewsImportance importance;
 
-
     @ManyToMany
     @JoinTable(
             name = "news_recipients",
@@ -53,6 +52,15 @@ public class News extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> recipients = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "news_recipients_roles",
+            joinColumns = @JoinColumn(name = "news_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
 
     public News() {
     }

@@ -41,11 +41,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/users/ids")
-    public ResponseEntity<ApiResponse<List<UserLookupDto>>> getUsersForLookUp(@RequestParam List<Long> ids) {
-        return ResponseEntity.ok(ApiResponse.success(userService.findUsersWithIds(ids)));
-    }
-
     @GetMapping("/users/roles")
     public ResponseEntity<ApiResponse<List<UserLookupDto>>> getUsersForLookUp(@RequestParam Set<String> roleNames) {
         return ResponseEntity.ok(ApiResponse.success(userService.findUsersWithRoles(roleNames)));

@@ -208,9 +208,14 @@ public class MemberServiceImpl implements MemberService {
     private void validateCredentials(User member, UserCreateRequestDto requestDto) {
         Map<String, String> errors = new HashMap<>();
 
-        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
+        if (userService.existsByEmail(requestDto.getEmail())) {
             LOGGER.warn("User with email {} already exists", requestDto.getEmail());
-            errors.put("email", "Email is already registered");
+            errors.put("email", "Email is already registered ");
+        }
+
+        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
+            LOGGER.warn("User with email {} already exists in tenant with ID: {}", requestDto.getEmail(), member.getTenant().getId());
+            errors.put("email", "Email is already registered in this tenant");
         }
 
         if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {

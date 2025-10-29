@@ -134,18 +134,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByIdsOrRoleTypesAndTenant(ids, targetRoles, tenantId);
     }
 
-    @Override
-    public List<UserLookupDto> findUsersWithIds(List<Long> ids) {
-        Long tenantId = this.getCurrentUser().getTenant().getId();
-        List<User> users = userRepository.findAllByIdAndTenantId(ids, tenantId);
 
-        return users
-                .stream()
-                .map(user -> new UserLookupDto()
-                        .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
-                        .setValue(user.getId().toString()))
-                .toList();
-    }
 
     @Override
     public List<UserLookupDto> findUsersWithRoles(Set<String> roleNames) {
@@ -163,10 +152,13 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(user -> new UserLookupDto()
                         .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
-                        .setValue(UserRoleHelper.extractRoleTypes(user).stream()
-                                .map(Enum::name)
-                                .collect(Collectors.joining(", "))))
+                        .setValue(user.getId().toString()))
                 .toList();
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override

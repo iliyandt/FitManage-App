@@ -30,6 +30,6 @@ public interface UserService {
     Long countAllUsersByTenant();
     User findByEmail(String email);
     Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId);
-    List<UserLookupDto> findUsersWithIds(List<Long> ids);
     List<UserLookupDto> findUsersWithRoles(Set<String> roleNames);
+    boolean existsByEmail(String email);
 }
