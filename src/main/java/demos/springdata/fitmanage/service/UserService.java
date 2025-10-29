@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface UserService {
+    User getCurrentUser();
     UserResponseDto getUserProfileByEmail(String email);
     UserResponseDto updateProfile(UserUpdateDto dto);
     List<User> findMembersByFilter(Specification<User> spec);
@@ -26,7 +27,6 @@ public interface UserService {
     Long countByGenderForTenant(Gender gender);
     Long countAllUsersByTenant();
     User findByEmail(String email);
-
     Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId);
 
 }

@@ -7,14 +7,15 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.UserRepository;
+import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.UserService;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
-import demos.springdata.fitmanage.util.RoleUtils;
+import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,20 +27,28 @@ import java.util.Set;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CurrentUserUtils currentUserUtils;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 
     @Autowired
     public UserServiceImpl
-            (UserRepository userRepository,
-             ModelMapper modelMapper,
-             CurrentUserUtils currentUserUtils) {
+            (
+                    UserRepository userRepository,
+                    ModelMapper modelMapper
+            ) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.currentUserUtils = currentUserUtils;
     }
+
+
+    @Override
+    public User getCurrentUser() {
+        UserData user = (UserData) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findById(user.getId()).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+    }
+
+
 
 
     @Transactional
@@ -49,7 +58,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
 
-        Set<RoleType> roles = RoleUtils.extractRoleTypes(user);
+        Set<RoleType> roles = UserRoleHelper.extractRoleTypes(user);
 
         return mapBaseProfile(user, roles);
     }
@@ -58,7 +67,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateProfile(UserUpdateDto dto) {
 
-        User currentlyLoggedUser = currentUserUtils.getCurrentUser();
+        User currentlyLoggedUser = this.getCurrentUser();
 
 
         LOGGER.info("Updating basic info for user with id: {}", currentlyLoggedUser.getId());
@@ -71,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
         UserResponseDto response = modelMapper.map(savedUser, UserResponseDto.class);
 
-        response.setRoles(RoleUtils.extractRoleTypes(currentlyLoggedUser));
+        response.setRoles(UserRoleHelper.extractRoleTypes(currentlyLoggedUser));
 
         return response;
     }
@@ -98,12 +107,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long countByGenderForTenant(Gender gender) {
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = this.getCurrentUser().getTenant();
         List<User> users = userRepository.findByGender_AndTenant(gender, tenant);
 
         return users.stream()
                 .filter(user -> {
-                    Set<RoleType> roleTypes = RoleUtils.extractRoleTypes(user);
+                    Set<RoleType> roleTypes = UserRoleHelper.extractRoleTypes(user);
                     return roleTypes.contains(RoleType.MEMBER);
                 })
                 .count();
@@ -111,7 +120,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Long countAllUsersByTenant() {
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = this.getCurrentUser().getTenant();
         return userRepository.countByTenantAndRoleType(tenant, RoleType.MEMBER);
     }
 
@@ -157,7 +166,7 @@ public class UserServiceImpl implements UserService {
     private UserResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         dto.setBirthDate(user.getBirthDate());
-        dto.setUsername(user.getActualUsername());
+        dto.setUsername(user.getUsername());
         dto.setRoles(roles);
         return dto;
     }

@@ -12,9 +12,8 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
-import demos.springdata.fitmanage.util.RoleUtils;
-import demos.springdata.fitmanage.util.UserSecurityUtils;
+import demos.springdata.fitmanage.util.UserRoleHelper;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -34,8 +33,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserService userService;
     private final EmailService emailService;
     private final ModelMapper modelMapper;
-    private final UserSecurityUtils securityUtils;
-    private final CurrentUserUtils currentUserUtils;
     private final BCryptPasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
@@ -48,8 +45,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                     UserService userService,
                     EmailService emailService,
                     ModelMapper modelMapper,
-                    UserSecurityUtils securityUtils,
-                    CurrentUserUtils currentUserUtils,
                     BCryptPasswordEncoder passwordEncoder
             ) {
         this.employeeRepository = employeeRepository;
@@ -58,15 +53,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.userService = userService;
         this.emailService = emailService;
         this.modelMapper = modelMapper;
-        this.securityUtils = securityUtils;
-        this.currentUserUtils = currentUserUtils;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     @Override
     public EmployeeResponseDto createEmployee(EmployeeCreateRequestDto requestDto) {
-        User user = currentUserUtils.getCurrentUser();
+        User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
         User member = buildEmployee(tenant, requestDto);
@@ -81,7 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         LOGGER.info("Successfully added staff with ID {} to facility '{}'", member.getId(), tenant.getName());
 
         EmployeeResponseDto mappedStaff = modelMapper.map(member, EmployeeResponseDto.class);
-        mappedStaff.setRoles(RoleUtils.extractRoleTypes(member));
+        mappedStaff.setRoles(UserRoleHelper.extractRoleTypes(member));
         modelMapper.map(employee, mappedStaff);
         mappedStaff.setEmployeeRole(requestDto.getEmployeeRole());
 
@@ -92,7 +85,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeTableDto> getAllEmployees() {
         LOGGER.info("Fetching all members..");
-        User user = currentUserUtils.getCurrentUser();
+        User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
         LOGGER.info("Tenant ID: {}", tenant.getId());
@@ -107,9 +100,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<EmployeeName> getEmployeesFullNames() {
-       User user = currentUserUtils.getCurrentUser();
+       User user = userService.getCurrentUser();
 
-        return currentUserUtils.isFacilityAdmin(user)
+        return UserRoleHelper.isFacilityAdmin(user)
                 ? getAllEmployeesForTenant(user.getTenant().getId())
                 : getSingleEmployeeForUser(user.getTenant().getId(), user.getId());
     }
@@ -182,7 +175,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private void createAndSendInitialPasswordToUser(User user) {
         LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
-        String initialPassword = securityUtils.generateDefaultPassword();
+        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
         LOGGER.debug("Initial password {}", initialPassword);
         sendInitialPassword(user, initialPassword);
         user.setPassword(passwordEncoder.encode(initialPassword))

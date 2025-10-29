@@ -9,7 +9,7 @@ import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.repository.ShiftRepository;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.service.ShiftService;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
+import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,22 +24,29 @@ public class ShiftServiceImpl implements ShiftService {
 
     private final ShiftRepository shiftRepository;
     private final EmployeeService employeeService;
-    private final CurrentUserUtils currentUserUtils;
+
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiftServiceImpl.class);
+    private final UserService userService;
 
     @Autowired
-    public ShiftServiceImpl(ShiftRepository shiftRepository, EmployeeService employeeService, CurrentUserUtils currentUserUtils, ModelMapper modelMapper) {
+    public ShiftServiceImpl
+            (
+                    ShiftRepository shiftRepository,
+                    EmployeeService employeeService,
+                    ModelMapper modelMapper,
+                    UserService userService
+            ) {
         this.shiftRepository = shiftRepository;
         this.employeeService = employeeService;
-        this.currentUserUtils = currentUserUtils;
         this.modelMapper = modelMapper;
+        this.userService = userService;
     }
 
 
     @Override
     public ShiftResponseDto createShift(ShiftCreateRequest createRequest) {
-        User user = currentUserUtils.getCurrentUser();
+        User user = userService.getCurrentUser();
         Tenant tenant = user.getTenant();
 
         Employee employee = employeeService.getEmployeeById(createRequest.getId(), tenant);
@@ -62,7 +69,7 @@ public class ShiftServiceImpl implements ShiftService {
     @Transactional
     public List<ShiftResponseDto> getShiftsForCurrentUser() {
         LOGGER.info("Get shifts information for current user");
-        User user = currentUserUtils.getCurrentUser();
+        User user = userService.getCurrentUser();
 
         List<Shift> employeeShifts = shiftRepository.findByEmployee_User(user);
 

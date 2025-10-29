@@ -46,7 +46,7 @@ public class ApplicationBeanConfiguration {
                 .setPropertyCondition(Conditions.isNotNull());
 
         modelMapper.typeMap(User.class, EmployeeResponseDto.class).addMappings(mapper ->
-                mapper.map(User::getActualUsername, EmployeeResponseDto::setUsername)
+                mapper.map(User::getUsername, EmployeeResponseDto::setUsername)
         ).setPropertyCondition(Conditions.isNotNull());
 
         configureUserMapper(modelMapper);

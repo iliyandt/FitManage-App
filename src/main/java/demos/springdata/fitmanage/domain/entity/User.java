@@ -1,20 +1,13 @@
 package demos.springdata.fitmanage.domain.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users",
@@ -23,7 +16,7 @@ import java.util.stream.Collectors;
                 @UniqueConstraint(name = "uq_user_phone_tenant", columnNames = {"phone", "tenant_id"}),
                 @UniqueConstraint(name = "uq_user_username_tenant", columnNames = {"username", "tenant_id"})
         })
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseEntity {
     @Column(name = "qr_token", unique = true)
     private String qrToken;
 
@@ -123,13 +116,13 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public User setUsername(String username) {
         this.username = username;
         return this;
-    }
-
-    public String getActualUsername() {
-        return username;
     }
 
     public String getEmail() {
@@ -141,12 +134,32 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
     public User setPassword(String password) {
         this.password = password;
         return this;
     }
 
+    public String getVerificationCode() {
+        return verificationCode;
+    }
 
+    public User setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
+        return this;
+    }
+
+    public LocalDateTime getVerificationCodeExpiresAt() {
+        return verificationCodeExpiresAt;
+    }
+
+    public User setVerificationCodeExpiresAt(LocalDateTime verificationCodeExpiresAt) {
+        this.verificationCodeExpiresAt = verificationCodeExpiresAt;
+        return this;
+    }
 
     public Set<Role> getRoles() {
         return roles;
@@ -211,6 +224,10 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     public User setEnabled(boolean enabled) {
         this.enabled = enabled;
         return this;
@@ -261,24 +278,6 @@ public class User extends BaseEntity implements UserDetails {
         return this;
     }
 
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public User setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
-        return this;
-    }
-
-    public LocalDateTime getVerificationCodeExpiresAt() {
-        return verificationCodeExpiresAt;
-    }
-
-    public User setVerificationCodeExpiresAt(LocalDateTime verificationCodeExpiresAt) {
-        this.verificationCodeExpiresAt = verificationCodeExpiresAt;
-        return this;
-    }
-
     public List<Employee> getEmployees() {
         return employees;
     }
@@ -305,45 +304,4 @@ public class User extends BaseEntity implements UserDetails {
         this.authoredNews = authoredNews;
         return this;
     }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-
-
 }

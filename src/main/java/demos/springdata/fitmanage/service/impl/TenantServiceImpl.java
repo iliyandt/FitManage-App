@@ -10,7 +10,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
+import demos.springdata.fitmanage.util.UserRoleHelper;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -26,14 +26,12 @@ import java.util.List;
 public class TenantServiceImpl implements TenantService {
 
     private final TenantRepository tenantRepository;
-    private final CurrentUserUtils currentUserUtils;
     private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(TenantServiceImpl.class);
 
     @Autowired
-    public TenantServiceImpl(TenantRepository tenantRepository, CurrentUserUtils currentUserUtils, ModelMapper modelMapper) {
+    public TenantServiceImpl(TenantRepository tenantRepository, ModelMapper modelMapper) {
         this.tenantRepository = tenantRepository;
-        this.currentUserUtils = currentUserUtils;
         this.modelMapper = modelMapper;
     }
 
@@ -95,7 +93,7 @@ public class TenantServiceImpl implements TenantService {
 
     private Long getCountOfUsersWithRoleMemberWithinATenant(Tenant tenant) {
         return tenant.getUsers().stream()
-                .filter(user -> currentUserUtils.hasRole(user, RoleType.MEMBER))
+                .filter(user -> UserRoleHelper.hasRole(user, RoleType.MEMBER))
                 .count();
     }
 

@@ -1,18 +1,18 @@
 package demos.springdata.fitmanage.util;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 
 import java.util.Random;
 
-@Component
-public class UserSecurityUtils {
+@UtilityClass
+public class SecurityCodeGenerator {
     private final Random random = new Random();
 
-    public String generateDefaultPassword() {
+    public static String generateDefaultPassword() {
         return "InitialPass" + System.currentTimeMillis() + "!";
     }
 
-    public String generateVerificationCode() {
+    public static String generateVerificationCode() {
         int code = random.nextInt(900_000) + 100_000;
         return String.valueOf(code);
     }

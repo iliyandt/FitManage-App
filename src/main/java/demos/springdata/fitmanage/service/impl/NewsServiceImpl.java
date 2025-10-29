@@ -13,7 +13,6 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.NewsRepository;
 import demos.springdata.fitmanage.service.NewsService;
 import demos.springdata.fitmanage.service.UserService;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,19 +28,18 @@ public class NewsServiceImpl implements NewsService {
 
     private final NewsRepository newsRepository;
     private final UserService userService;
-    private final CurrentUserUtils currentUser;
 
     @Autowired
-    public NewsServiceImpl(NewsRepository newsRepository, UserService userService, CurrentUserUtils currentUser) {
+    public NewsServiceImpl(NewsRepository newsRepository, UserService userService) {
         this.newsRepository = newsRepository;
         this.userService = userService;
-        this.currentUser = currentUser;
+
     }
 
     @Override
     public NewsResponse createNews(NewsRequest request) {
 
-        User user = currentUser.getCurrentUser();
+        User user = userService.getCurrentUser();
         News news = new News()
                 .setTitle(request.getTitle())
                 .setContent(request.getContent())
@@ -67,7 +65,7 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     public List<NewsResponse> getNewsForUser() {
 
-        User user = currentUser.getCurrentUser();
+        User user = userService.getCurrentUser();
         boolean isAdmin = user.getRoles().stream()
                 .anyMatch(role -> role.getName() == RoleType.ADMIN);
 

@@ -33,4 +33,6 @@ public class UserController {
         UserResponseDto response = userService.updateProfile(dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+
 }

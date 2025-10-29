@@ -5,7 +5,7 @@ import demos.springdata.fitmanage.domain.entity.AccountSettings;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.repository.AccountSettingsRepository;
 import demos.springdata.fitmanage.service.UserAccountSettingsService;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
+import demos.springdata.fitmanage.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,20 +19,25 @@ import java.util.Map;
 public class UserAccountSettingsServiceImpl implements UserAccountSettingsService {
 
     private final AccountSettingsRepository accountSettingsRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserAccountSettingsServiceImpl.class);
-    private final CurrentUserUtils currentUserUtils;
 
     @Autowired
-    public UserAccountSettingsServiceImpl(AccountSettingsRepository accountSettingsRepository, ModelMapper modelMapper, CurrentUserUtils currentUserUtils) {
+    public UserAccountSettingsServiceImpl
+            (
+                    AccountSettingsRepository accountSettingsRepository,
+                    ModelMapper modelMapper,
+                    UserService userService
+            ) {
         this.accountSettingsRepository = accountSettingsRepository;
         this.modelMapper = modelMapper;
-        this.currentUserUtils = currentUserUtils;
+        this.userService = userService;
     }
 
     @Override
     public AccountSettingsDto getUserSettings() {
-        Long id = currentUserUtils.getCurrentUser().getId();
+        Long id = userService.getCurrentUser().getId();
         LOGGER.info("Fetching account settings for account with ID {}", id);
         return accountSettingsRepository.findByUserId(id)
                 .map(settings -> modelMapper.map(settings, AccountSettingsDto.class))
@@ -42,7 +47,7 @@ public class UserAccountSettingsServiceImpl implements UserAccountSettingsServic
     @Override
     @Transactional
     public AccountSettingsDto updateUserSettings(Map<String, Object> newSettings) {
-        User user = currentUserUtils.getCurrentUser();
+        User user = userService.getCurrentUser();
         LOGGER.info("Updating account settings for account ID {}", user.getId());
 
         AccountSettings settings = accountSettingsRepository.findByUserId(user.getId())

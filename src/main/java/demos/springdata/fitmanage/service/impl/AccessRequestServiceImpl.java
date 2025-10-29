@@ -12,8 +12,8 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.RoleUtils;
-import demos.springdata.fitmanage.util.UserSecurityUtils;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
+import demos.springdata.fitmanage.util.UserRoleHelper;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 
@@ -35,19 +35,17 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     private final RoleService roleService;
     private final UserService userService;
     private final EmailService emailService;
-    private final UserSecurityUtils securityUtils;
     private final BCryptPasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
 
     @Autowired
-    public AccessRequestServiceImpl(TenantService tenantService, MembershipService membershipService, RoleService roleService, UserService userService, EmailService emailService, UserSecurityUtils securityUtils, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public AccessRequestServiceImpl(TenantService tenantService, MembershipService membershipService, RoleService roleService, UserService userService, EmailService emailService, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.tenantService = tenantService;
         this.membershipService = membershipService;
         this.roleService = roleService;
         this.userService = userService;
         this.emailService = emailService;
-        this.securityUtils = securityUtils;
         this.passwordEncoder = passwordEncoder;
         this.modelMapper = modelMapper;
     }
@@ -132,12 +130,12 @@ public class AccessRequestServiceImpl implements AccessRequestService {
         }
 
 
-        return modelMapper.map(member, MemberResponseDto.class).setRoles(RoleUtils.extractRoleTypes(member));
+        return modelMapper.map(member, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(member));
     }
 
     private void createAndSendInitialPasswordToUser(User member) {
         LOGGER.info("Initial password for user with email: {} will be created", member.getEmail());
-        String initialPassword = securityUtils.generateDefaultPassword();
+        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
         sendInitialPassword(member, initialPassword);
         member.setPassword(passwordEncoder.encode(initialPassword))
                 .setUpdatedAt(LocalDateTime.now());

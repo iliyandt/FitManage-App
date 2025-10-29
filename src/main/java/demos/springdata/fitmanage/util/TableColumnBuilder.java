@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.util;
 import demos.springdata.fitmanage.annotation.DropDown;
 import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfigDto;
 import demos.springdata.fitmanage.domain.dto.common.config.DropDownConfig;
+import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class TableColumnBuilder {
 
     public static <T> List<ColumnConfigDto> buildColumns(Class<T> clazz) {

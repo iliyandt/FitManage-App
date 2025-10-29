@@ -13,9 +13,8 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.support.MemberSpecification;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
-import demos.springdata.fitmanage.util.RoleUtils;
-import demos.springdata.fitmanage.util.UserSecurityUtils;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
+import demos.springdata.fitmanage.util.UserRoleHelper;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -39,8 +38,7 @@ public class MemberServiceImpl implements MemberService {
     private final VisitService visitService;
     private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final UserSecurityUtils securityUtils;
-    private final CurrentUserUtils currentUserUtils;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Autowired
@@ -51,26 +49,23 @@ public class MemberServiceImpl implements MemberService {
                     EmailService emailService,
                     ModelMapper modelMapper,
                     BCryptPasswordEncoder passwordEncoder,
-                    UserSecurityUtils securityUtils,
                     MembershipService membershipService,
-                    VisitService visitService, CurrentUserUtils currentUserUtils
+                    VisitService visitService
             ) {
         this.userService = userService;
         this.roleService = roleService;
         this.emailService = emailService;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
-        this.securityUtils = securityUtils;
         this.membershipService = membershipService;
         this.visitService = visitService;
-        this.currentUserUtils = currentUserUtils;
     }
 
 
     @Transactional
     @Override
     public MemberResponseDto createMember(UserCreateRequestDto requestDto) {
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = userService.getCurrentUser().getTenant();
 
         User user = buildMember(tenant, requestDto);
         validateCredentials(user, requestDto);
@@ -83,7 +78,7 @@ public class MemberServiceImpl implements MemberService {
 
         LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
 
-        MemberResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(RoleUtils.extractRoleTypes(user));
+        MemberResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(user));
         modelMapper.map(membership, mappedMember);
 
         return mappedMember;
@@ -91,7 +86,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void removeMember(Long memberId) {
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = userService.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
 
         LOGGER.info("Deleting member with ID {} from tenant {}", memberId, tenant.getName());
@@ -117,7 +112,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
-        User authenticatedUser = currentUserUtils.getCurrentUser();
+        User authenticatedUser = userService.getCurrentUser();
         User member = userService.findUserById(memberId);
 
         Membership membership = member.getMemberships().stream().findFirst().orElseThrow(() -> new FitManageAppException("Member has no membership created.", ApiErrorCode.CONFLICT));
@@ -135,7 +130,7 @@ public class MemberServiceImpl implements MemberService {
                 .setSubscriptionEndDate(membership.getSubscriptionEndDate())
                 .setEmployment(membership.getEmployment())
                 .setLastCheckInAt(membership.getLastCheckInAt())
-                .setRoles(RoleUtils.extractRoleTypes(authenticatedUser));
+                .setRoles(UserRoleHelper.extractRoleTypes(authenticatedUser));
     }
 
     @Transactional
@@ -143,7 +138,7 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberTableDto> getAllMembersForTable() {
         LOGGER.info("Prepare list of all members for table view");
 
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = userService.getCurrentUser().getTenant();
 
         List<User> users = tenant.getUsers();
         LOGGER.info("Tenant users size: {}", tenant.getUsers().size());
@@ -159,7 +154,7 @@ public class MemberServiceImpl implements MemberService {
     public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
         LOGGER.info("Search for users with filter: {}", filter);
 
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = userService.getCurrentUser().getTenant();
 
         Specification<User> spec = MemberSpecification.build(filter)
                 .and((root, query, cb) -> cb.equal(root.get("tenant"), tenant));
@@ -190,8 +185,8 @@ public class MemberServiceImpl implements MemberService {
                     .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
             MemberResponseDto dto = mapToResponseDto(user, membership, null);
-            dto.setUsername(user.getActualUsername());
-            dto.setRoles(RoleUtils.extractRoleTypes(user));
+            dto.setUsername(user.getUsername());
+            dto.setRoles(UserRoleHelper.extractRoleTypes(user));
             return dto;
         }).toList();
     }
@@ -230,7 +225,7 @@ public class MemberServiceImpl implements MemberService {
 
     private void createAndSendInitialPasswordToUser(User user) {
         LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
-        String initialPassword = securityUtils.generateDefaultPassword();
+        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
         sendInitialPassword(user, initialPassword);
         user.setPassword(passwordEncoder.encode(initialPassword))
                 .setUpdatedAt(LocalDateTime.now());
@@ -275,7 +270,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private List<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
-        Tenant tenant = currentUserUtils.getCurrentUser().getTenant();
+        Tenant tenant = userService.getCurrentUser().getTenant();
 
         LOGGER.warn("Searching users with filter: {}", filter);
         LOGGER.warn("Tenant ID: {}", tenant.getId());
@@ -305,7 +300,7 @@ public class MemberServiceImpl implements MemberService {
                 .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
         modelMapper.map(membership, dto);
-        dto.setRoles(RoleUtils.extractRoleTypes(user));
+        dto.setRoles(UserRoleHelper.extractRoleTypes(user));
 
         return dto;
     }

@@ -18,9 +18,8 @@ import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
-import demos.springdata.fitmanage.security.CustomUserDetails;
+import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.CurrentUserUtils;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -49,8 +48,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final EmailService emailService;
     private final StripeConnectService stripeConnectService;
     private final CustomUserDetailsService customUserDetailsService;
-    private final CurrentUserUtils currentUserUtils;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
+    private final UserService userService;
 
 
     @Value("${stripe.api.key}")
@@ -58,7 +57,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
     @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, ModelMapper modelMapper, BCryptPasswordEncoder passwordEncoder, RoleService roleService, AuthenticationManager authenticationManager, EmailService emailService, CustomUserDetailsService customUserDetailsService, TenantRepository tenantRepository, StripeConnectService stripeConnectService, CurrentUserUtils currentUserUtils) {
+    public AuthenticationServiceImpl
+            (
+            UserRepository userRepository,
+            ModelMapper modelMapper,
+            BCryptPasswordEncoder passwordEncoder,
+            RoleService roleService,
+            AuthenticationManager authenticationManager,
+            EmailService emailService,
+            CustomUserDetailsService customUserDetailsService,
+            TenantRepository tenantRepository,
+            StripeConnectService stripeConnectService,
+            UserService userService
+            ) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
@@ -68,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.customUserDetailsService = customUserDetailsService;
         this.tenantRepository = tenantRepository;
         this.stripeConnectService = stripeConnectService;
-        this.currentUserUtils = currentUserUtils;
+        this.userService = userService;
     }
 
     @Transactional
@@ -132,8 +143,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public VerificationResponseDto resendUserVerificationCode(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+        User user = userService.findByEmail(email);
 
         if (user.isEnabled()) {
             throw new FitManageAppException("Account is already verified", ApiErrorCode.OK);
@@ -151,7 +161,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String changePassword(ChangePasswordRequest request) {
-       User user = currentUserUtils.getCurrentUser();
+       User user = userService.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw  new FitManageAppException("Old password is incorrect", ApiErrorCode.NOT_FOUND);
@@ -223,7 +233,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private static void verifyAccountStatus(UserDetails authUser) {
-        if (authUser instanceof CustomUserDetails user) {
+        if (authUser instanceof UserData user) {
             if (!user.isEnabled()) {
                 throw new FitManageAppException("Account not verified. Please verify your account"
                         , ApiErrorCode.UNAUTHORIZED);
