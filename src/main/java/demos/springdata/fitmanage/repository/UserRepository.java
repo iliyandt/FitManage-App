@@ -1,4 +1,5 @@
 package demos.springdata.fitmanage.repository;
+import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -39,5 +40,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
              @Param("roleTypes") Set<RoleType> roles,
              @Param("tenantId") Long tenantId);
 
-    Set<Long> id(Long id);
+    @Query("SELECT u FROM User u WHERE " +
+            "u.id IN :ids AND " +
+            "u.tenant.id = :tenantId")
+    List<User> findAllByIdAndTenantId(@Param("ids") List<Long> ids, @Param("tenantId") Long tenantId);
+
+    @Query("SELECT u FROM User u JOIN u.roles r WHERE r IN :roles AND u.tenant.id = :tenantId")
+    List<User> findUsersByRolesAndTenant(@Param("roles") Set<Role> roles, @Param("tenantId") Long tenantId);
 }

@@ -8,6 +8,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.UserData;
+import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.modelmapper.ModelMapper;
@@ -23,22 +24,25 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final RoleService roleService;
 
 
     @Autowired
     public UserServiceImpl
             (
                     UserRepository userRepository,
-                    ModelMapper modelMapper
-            ) {
+                    ModelMapper modelMapper,
+                    RoleService roleService) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.roleService = roleService;
     }
 
 
@@ -47,9 +51,6 @@ public class UserServiceImpl implements UserService {
         UserData user = (UserData) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userRepository.findById(user.getId()).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
     }
-
-
-
 
     @Transactional
     @Override
@@ -62,7 +63,6 @@ public class UserServiceImpl implements UserService {
 
         return mapBaseProfile(user, roles);
     }
-
 
     @Override
     public UserResponseDto updateProfile(UserUpdateDto dto) {
@@ -134,6 +134,40 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllByIdsOrRoleTypesAndTenant(ids, targetRoles, tenantId);
     }
 
+    @Override
+    public List<UserLookupDto> findUsersWithIds(List<Long> ids) {
+        Long tenantId = this.getCurrentUser().getTenant().getId();
+        List<User> users = userRepository.findAllByIdAndTenantId(ids, tenantId);
+
+        return users
+                .stream()
+                .map(user -> new UserLookupDto()
+                        .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
+                        .setValue(user.getId().toString()))
+                .toList();
+    }
+
+    @Override
+    public List<UserLookupDto> findUsersWithRoles(Set<String> roleNames) {
+        Set<RoleType> roleTypes = roleNames.stream()
+                .map(RoleType::valueOf)
+                .collect(Collectors.toSet());
+
+        Set<Role> roles = roleService.findByNameIn(roleTypes);
+
+        Long tenantId = this.getCurrentUser().getTenant().getId();
+
+        List<User> users = userRepository.findUsersByRolesAndTenant(roles, tenantId);
+
+        return users
+                .stream()
+                .map(user -> new UserLookupDto()
+                        .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
+                        .setValue(UserRoleHelper.extractRoleTypes(user).stream()
+                                .map(Enum::name)
+                                .collect(Collectors.joining(", "))))
+                .toList();
+    }
 
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
@@ -156,7 +190,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(memberId)
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
     }
-
 
     @Override
     public Optional<User> findByQrToken(String qrToken) {

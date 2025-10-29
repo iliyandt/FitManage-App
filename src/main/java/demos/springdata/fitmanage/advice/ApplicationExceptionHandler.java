@@ -41,8 +41,6 @@ public class ApplicationExceptionHandler {
     }
 
 
-
-
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(FitManageAppException.class)
     public ApiResponse<?> handleFitManageAppException(FitManageAppException ex) {

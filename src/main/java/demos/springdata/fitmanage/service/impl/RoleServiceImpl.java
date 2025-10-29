@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -31,6 +33,11 @@ public class RoleServiceImpl implements RoleService {
                     LOGGER.warn("Role with name {} not found", name);
                     return new FitManageAppException("Role with name " + name + " not found", ApiErrorCode.NOT_FOUND);
                 });
+    }
+
+    @Override
+    public Set<Role> findByNameIn(Set<RoleType> roleTypes) {
+        return roleRepository.findByNameIn(roleTypes);
     }
 
     @Override
