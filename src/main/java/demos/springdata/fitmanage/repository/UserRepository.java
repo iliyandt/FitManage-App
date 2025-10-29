@@ -1,5 +1,4 @@
 package demos.springdata.fitmanage.repository;
-import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -21,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdAndTenantId(Long id, Long tenantId);
     boolean existsByPhoneAndTenant_Id(String phone, Long tenantId);
     boolean existsByEmailAndTenant_Id(String email, Long id);
+    boolean existsByEmail(String email);
     boolean existsByRoles_Name(RoleType roleType);
     List<User> findAll(Specification<User> spec);
     Optional<User> findByQrToken(String qrToken);
@@ -43,5 +43,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r IN :roles AND u.tenant.id = :tenantId")
     List<User> findUsersByRolesAndTenant(@Param("roles") Set<Role> roles, @Param("tenantId") Long tenantId);
 
-    boolean existsByEmail(String email);
+
 }

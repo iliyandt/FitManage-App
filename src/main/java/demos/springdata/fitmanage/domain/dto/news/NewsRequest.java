@@ -1,4 +1,5 @@
 package demos.springdata.fitmanage.domain.dto.news;
+import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -9,7 +10,7 @@ import java.util.Set;
 public class NewsRequest {
     private String title;
     private String content;
-    private Set<RoleType> targetRoles;
+    private Set<String> targetRoles;
     private Set<Long> recipientsIds;
     private PublicationType publicationType;
     private NewsImportance importance;
@@ -38,11 +39,11 @@ public class NewsRequest {
         return this;
     }
 
-    public Set<RoleType> getTargetRoles() {
+    public Set<String> getTargetRoles() {
         return targetRoles;
     }
 
-    public NewsRequest setTargetRoles(Set<RoleType> targetRoles) {
+    public NewsRequest setTargetRoles(Set<String> targetRoles) {
         this.targetRoles = targetRoles;
         return this;
     }

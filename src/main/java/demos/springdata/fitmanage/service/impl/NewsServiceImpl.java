@@ -12,6 +12,7 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.NewsRepository;
 import demos.springdata.fitmanage.service.NewsService;
+import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,12 +29,13 @@ public class NewsServiceImpl implements NewsService {
 
     private final NewsRepository newsRepository;
     private final UserService userService;
+    private final RoleService roleService;
 
     @Autowired
-    public NewsServiceImpl(NewsRepository newsRepository, UserService userService) {
+    public NewsServiceImpl(NewsRepository newsRepository, UserService userService, RoleService roleService) {
         this.newsRepository = newsRepository;
         this.userService = userService;
-
+        this.roleService = roleService;
     }
 
     @Override
@@ -104,13 +106,18 @@ public class NewsServiceImpl implements NewsService {
     private News getTargetedUsers(NewsRequest request, News news) {
 
         Set<Long> recipientsIds = request.getRecipientsIds();
-        Set<RoleType> targetRoles = request.getTargetRoles();
+        Set<String> targetRoles = request.getTargetRoles();
 
         if (request.getPublicationType() == PublicationType.TARGETED) {
 
-            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, targetRoles, news.getAuthor().getTenant().getId());
+            Set<RoleType> roleTypes = targetRoles.stream()
+                    .map(RoleType::valueOf)
+                    .collect(Collectors.toSet());
+
+            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, roleTypes, news.getAuthor().getTenant().getId());
 
             news.setRecipients(targetedUsers);
+            news.setTargetRoles(roleService.findByNameIn(roleTypes));
 
         } else if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null || recipientsIds == null)) {
             throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);

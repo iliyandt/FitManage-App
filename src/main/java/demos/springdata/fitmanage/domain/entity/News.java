@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.domain.entity;
 import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
+import demos.springdata.fitmanage.domain.enums.RoleType;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
@@ -59,7 +60,7 @@ public class News extends BaseEntity {
             joinColumns = @JoinColumn(name = "news_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>();
+    private Set<Role> targetRoles = new HashSet<>();
 
 
     public News() {
@@ -161,6 +162,15 @@ public class News extends BaseEntity {
 
     public News setRecipients(Set<User> recipients) {
         this.recipients = recipients;
+        return this;
+    }
+
+    public Set<Role> getTargetRoles() {
+        return targetRoles;
+    }
+
+    public News setTargetRoles(Set<Role> targetRoles) {
+        this.targetRoles = targetRoles;
         return this;
     }
 }
