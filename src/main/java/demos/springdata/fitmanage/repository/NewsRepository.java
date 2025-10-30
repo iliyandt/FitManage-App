@@ -13,14 +13,6 @@ import java.util.Set;
 @Repository
 public interface NewsRepository extends JpaRepository<News, Long> {
     News getNewsById(Long id);
+    List<News> findAllByTenantId(Long tenantId);
 
-    @Query("SELECT DISTINCT n FROM News n " +
-            "LEFT JOIN n.targetRoles tr " +
-            "WHERE n.tenantId = :tenantId " +
-            "AND (n.author.id = :userId) OR (n.author IS NULL AND (n.targetRoles IS EMPTY OR tr.name IN :roles))"
-    )
-    List<News> findAllOrTargetedToUser(@Param("tenantId") Long tenantId,
-                                       @Param("roles") Set<RoleType> roles,
-                                       @Param("userId") Long userId
-    );
 }

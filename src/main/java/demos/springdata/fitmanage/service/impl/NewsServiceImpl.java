@@ -69,16 +69,15 @@ public class NewsServiceImpl implements NewsService {
     public List<NewsResponse> getNewsForUser() {
 
         User user = userService.getCurrentUser();
-
         Set<RoleType> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
-        List<News> news = newsRepository.findAllOrTargetedToUser
-                (
-                        user.getTenant().getId(),
-                        roles,
-                        user.getId()
-                );
 
-        return news.stream()
+        List<News> allTenantNews = newsRepository.findAllByTenantId(user.getTenant().getId());
+
+        List<News> relevantNews = allTenantNews.stream()
+                .filter(news -> isNewsRelevantForUser(news, user.getId(), roles))
+                .toList();
+
+        return relevantNews.stream()
                 .map(this::mapToDto)
                 .toList();
     }
@@ -134,6 +133,22 @@ public class NewsServiceImpl implements NewsService {
         return news;
     }
 
+
+    private boolean isNewsRelevantForUser(News news, Long userId, Set<RoleType> userRoles) {
+        if (news.getRecipientIds() != null && !news.getRecipientIds().isEmpty()) {
+            return news.getRecipientIds().contains(userId);
+        }
+
+        if (news.getTargetRoles() == null || news.getTargetRoles().isEmpty()) {
+            return true;
+        }
+
+        Set<RoleType> newsTargetRoles = news.getTargetRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet());
+
+        return userRoles.stream().anyMatch(newsTargetRoles::contains);
+    }
 
     private NewsResponse mapToDto(News news) {
         Set<Long> recipientIds = news.getRecipientIds();

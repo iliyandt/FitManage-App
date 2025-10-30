@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/news")
-@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'MEMBER')")
 public class NewsController {
 
     private final NewsService newsService;
