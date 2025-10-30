@@ -117,7 +117,7 @@ public class NewsServiceImpl implements NewsService {
             Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, roleTypes, news.getAuthor().getTenant().getId());
 
             news.setRecipients(targetedUsers);
-            news.setTargetRoles(roleService.findByNameIn(roleTypes));
+//            news.setTargetRoles(roleService.findByNameIn(roleTypes));
 
         } else if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null || recipientsIds == null)) {
             throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);
