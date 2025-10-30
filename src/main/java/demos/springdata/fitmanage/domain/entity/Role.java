@@ -15,8 +15,8 @@ public class Role extends BaseEntity {
     @Column(nullable = false, unique = true)
     private RoleType name;
 
-//    @ManyToMany(mappedBy = "targetRoles")
-//    private Set<News> news = new HashSet<>();
+    @ManyToMany(mappedBy = "targetRoles")
+    private Set<News> news = new HashSet<>();
 
     public Role() {
     }
@@ -33,12 +33,12 @@ public class Role extends BaseEntity {
         this.name = name;
     }
 
-//    public Set<News> getNews() {
-//        return news;
-//    }
-//
-//    public Role setNews(Set<News> news) {
-//        this.news = news;
-//        return this;
-//    }
+    public Set<News> getNews() {
+        return news;
+    }
+
+    public Role setNews(Set<News> news) {
+        this.news = news;
+        return this;
+    }
 }

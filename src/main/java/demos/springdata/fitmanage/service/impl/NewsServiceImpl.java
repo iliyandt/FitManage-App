@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,10 +69,14 @@ public class NewsServiceImpl implements NewsService {
     public List<NewsResponse> getNewsForUser() {
 
         User user = userService.getCurrentUser();
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName() == RoleType.ADMIN);
 
-        List<News> news = newsRepository.findAllPublishedForUser(user.getId(), NewsStatus.PUBLISHED, user.getTenant().getId(), isAdmin);
+        Set<RoleType> roles = user.getRoles().stream().map(Role::getName).collect(Collectors.toSet());
+        List<News> news = newsRepository.findAllOrTargetedToUser
+                (
+                        user.getTenant().getId(),
+                        roles,
+                        user.getId()
+                );
 
         return news.stream()
                 .map(this::mapToDto)
@@ -114,12 +119,14 @@ public class NewsServiceImpl implements NewsService {
                     .map(RoleType::valueOf)
                     .collect(Collectors.toSet());
 
-            Set<User> targetedUsers = userService.findAllUsersByIdsOrRoles(recipientsIds, roleTypes, news.getAuthor().getTenant().getId());
+            news.setTargetRoles(roleService.findByNameIn(roleTypes));
+        }
 
-            news.setRecipients(targetedUsers);
-//            news.setTargetRoles(roleService.findByNameIn(roleTypes));
+        if (recipientsIds != null && !recipientsIds.isEmpty()) {
+            news.setRecipientIds(recipientsIds);
+        }
 
-        } else if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null || recipientsIds == null)) {
+        if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null && recipientsIds == null)){
             throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);
         }
 
@@ -128,21 +135,11 @@ public class NewsServiceImpl implements NewsService {
 
 
     private NewsResponse mapToDto(News news) {
+        Set<Long> recipientIds = news.getRecipientIds();
 
-        Set<User> recipients = news.getRecipients();
-
-        Set<Long> recipientIds = new HashSet<>();
-
-        Set<RoleType> targetedRoles = recipients.stream()
-                .flatMap(user -> user.getRoles().stream())
-                .map(Role::getName)
+        Set<RoleType> targetedRoles = news.getTargetRoles()
+                .stream().map(Role::getName)
                 .collect(Collectors.toSet());
-
-        if (!recipients.isEmpty()) {
-            recipientIds = recipients.stream()
-                    .map(User::getId)
-                    .collect(Collectors.toSet());
-        }
 
         return  new NewsResponse()
                 .setNewsId(news.getId())

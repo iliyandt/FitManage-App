@@ -130,13 +130,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId) {
-        return userRepository.findAllByIdsOrRoleTypesAndTenant(ids, targetRoles, tenantId);
-    }
-
-
-
-    @Override
     public List<UserLookupDto> findUsersWithRoles(Set<String> roleNames) {
         Set<RoleType> roleTypes = roleNames.stream()
                 .map(RoleType::valueOf)
