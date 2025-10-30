@@ -116,6 +116,7 @@ public class NewsServiceImpl implements NewsService {
         if (request.getPublicationType() == PublicationType.TARGETED) {
 
             Set<RoleType> roleTypes = targetRoles.stream()
+                    .map(String::toUpperCase)
                     .map(RoleType::valueOf)
                     .collect(Collectors.toSet());
 
