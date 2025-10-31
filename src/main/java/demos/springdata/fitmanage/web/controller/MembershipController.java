@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users/membership")
+@RequestMapping("/api/v1/memberships")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 public class MembershipController {
     private final MembershipService membershipService;
@@ -35,7 +35,7 @@ public class MembershipController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/plans/options")
+    @GetMapping
     public ResponseEntity<ApiResponse<List<EnumOption>>> getAccountSubscriptionPlans() {
         List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPricesAsPriceDto();
         List<EnumOption> enumOptions = planPriceDtoList.stream()

@@ -50,7 +50,7 @@ public class TableColumnBuilder {
 
         if (field.getType().isEnum()) {
             String capitalizedFieldName = capitalizeFirstLetter(field.getName());
-            String url = "/v1/" + capitalizedFieldName + "/values";
+            String url = "/v1/enums/" + capitalizedFieldName;
             return new DropDownConfig(url, false);
         }
 

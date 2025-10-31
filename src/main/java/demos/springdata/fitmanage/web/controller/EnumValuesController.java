@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/enums")
 @PreAuthorize("hasAnyAuthority('ADMINISTATOR', 'ADMIN')")
 public class EnumValuesController {
 
@@ -21,7 +21,7 @@ public class EnumValuesController {
         this.enumService = enumService;
     }
 
-    @GetMapping("/{enumName}/values")
+    @GetMapping("/{enumName}")
     public ResponseEntity<ApiResponse<List<EnumOption>>> getEnumValues(@PathVariable String enumName) {
         List<EnumOption> options = enumService.getEnumOptions(enumName);
         return ResponseEntity.ok(ApiResponse.success(options));

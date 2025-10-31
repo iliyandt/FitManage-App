@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/users/members")
+@RequestMapping(path = "/api/v1/members")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
 public class MemberController {
     private final MemberService memberService;
@@ -83,7 +83,7 @@ public class MemberController {
 
     private TableResponseDto buildTableResponse(List<MemberTableDto> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/users/members", MemberTableDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/members", MemberTableDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(MemberTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping(path = "/api/v1/user")
+@RequestMapping(path = "/api/v1/users")
 @PreAuthorize("hasAnyAuthority('ADMINISTRATOR','ADMIN', 'MEMBER', 'STAFF')")
 public class UserController {
     private final UserService userService;
@@ -28,8 +28,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    //todo: logic for authentication should be in the service layer?
-    @GetMapping("/me")
+    @GetMapping("/current")
     public ResponseEntity<ApiResponse<UserResponseDto>> authenticatedUser(@AuthenticationPrincipal UserData userData) {
         UserResponseDto user = userService.getUserProfileByEmail(userData.getEmail());
         return ResponseEntity.ok(ApiResponse.success(user));
@@ -41,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/users/roles")
+    @GetMapping("/lookup")
     public ResponseEntity<ApiResponse<List<UserLookupDto>>> getUsersForLookUp(@RequestParam Set<String> roleNames) {
         return ResponseEntity.ok(ApiResponse.success(userService.findUsersWithRoles(roleNames)));
     }

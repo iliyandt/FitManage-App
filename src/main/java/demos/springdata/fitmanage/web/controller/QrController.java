@@ -19,13 +19,11 @@ import java.io.ByteArrayOutputStream;
 @RequestMapping("/api/v1/qr")
 public class QrController {
     private final UserService userService;
-    private final MemberService memberService;
     private final QrService qrService;
 
 
-    public QrController(UserService userService, MemberService memberService, QrService qrService) {
+    public QrController(UserService userService, QrService qrService) {
         this.userService = userService;
-        this.memberService = memberService;
         this.qrService = qrService;
     }
 
@@ -44,15 +42,5 @@ public class QrController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .body(imageBytes);
-    }
-
-    @PostMapping("/qr")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> checkInByQr(@RequestParam String qrToken) {
-        User user = userService.findByQrToken(qrToken)
-                .orElseThrow(() -> new RuntimeException("Invalid QR code"));
-
-        MemberResponseDto response = memberService.checkInMember(user.getId());
-
-        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

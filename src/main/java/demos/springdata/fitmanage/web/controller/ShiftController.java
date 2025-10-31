@@ -27,7 +27,7 @@ public class ShiftController {
         return ResponseEntity.ok(ApiResponse.success(shiftService.createShift(request)));
     }
 
-    @GetMapping("/my")
+    @GetMapping
     @PreAuthorize("hasAuthority('STAFF')")
     public ResponseEntity<ApiResponse<List<ShiftResponseDto>>> getMyShifts() {
         List<ShiftResponseDto> shifts = shiftService.getShiftsForCurrentUser();

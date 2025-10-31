@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/members")
+@RequestMapping("/api/v1/visits")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'MEMBER')")
 public class VisitController {
     private final VisitService visitService;
@@ -28,7 +28,7 @@ public class VisitController {
         this.tableHelper = tableHelper;
     }
 
-    @GetMapping("/{memberId}/visits")
+    @GetMapping("/{memberId}")
     public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable Long memberId) {
         List<VisitDto> visitsForMember = visitService.findVisitsForMember(memberId);
         return ResponseEntity.ok(ApiResponse.success(visitsForMember));

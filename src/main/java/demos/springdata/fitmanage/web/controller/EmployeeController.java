@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/users/employee")
+@RequestMapping("api/v1/employees")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF') " +
         "and (@accessGuard.hasValidSubscription('GROWTH') " +
         "or @accessGuard.hasValidSubscription('PRO'))")
@@ -55,7 +55,7 @@ public class    EmployeeController {
 
     private TableResponseDto buildTableResponse(List<EmployeeTableDto> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/users/employee", EmployeeTableDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/employees", EmployeeTableDto.class));
         response.setColumns(TableColumnBuilder.buildColumns(EmployeeTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;

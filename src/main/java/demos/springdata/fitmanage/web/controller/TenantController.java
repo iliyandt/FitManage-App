@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/tenant")
+@RequestMapping("/api/v1/tenants")
 public class TenantController {
     private final TenantService tenantService;
 
@@ -22,7 +22,7 @@ public class TenantController {
         this.tenantService = tenantService;
     }
 
-    @GetMapping("/all/short")
+    @GetMapping("/lookup")
     public ResponseEntity<ApiResponse<List<TenantNonAuthInfoDto>>> getShortInfoForAllTenants() {
         List<TenantNonAuthInfoDto> tenants = tenantService.getShortInfoForAllTenants();
         return ResponseEntity.ok(ApiResponse.success(tenants));

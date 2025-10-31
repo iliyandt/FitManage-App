@@ -38,7 +38,7 @@ public class MembershipPlanController {
         return ResponseEntity.ok(ApiResponse.success(savedPlans));
     }
 
-    @GetMapping
+    @GetMapping("table")
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
         List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPrices();
         TableResponseDto response = new TableResponseDto();
@@ -57,14 +57,14 @@ public class MembershipPlanController {
 
 
     @PatchMapping("/{planId}")
-    public ResponseEntity<ApiResponse<MembershipPlanUpdateDto>> editPlanPrices(@PathVariable Long planId,
-                                                                               @RequestBody @Valid MembershipPlanUpdateDto dto) {
+    public ResponseEntity<ApiResponse<MembershipPlanUpdateDto>> update(@PathVariable Long planId,
+                                                                       @RequestBody @Valid MembershipPlanUpdateDto dto) {
         MembershipPlanUpdateDto updatedDto = membershipPlanService.updatePlanPrices(planId, dto);
         return ResponseEntity.ok(ApiResponse.success(updatedDto));
     }
 
     @DeleteMapping("/{planId}")
-    public ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable Long planId) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long planId) {
         membershipPlanService.deletePlan(planId);
         //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));

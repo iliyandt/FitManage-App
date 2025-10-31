@@ -19,7 +19,7 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
 
-    @GetMapping("/user-ratio")
+    @GetMapping
     public ResponseEntity<ApiResponse<UserRatioAnalyticsDto>> getUserRatios() {
         UserRatioAnalyticsDto ratios = analyticsService.calculateUserRatios();
         return ResponseEntity.ok(ApiResponse.success(ratios));

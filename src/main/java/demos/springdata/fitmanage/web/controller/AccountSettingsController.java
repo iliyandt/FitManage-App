@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/users/settings")
+@RequestMapping("/api/v1/settings")
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'MEMBER')")
 public class AccountSettingsController {
     private final UserAccountSettingsService userAccountSettingsService;
@@ -19,13 +19,13 @@ public class AccountSettingsController {
         this.userAccountSettingsService = userAccountSettingsService;
     }
 
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<ApiResponse<AccountSettingsDto>> getCurrentAccountSettings() {
         AccountSettingsDto settings = userAccountSettingsService.getUserSettings();
         return ResponseEntity.ok(ApiResponse.success(settings));
     }
 
-    @PutMapping("update/me")
+    @PutMapping
     public ResponseEntity<ApiResponse<AccountSettingsDto>> updateCurrentGymSettings(@RequestBody Map<String, Object> newSettings) {
         AccountSettingsDto updatedSettings = userAccountSettingsService.updateUserSettings(newSettings);
         return ResponseEntity.ok(ApiResponse.success(updatedSettings));
