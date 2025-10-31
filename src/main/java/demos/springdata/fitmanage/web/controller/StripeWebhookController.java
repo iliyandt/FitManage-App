@@ -15,7 +15,7 @@ public class StripeWebhookController {
         this.stripeService = stripeService;
     }
 
-    @PostMapping(value = "/webhook")
+    @PostMapping
     public ResponseEntity<String> webhook(
             @RequestBody String payload,
             @RequestHeader HttpHeaders headers) {
