@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
+
 @RestController
 @RequestMapping("/api/v1/access-requests")
 public class AccessRequestController {
@@ -29,6 +29,7 @@ public class AccessRequestController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/approve")
     public ResponseEntity<ApiResponse<MemberResponseDto>> approveAccess(
             @PathVariable Long userId) {
@@ -37,6 +38,7 @@ public class AccessRequestController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/reject")
     public ResponseEntity<ApiResponse<MemberResponseDto>> rejectAccess(
             @PathVariable Long userId) {

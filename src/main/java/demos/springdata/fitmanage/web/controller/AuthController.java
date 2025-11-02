@@ -52,7 +52,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PostMapping("/{email}")
+    @PostMapping("verification-code/{email}")
     public ResponseEntity<VerificationResponseDto> resendVerificationCode(@PathVariable String email) {
         return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), HttpStatus.CREATED);
     }
