@@ -45,9 +45,8 @@ public class SecurityConfiguration {
                                 "/v3/api-docs",
                                 "/v3/api-docs.yaml",
                                 "/swagger-ui.html",
-                                "/api/v1/stripe/webhook")
+                                "/api/v1/webhooks/**")
                         .permitAll()
-                        .requestMatchers("/api/v1/gym/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

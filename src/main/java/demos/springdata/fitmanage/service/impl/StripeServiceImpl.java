@@ -15,7 +15,6 @@ import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.StripeService;
 import demos.springdata.fitmanage.service.TenantService;
 import org.slf4j.Logger;
@@ -51,7 +50,8 @@ public class StripeServiceImpl implements StripeService {
         Stripe.apiKey = apiKey;
 
         SessionCreateParams.Builder params = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.PAYMENT)//recurring??
+                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                .setUiMode(SessionCreateParams.UiMode.HOSTED)
                 .setSuccessUrl("https://damilsoft.com/success?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl("https://damilsoft.com/cancel")
                 .setCustomerEmail(checkoutRequest.getBusinessEmail())
