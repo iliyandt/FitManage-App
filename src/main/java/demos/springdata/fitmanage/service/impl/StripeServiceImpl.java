@@ -50,11 +50,10 @@ public class StripeServiceImpl implements StripeService {
         Stripe.apiKey = apiKey;
 
         SessionCreateParams.Builder params = SessionCreateParams.builder()
-                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setUiMode(SessionCreateParams.UiMode.HOSTED)
                 .setSuccessUrl("https://damilsoft.com/success?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl("https://damilsoft.com/cancel")
-                .setCustomerEmail(checkoutRequest.getBusinessEmail())
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setQuantity(1L)
@@ -73,8 +72,7 @@ public class StripeServiceImpl implements StripeService {
                 )
                 .putMetadata("tenantId", checkoutRequest.getTenantId())
                 .putMetadata("planName", checkoutRequest.getPlan())
-                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration())
-                .putMetadata("businessEmail", checkoutRequest.getBusinessEmail());
+                .putMetadata("abonnementDuration", checkoutRequest.getAbonnementDuration());
 
         return Session.create(params.build());
     }
