@@ -8,6 +8,7 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import demos.springdata.fitmanage.domain.dto.payment.AccountLinkResponse;
+import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.service.StripeConnectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class StripeConnectServiceImpl implements StripeConnectService {
     private static final Logger LOGGER = LoggerFactory.getLogger(StripeConnectServiceImpl.class);
 
     @Override
-    public Account createConnectedAccount(String tenantEmail) throws StripeException {
+    public Account createConnectedAccount(Tenant tenant) throws StripeException {
         AccountCreateParams.Capabilities capabilities =
                 AccountCreateParams.Capabilities.builder()
                         .setCardPayments(
@@ -39,15 +40,15 @@ public class StripeConnectServiceImpl implements StripeConnectService {
                 AccountCreateParams.builder()
                         .setType(AccountCreateParams.Type.EXPRESS)
                         .setCountry("BG")
-                        .setEmail(tenantEmail)
+                        .setEmail(tenant.getBusinessEmail())
                         .setCapabilities(capabilities)
                         .setBusinessType(AccountCreateParams.BusinessType.COMPANY)
                         .setBusinessProfile(
                                 AccountCreateParams.BusinessProfile
                                         .builder()
-                                        .setName("Set current tenant name") //TODO: set current tenant name
+                                        .setName(tenant.getName())
                                         .setProductDescription("Subscription")
-                                        .setMcc("7941") //TODO: check if the mcc is correct
+                                        .setMcc("7941")
                                         .build()
                         )
                         .build();

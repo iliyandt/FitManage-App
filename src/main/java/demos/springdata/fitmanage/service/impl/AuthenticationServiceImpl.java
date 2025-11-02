@@ -316,7 +316,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void createTenantStripeAccount(User user, Tenant tenant) {
         try {
-            Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant().getBusinessEmail());
+            Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant());
             tenant.setStripeAccountId(stripeAccount.getId());
         } catch (StripeException e) {
             throw new RuntimeException("Unsuccessful creation of stripe account: " + e.getMessage(), e);
