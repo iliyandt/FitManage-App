@@ -135,6 +135,10 @@ public class NewsServiceImpl implements NewsService {
 
 
     private boolean isNewsRelevantForUser(News news, Long userId, Set<RoleType> userRoles) {
+        if (userRoles.contains(RoleType.ADMIN)) {
+            return true;
+        }
+
         if (news.getRecipientIds() != null && !news.getRecipientIds().isEmpty()) {
             return news.getRecipientIds().contains(userId);
         }
