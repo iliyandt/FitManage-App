@@ -11,9 +11,8 @@ import java.util.List;
 
 public interface MembershipPlanService {
     List<MembershipPlanDto> createPlans(List<MembershipPlanDto> plansDto);
-    List<MembershipPlanDto> getPlansAndPrices();
-    List<MembershipPlanDto> getPlansAndPricesAsPriceDto();
+    List<MembershipPlanDto> getPlansData();
     MembershipPlanUpdateDto updatePlanPrices(Long planId, MembershipPlanUpdateDto dto);
     void deletePlan(Long planId);
-    PlanPriceResponse getCurrentPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment);
+    PlanPriceResponse getPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment);
 }

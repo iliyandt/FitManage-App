@@ -61,7 +61,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
 
     @Override
-    public List<MembershipPlanDto> getPlansAndPrices() {
+    public List<MembershipPlanDto> getPlansData() {
         Tenant tenant = userService.getCurrentUser().getTenant();
         List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByTenant(tenant);
 
@@ -69,12 +69,6 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
                 .map(p -> modelMapper.map(p, MembershipPlanDto.class)).toList();
     }
 
-    @Override
-    public List<MembershipPlanDto> getPlansAndPricesAsPriceDto() {
-        return getPlansAndPrices().stream()
-                .map(dto -> modelMapper.map(dto, MembershipPlanDto.class))
-                .toList();
-    }
 
     @Override
     public MembershipPlanUpdateDto updatePlanPrices(Long planId, MembershipPlanUpdateDto dto) {
@@ -97,7 +91,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     }
 
     @Override
-    public PlanPriceResponse getCurrentPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
+    public PlanPriceResponse getPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         BigDecimal specificPlanPrice = membershipPlanRepository.findPriceByTenantAndSubscriptionPlanAndEmployment(tenant, subscriptionPlan, employment.name());
         PlanPriceResponse planPriceResponse = new PlanPriceResponse();

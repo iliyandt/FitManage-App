@@ -27,17 +27,16 @@ public class MembershipController {
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> initializeSubscription(
+    public ResponseEntity<ApiResponse<MemberResponseDto>> update(
             @PathVariable Long memberId,
             @RequestBody @Valid MemberSubscriptionRequestDto dto) {
-
         MemberResponseDto response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<EnumOption>>> getAccountSubscriptionPlans() {
-        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPricesAsPriceDto();
+    public ResponseEntity<ApiResponse<List<EnumOption>>> getPlansForTenant() {
+        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansData();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
                 .toList();

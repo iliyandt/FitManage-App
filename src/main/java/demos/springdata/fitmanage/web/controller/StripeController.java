@@ -2,10 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.payment.AccountLinkRequest;
-import demos.springdata.fitmanage.domain.dto.payment.AccountLinkResponse;
-import demos.springdata.fitmanage.domain.dto.payment.CheckoutRequest;
-import demos.springdata.fitmanage.domain.dto.payment.CheckoutSessionResponse;
+import demos.springdata.fitmanage.domain.dto.payment.*;
 import demos.springdata.fitmanage.service.StripeConnectService;
 import demos.springdata.fitmanage.service.StripeService;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/stripe")
-@PreAuthorize("hasAuthority('ADMIN')")
+@PreAuthorize("hasAnyAuthority('ADMIN', 'MEMBER')")
 public class StripeController {
+
 
     private final StripeService stripeService;
     private final StripeConnectService stripeConnectService;
@@ -29,6 +27,12 @@ public class StripeController {
     @PostMapping("/create-checkout-session")
     public CheckoutSessionResponse createCheckoutSession(@RequestBody CheckoutRequest request) throws StripeException {
         Session session = stripeService.createCheckoutSession(request);
+        return new CheckoutSessionResponse(session.getId(), session.getUrl(), session.getCustomer());
+    }
+
+    @PostMapping("/create-checkout-session/connectedAccounts")
+    public CheckoutSessionResponse createCheckoutSessionConnectedAccounts(@RequestParam String connectedAccountId, @RequestBody ConnectedCheckoutRequest request) throws StripeException {
+        Session session = stripeConnectService.createCheckoutSessionConnectedAccounts(connectedAccountId, request);
         return new CheckoutSessionResponse(session.getId(), session.getUrl(), session.getCustomer());
     }
 

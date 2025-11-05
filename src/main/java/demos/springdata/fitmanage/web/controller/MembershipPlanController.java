@@ -33,28 +33,10 @@ public class MembershipPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<List<MembershipPlanDto>>> createPlans(@RequestBody List<MembershipPlanDto> plansDto) {
+    public ResponseEntity<ApiResponse<List<MembershipPlanDto>>> create(@RequestBody List<MembershipPlanDto> plansDto) {
         List<MembershipPlanDto> savedPlans = pricingService.createPlans(plansDto);
         return ResponseEntity.ok(ApiResponse.success(savedPlans));
     }
-
-    @GetMapping("table")
-    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansAndPrices() {
-        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansAndPrices();
-        TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/membership-plans", MembershipPlanTableDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(MembershipPlanTableDto.class));
-        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
-
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/{subscriptionPlan}/{employment}")
-    public ResponseEntity<ApiResponse<PlanPriceResponse>> getCurrentPlanPrice(@PathVariable SubscriptionPlan subscriptionPlan, @PathVariable Employment employment) {
-        PlanPriceResponse currentPlanPrice = membershipPlanService.getCurrentPlanPrice(subscriptionPlan, employment);
-        return ResponseEntity.ok(ApiResponse.success(currentPlanPrice));
-    }
-
 
     @PatchMapping("/{planId}")
     public ResponseEntity<ApiResponse<MembershipPlanUpdateDto>> update(@PathVariable Long planId,
@@ -66,7 +48,24 @@ public class MembershipPlanController {
     @DeleteMapping("/{planId}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long planId) {
         membershipPlanService.deletePlan(planId);
-        //todo: add response dto for delete
         return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
+
+    @GetMapping("table")
+    public ResponseEntity<ApiResponse<TableResponseDto>> getPlansDataAsTable() {
+        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansData();
+        TableResponseDto response = new TableResponseDto();
+        response.setConfig(tableHelper.buildTableConfig("/membership-plans", MembershipPlanTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(MembershipPlanTableDto.class));
+        response.setRows(tableHelper.buildRows(planPriceDtoList, tableHelper::buildRowMap));
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{subscriptionPlan}/{employment}")
+    public ResponseEntity<ApiResponse<PlanPriceResponse>> getPlanPrice(@PathVariable SubscriptionPlan subscriptionPlan, @PathVariable Employment employment) {
+        PlanPriceResponse response = membershipPlanService.getPlanPrice(subscriptionPlan, employment);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }
