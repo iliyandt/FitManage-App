@@ -16,7 +16,6 @@ import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRe
 import demos.springdata.fitmanage.domain.dto.payment.AccountLinkResponse;
 import demos.springdata.fitmanage.domain.dto.payment.ConnectedCheckoutRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
-import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.exception.ApiErrorCode;

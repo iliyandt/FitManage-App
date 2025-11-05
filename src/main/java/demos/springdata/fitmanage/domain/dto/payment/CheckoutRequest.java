@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.domain.dto.payment;
 
 public class CheckoutRequest {
     private String tenantId;
-    private String businessEmail;
+    //private String businessEmail;
     private String plan;
     private Long amount;
     private String currency;
@@ -22,14 +22,14 @@ public class CheckoutRequest {
         return this;
     }
 
-    public String getBusinessEmail() {
-        return businessEmail;
-    }
-
-    public CheckoutRequest setBusinessEmail(String businessEmail) {
-        this.businessEmail = businessEmail;
-        return this;
-    }
+//    public String getBusinessEmail() {
+//        return businessEmail;
+//    }
+//
+//    public CheckoutRequest setBusinessEmail(String businessEmail) {
+//        this.businessEmail = businessEmail;
+//        return this;
+//    }
 
     public String getPlan() {
         return plan;
