@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/webhooks")
 public class StripeWebhookController {
 
+    private final StripeService stripeService;
     private final StripeConnectService stripeConnectService;
 
-    public StripeWebhookController(StripeConnectService stripeConnectService) {
+    public StripeWebhookController(StripeService stripeService, StripeConnectService stripeConnectService) {
+        this.stripeService = stripeService;
         this.stripeConnectService = stripeConnectService;
     }
 
@@ -22,7 +24,7 @@ public class StripeWebhookController {
             @RequestHeader HttpHeaders headers) {
 
         String signatureHeader = headers.getFirst("Stripe-Signature");
-        stripeConnectService.webhookEventConnected(payload, signatureHeader);
+        stripeService.webhookEvent(payload, signatureHeader);
         return ResponseEntity.ok("Success");
     }
 
