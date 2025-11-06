@@ -7,6 +7,7 @@ import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -60,9 +61,7 @@ public class MemberController {
     @PostMapping("/{memberId}/check-in")
     public ResponseEntity<ApiResponse<MemberResponseDto>> checkInMember(
             @PathVariable Long memberId) {
-
         MemberResponseDto result = memberService.checkInMember(memberId);
-
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
@@ -72,14 +71,11 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 
-
-    //todo: should i add response dto for delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteMember(@PathVariable Long id) {
-        memberService.removeMember(id);
-        return ResponseEntity.ok(ApiResponse.success(null));
+    public ResponseEntity<ApiResponse<UserResponseDto>> deleteMember(@PathVariable Long id) {
+        UserResponseDto response = memberService.removeMember(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
-
 
     private TableResponseDto buildTableResponse(List<MemberTableDto> members) {
         TableResponseDto response = new TableResponseDto();

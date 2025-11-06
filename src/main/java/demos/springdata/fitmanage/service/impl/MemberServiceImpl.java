@@ -5,6 +5,7 @@ import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
@@ -32,31 +33,26 @@ import java.util.*;
 public class MemberServiceImpl implements MemberService {
 
     private final UserService userService;
+    private final UserPasswordService userPasswordService;
     private final RoleService roleService;
-    private final EmailService emailService;
     private final MembershipService membershipService;
     private final VisitService visitService;
     private final ModelMapper modelMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Autowired
     public MemberServiceImpl
             (
-                    UserService userService,
+                    UserService userService, UserPasswordService userPasswordService,
                     RoleService roleService,
-                    EmailService emailService,
                     ModelMapper modelMapper,
-                    BCryptPasswordEncoder passwordEncoder,
                     MembershipService membershipService,
                     VisitService visitService
             ) {
         this.userService = userService;
+        this.userPasswordService = userPasswordService;
         this.roleService = roleService;
-        this.emailService = emailService;
         this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
         this.membershipService = membershipService;
         this.visitService = visitService;
     }
@@ -70,9 +66,10 @@ public class MemberServiceImpl implements MemberService {
         User user = buildMember(tenant, requestDto);
         validateCredentials(user, requestDto);
 
-        createAndSendInitialPasswordToUser(user);
+        userPasswordService.setupMemberInitialPassword(user);
 
         Membership membership = createAndLinkMembershipToUser(tenant, user);
+
         userService.save(user);
         membershipService.save(membership);
 
@@ -85,13 +82,28 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public void removeMember(Long memberId) {
+    public UserResponseDto removeMember(Long memberId) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
 
         LOGGER.info("Deleting member with ID {} from tenant {}", memberId, tenant.getName());
         userService.delete(user);
         LOGGER.info("Member with ID {} deleted successfully", memberId);
+
+        return new UserResponseDto()
+                .setId(user.getId())
+                .setFirstName(user.getFirstName())
+                .setLastName(user.getLastName())
+                .setUsername(user.getUsername())
+                .setEmail(user.getEmail())
+                .setGender(user.getGender())
+                .setRoles(UserRoleHelper.extractRoleTypes(user))
+                .setBirthDate(user.getBirthDate())
+                .setCreatedAt(user.getCreatedAt())
+                .setUpdatedAt(user.getUpdatedAt())
+                .setPhone(user.getPhone())
+                .setAddress(user.getAddress())
+                .setCity(user.getCity());
     }
 
     @Transactional
@@ -205,7 +217,8 @@ public class MemberServiceImpl implements MemberService {
         return user;
     }
 
-    private void validateCredentials(User member, UserCreateRequestDto requestDto) {
+    //TODO: extract this method
+    private void validateCredentials(User user, UserCreateRequestDto requestDto) {
         Map<String, String> errors = new HashMap<>();
 
         if (userService.existsByEmail(requestDto.getEmail())) {
@@ -213,27 +226,19 @@ public class MemberServiceImpl implements MemberService {
             errors.put("email", "Email is already registered ");
         }
 
-        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
-            LOGGER.warn("User with email {} already exists in tenant with ID: {}", requestDto.getEmail(), member.getTenant().getId());
+        if (userService.existsByEmailAndTenant(requestDto.getEmail(), user.getTenant().getId())) {
+            LOGGER.warn("User with email {} already exists in tenant with ID: {}", requestDto.getEmail(), user.getTenant().getId());
             errors.put("email", "Email is already registered in this tenant");
         }
 
-        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
-            LOGGER.warn("User with phone {} already exists", member.getPhone());
+        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), user.getTenant().getId())) {
+            LOGGER.warn("User with phone {} already exists", user.getPhone());
             errors.put("phone", "Phone used from another user");
         }
 
         if (!errors.isEmpty()) {
             throw new MultipleValidationException(errors);
         }
-    }
-
-    private void createAndSendInitialPasswordToUser(User user) {
-        LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
-        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
-        sendInitialPassword(user, initialPassword);
-        user.setPassword(passwordEncoder.encode(initialPassword))
-                .setUpdatedAt(LocalDateTime.now());
     }
 
     private static Membership createAndLinkMembershipToUser(Tenant tenant, User user) {
@@ -246,32 +251,6 @@ public class MemberServiceImpl implements MemberService {
 
         user.getMemberships().add(membership);
         return membership;
-    }
-
-    //TODO: extract htmlMessage code, Update with company logo
-    private void sendInitialPassword(User user, String initialPassword) {
-        String subject = "Password";
-        String password = "PASSWORD " + initialPassword;
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + password + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
-
-        try {
-            LOGGER.info("Sending initial password to: {}", user.getEmail());
-            emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
-            throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
-        }
     }
 
     private List<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {

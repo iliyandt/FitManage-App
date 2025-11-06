@@ -12,19 +12,14 @@ import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import demos.springdata.fitmanage.util.UserRoleHelper;
-import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,19 +29,17 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     private final MembershipService membershipService;
     private final RoleService roleService;
     private final UserService userService;
-    private final EmailService emailService;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserPasswordService userPasswordService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
 
     @Autowired
-    public AccessRequestServiceImpl(TenantService tenantService, MembershipService membershipService, RoleService roleService, UserService userService, EmailService emailService, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public AccessRequestServiceImpl(TenantService tenantService, MembershipService membershipService, RoleService roleService, UserService userService, UserPasswordService userPasswordService, EmailService emailService, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
         this.tenantService = tenantService;
         this.membershipService = membershipService;
         this.roleService = roleService;
         this.userService = userService;
-        this.emailService = emailService;
-        this.passwordEncoder = passwordEncoder;
+        this.userPasswordService = userPasswordService;
         this.modelMapper = modelMapper;
     }
 
@@ -77,12 +70,11 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .setSubscriptionStatus(SubscriptionStatus.PENDING)
                 .setAllowedVisits(0)
                 .setRemainingVisits(0);
-
         member.getMemberships().add(membership);
 
         validateCredentials(member, memberCreateRequestDto);
-        createAndSendInitialPasswordToUser(member);
 
+        userPasswordService.setupMemberInitialPassword(member);
         userService.save(member);
         membershipService.save(membership);
 
@@ -96,9 +88,6 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     @Transactional
     @Override
     public MemberResponseDto processAccessRequest(Long userId, boolean approve) {
-        //Membership membership = membershipService.getMembershipById(membershipId).orElseThrow(()-> new FitManageAppException("Membership not found", ApiErrorCode.NOT_FOUND));
-        //User member = membership.getUser();
-
         User member = userService.findUserById(userId);
 
         Membership membership = member.getMemberships().stream().findFirst().get();
@@ -114,7 +103,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             userService.save(member);
             membershipService.save(membership);
 
-            // Изпращане на имейл за успешно одобрение
+            //todo: send email to the user that he is approved and he can use his password to log in
             //sendApprovalEmail(member, membership);
 
             LOGGER.info("Access request approved for user {}", member.getEmail());
@@ -124,6 +113,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             membership.setSubscriptionStatus(SubscriptionStatus.CANCELLED);
             membershipService.save(membership);
 
+            //todo: send email to the user that his request was rejected
             //sendRejectionEmail(member);
 
             LOGGER.warn("Access request rejected for user {}", member.getEmail());
@@ -133,39 +123,6 @@ public class AccessRequestServiceImpl implements AccessRequestService {
         return modelMapper.map(member, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(member));
     }
 
-    private void createAndSendInitialPasswordToUser(User member) {
-        LOGGER.info("Initial password for user with email: {} will be created", member.getEmail());
-        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
-        sendInitialPassword(member, initialPassword);
-        member.setPassword(passwordEncoder.encode(initialPassword))
-                .setUpdatedAt(LocalDateTime.now());
-    }
-
-    //TODO: extract htmlMessage code, Update with company logo
-    private void sendInitialPassword(User user, String initialPassword) {
-        String subject = "Password";
-        String password = "PASSWORD " + initialPassword;
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + password + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
-
-        try {
-            LOGGER.info("Sending initial password to: {}", user.getEmail());
-            emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
-            throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
-        }
-    }
 
     //TODO: logic is same in other classes
     private void validateCredentials(User member, MemberCreateRequestDto requestDto) {
@@ -185,5 +142,4 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             throw new MultipleValidationException(errors);
         }
     }
-
 }

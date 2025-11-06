@@ -24,7 +24,6 @@ public class AccessRequestController {
     public ResponseEntity<ApiResponse<MemberResponseDto>> requestAccess(
             @PathVariable Long tenantId,
             @Valid @RequestBody MemberCreateRequestDto requestDto) {
-
         MemberResponseDto response = accessRequestService.requestAccess(tenantId, requestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -33,7 +32,6 @@ public class AccessRequestController {
     @PatchMapping("/{userId}/approve")
     public ResponseEntity<ApiResponse<MemberResponseDto>> approveAccess(
             @PathVariable Long userId) {
-
         MemberResponseDto response = accessRequestService.processAccessRequest(userId, true);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -42,7 +40,6 @@ public class AccessRequestController {
     @PatchMapping("/{userId}/reject")
     public ResponseEntity<ApiResponse<MemberResponseDto>> rejectAccess(
             @PathVariable Long userId) {
-
         MemberResponseDto response = accessRequestService.processAccessRequest(userId, false);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

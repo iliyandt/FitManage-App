@@ -31,9 +31,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final TenantService tenantService;
     private final RoleService roleService;
     private final UserService userService;
-    private final EmailService emailService;
+    private final UserPasswordService userPasswordService;
     private final ModelMapper modelMapper;
-    private final BCryptPasswordEncoder passwordEncoder;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
 
     @Autowired
@@ -43,17 +42,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                     TenantService tenantService,
                     RoleService roleService,
                     UserService userService,
-                    EmailService emailService,
-                    ModelMapper modelMapper,
-                    BCryptPasswordEncoder passwordEncoder
+                    UserPasswordService userPasswordService,
+                    ModelMapper modelMapper
             ) {
         this.employeeRepository = employeeRepository;
         this.tenantService = tenantService;
         this.roleService = roleService;
         this.userService = userService;
-        this.emailService = emailService;
+        this.userPasswordService = userPasswordService;
         this.modelMapper = modelMapper;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
@@ -64,7 +61,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         User member = buildEmployee(tenant, requestDto);
         validateCredentials(member, requestDto);
-        createAndSendInitialPasswordToUser(member);
+
+        userPasswordService.setupMemberInitialPassword(member);
 
         Employee employee = createAndLinkStaffProfileToUser(tenant, member, requestDto);
 
@@ -170,41 +168,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if (!errors.isEmpty()) {
             throw new MultipleValidationException(errors);
-        }
-    }
-
-    private void createAndSendInitialPasswordToUser(User user) {
-        LOGGER.info("Initial password for user with email: {} will be created", user.getEmail());
-        String initialPassword = SecurityCodeGenerator.generateDefaultPassword();
-        LOGGER.debug("Initial password {}", initialPassword);
-        sendInitialPassword(user, initialPassword);
-        user.setPassword(passwordEncoder.encode(initialPassword))
-                .setUpdatedAt(LocalDateTime.now());
-    }
-
-    //TODO: extract method so it does not duplicate same logic in every service, extract htmlMessage code, Update with company logo
-    private void sendInitialPassword(User user, String initialPassword) {
-        String subject = "Password";
-        String password = "PASSWORD " + initialPassword;
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
-                + "<p style=\"font-size: 16px;\">Please use the password bellow for initial login</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Password:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + password + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
-
-        try {
-            LOGGER.info("Sending initial password to: {}", user.getEmail());
-            emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
-            throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
         }
     }
 
