@@ -10,7 +10,6 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.modelmapper.ModelMapper;
@@ -20,8 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.HashMap;
-import java.util.Map;
+
 
 @Service
 public class AccessRequestServiceImpl implements AccessRequestService {
@@ -29,16 +27,28 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     private final MembershipService membershipService;
     private final RoleService roleService;
     private final UserService userService;
+    private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
 
     @Autowired
-    public AccessRequestServiceImpl(TenantService tenantService, MembershipService membershipService, RoleService roleService, UserService userService, UserPasswordService userPasswordService, EmailService emailService, BCryptPasswordEncoder passwordEncoder, ModelMapper modelMapper) {
+    public AccessRequestServiceImpl
+            (
+                    TenantService tenantService,
+                    MembershipService membershipService,
+                    RoleService roleService,
+                    UserService userService,
+                    UserValidationService userValidationService,
+                    UserPasswordService userPasswordService,
+                    ModelMapper modelMapper
+            )
+    {
         this.tenantService = tenantService;
         this.membershipService = membershipService;
         this.roleService = roleService;
         this.userService = userService;
+        this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
         this.modelMapper = modelMapper;
     }
@@ -46,17 +56,17 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public MemberResponseDto requestAccess(Long tenantId, MemberCreateRequestDto memberCreateRequestDto) {
+    public MemberResponseDto requestAccess(Long tenantId, MemberCreateRequestDto createRequest) {
 
         Tenant tenant = tenantService.getTenantById(tenantId);
 
         User member = new User()
-                .setFirstName(memberCreateRequestDto.getFirstName())
-                .setLastName(memberCreateRequestDto.getLastName())
-                .setGender(memberCreateRequestDto.getGender())
-                .setBirthDate(memberCreateRequestDto.getBirthDate())
-                .setEmail(memberCreateRequestDto.getEmail())
-                .setPhone(memberCreateRequestDto.getPhone())
+                .setFirstName(createRequest.getFirstName())
+                .setLastName(createRequest.getLastName())
+                .setGender(createRequest.getGender())
+                .setBirthDate(createRequest.getBirthDate())
+                .setEmail(createRequest.getEmail())
+                .setPhone(createRequest.getPhone())
                 .setTenant(tenant)
                 .setEnabled(false);
 
@@ -72,8 +82,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .setRemainingVisits(0);
         member.getMemberships().add(membership);
 
-        validateCredentials(member, memberCreateRequestDto);
-
+        userValidationService.validateTenantScopedCredentials(createRequest.getEmail(), createRequest.getPhone(), tenantId);
         userPasswordService.setupMemberInitialPassword(member);
         userService.save(member);
         membershipService.save(membership);
@@ -121,25 +130,5 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
 
         return modelMapper.map(member, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(member));
-    }
-
-
-    //TODO: logic is same in other classes
-    private void validateCredentials(User member, MemberCreateRequestDto requestDto) {
-        Map<String, String> errors = new HashMap<>();
-
-        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
-            LOGGER.warn("User with email {} already exists", requestDto.getEmail());
-            errors.put("email", "Email is already registered");
-        }
-
-        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
-            LOGGER.warn("User with phone {} already exists", member.getPhone());
-            errors.put("phone", "Phone used from another user");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new MultipleValidationException(errors);
-        }
     }
 }

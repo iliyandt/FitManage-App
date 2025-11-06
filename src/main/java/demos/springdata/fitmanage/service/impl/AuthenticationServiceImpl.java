@@ -20,6 +20,7 @@ import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -50,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CustomUserDetailsService customUserDetailsService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     private final UserService userService;
+
 
 
     @Value("${stripe.api.key}")
@@ -109,7 +111,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto) {
+    public EmailResponseDto findUserEmail(UserEmailRequestDto userEmailRequestDto) {
         return this.userRepository.findByEmail(userEmailRequestDto.getEmail())
                 .map(user -> modelMapper.map(user, EmailResponseDto.class))
                 .orElseThrow(() -> {
@@ -150,9 +152,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         LOGGER.info("Resending verification code to: {}", email);
 
-        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationCode(SecurityCodeGenerator.generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusHours(1));
-        sendVerificationEmail(user);
+        emailService.sendVerificationEmail(user);
         userRepository.save(user);
 
 
@@ -250,13 +252,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         Role gymAdminRole = roleService.findByName(RoleType.ADMIN);
         user.getRoles().add(gymAdminRole);
-        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationCode(SecurityCodeGenerator.generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
-        sendVerificationEmail(user);
+
+        emailService.sendVerificationEmail(user);
+
         return user;
     }
 
-    //TODO: duplicate method
     private void validateCredentials(RegistrationRequestDto request) {
         Map<String, String> errors = new HashMap<>();
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -274,38 +277,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    //TODO: htmlMessage code extract, Update with company logo
-    private void sendVerificationEmail(User user) {
-        String subject = "Account Verification";
-        String verificationCode = "VERIFICATION CODE " + user.getVerificationCode();
-        String htmlMessage = "<html>"
-                + "<body style=\"font-family: Arial, sans-serif;\">"
-                + "<div style=\"background-color: #f5f5f5; padding: 20px;\">"
-                + "<h2 style=\"color: #333;\">Welcome to our app!</h2>"
-                + "<p style=\"font-size: 16px;\">Please enter the verification code below to continue:</p>"
-                + "<div style=\"background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);\">"
-                + "<h3 style=\"color: #333;\">Verification Code:</h3>"
-                + "<p style=\"font-size: 18px; font-weight: bold; color: #007bff;\">" + verificationCode + "</p>"
-                + "</div>"
-                + "</div>"
-                + "</body>"
-                + "</html>";
-
-        try {
-            LOGGER.info("Sending verification email to: {}", user.getEmail());
-            emailService.sendUserVerificationEmail(user.getEmail(), subject, htmlMessage);
-        } catch (MessagingException e) {
-            LOGGER.error("Failed to send verification email to: {}", user.getEmail(), e);
-            e.printStackTrace();
-        }
-    }
-
-    private String generateVerificationCode() {
-        Random random = new Random();
-        int code = random.nextInt(900000) + 100000;
-        return String.valueOf(code);
-    }
-
     private void encryptUserPassword(User user, String rawPassword) {
         user.setPassword(passwordEncoder.encode(rawPassword));
     }
@@ -319,7 +290,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant());
             tenant.setStripeAccountId(stripeAccount.getId());
         } catch (StripeException e) {
-            throw new RuntimeException("Unsuccessful creation of stripe account: " + e.getMessage(), e);
+            throw new FitManageAppException("Unsuccessful creation of stripe account: " + e.getMessage(), ApiErrorCode.BAD_REQUEST);
         }
     }
 }

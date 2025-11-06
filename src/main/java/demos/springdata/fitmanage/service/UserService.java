@@ -19,7 +19,6 @@ public interface UserService {
     UserResponseDto updateProfile(UserUpdateDto dto);
     List<User> findMembersByFilter(Specification<User> spec);
     List<User> findFirstMemberByFilter(Specification<User> spec);
-    Optional<User> findByQrToken(String qrToken);
     User getByIdAndTenantId(Long memberId, Long tenantId);
     User save(User user);
     User findUserById(Long memberId);
@@ -29,7 +28,6 @@ public interface UserService {
     Long countByGenderForTenant(Gender gender);
     Long countAllUsersByTenant();
     User findByEmail(String email);
-//    Set<User> findAllUsersByIdsOrRoles(Set<Long> ids, Set<RoleType> targetRoles, Long tenantId);
     List<UserLookupDto> findUsersWithRoles(Set<String> roleNames);
     boolean existsByEmail(String email);
 }

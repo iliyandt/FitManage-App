@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service;
-
-import jakarta.mail.MessagingException;
+import demos.springdata.fitmanage.domain.entity.User;
 
 public interface EmailService {
-    void sendUserVerificationEmail(String to, String subject, String text) throws MessagingException;
+    void sendInitialPassword(User user, String initialPassword);
+    void sendVerificationEmail(User user);
 }

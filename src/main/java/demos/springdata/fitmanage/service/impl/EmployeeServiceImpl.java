@@ -9,17 +9,13 @@ import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.UserRoleHelper;
-import demos.springdata.fitmanage.util.SecurityCodeGenerator;
-import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -31,6 +27,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final TenantService tenantService;
     private final RoleService roleService;
     private final UserService userService;
+    private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
     private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
@@ -41,7 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     EmployeeRepository employeeRepository,
                     TenantService tenantService,
                     RoleService roleService,
-                    UserService userService,
+                    UserService userService, UserValidationService userValidationService,
                     UserPasswordService userPasswordService,
                     ModelMapper modelMapper
             ) {
@@ -49,6 +46,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.tenantService = tenantService;
         this.roleService = roleService;
         this.userService = userService;
+        this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
         this.modelMapper = modelMapper;
     }
@@ -60,8 +58,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
         User member = buildEmployee(tenant, requestDto);
-        validateCredentials(member, requestDto);
-
+        userValidationService.validateTenantScopedCredentials(requestDto.getEmail(), requestDto.getPhone(), tenant.getId());
         userPasswordService.setupMemberInitialPassword(member);
 
         Employee employee = createAndLinkStaffProfileToUser(tenant, member, requestDto);
@@ -150,25 +147,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         user.getRoles().add(role);
 
         return user;
-    }
-
-    //TODO: override method for validation because now it duplicates same logic in every service
-    private void validateCredentials(User member, UserCreateRequestDto requestDto) {
-        Map<String, String> errors = new HashMap<>();
-
-        if (userService.existsByEmailAndTenant(requestDto.getEmail(), member.getTenant().getId())) {
-            LOGGER.warn("User with email {} already exists", requestDto.getEmail());
-            errors.put("email", "Email is already registered");
-        }
-
-        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), member.getTenant().getId())) {
-            LOGGER.warn("User with phone {} already exists", member.getPhone());
-            errors.put("phone", "Phone used from another member");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new MultipleValidationException(errors);
-        }
     }
 
     private EmployeeTableDto mapEmployeeToEmployeeTableDto(Employee employee) {

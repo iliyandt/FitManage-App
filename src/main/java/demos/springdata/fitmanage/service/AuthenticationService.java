@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthenticationService {
     RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequestDto, TenantDto tenantDto);
-    EmailResponseDto checkIfEmailIsAvailable(UserEmailRequestDto userEmailRequestDto);
+    EmailResponseDto findUserEmail(UserEmailRequestDto userEmailRequestDto);
     UserDetails authenticateUser(LoginRequestDto loginRequestDto);
     VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto);
     VerificationResponseDto resendUserVerificationCode(String email);

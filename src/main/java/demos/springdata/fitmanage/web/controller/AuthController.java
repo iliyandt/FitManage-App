@@ -59,7 +59,7 @@ public class AuthController {
 
     @PostMapping("/validate_email")
     public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
-        EmailResponseDto response = authenticationService.checkIfEmailIsAvailable(userEmailRequestDto);
+        EmailResponseDto response = authenticationService.findUserEmail(userEmailRequestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

@@ -176,11 +176,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
     }
 
-    @Override
-    public Optional<User> findByQrToken(String qrToken) {
-        return userRepository.findByQrToken(qrToken);
-    }
-
     private UserResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
         UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
         dto.setBirthDate(user.getBirthDate());

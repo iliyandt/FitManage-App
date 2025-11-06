@@ -11,18 +11,14 @@ import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
-import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.support.MemberSpecification;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import demos.springdata.fitmanage.util.UserRoleHelper;
-import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +30,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final UserService userService;
     private final UserPasswordService userPasswordService;
+    private final UserValidationService userValidationService;
     private final RoleService roleService;
     private final MembershipService membershipService;
     private final VisitService visitService;
@@ -43,7 +40,9 @@ public class MemberServiceImpl implements MemberService {
     @Autowired
     public MemberServiceImpl
             (
-                    UserService userService, UserPasswordService userPasswordService,
+                    UserService userService,
+                    UserPasswordService userPasswordService,
+                    UserValidationService userValidationService,
                     RoleService roleService,
                     ModelMapper modelMapper,
                     MembershipService membershipService,
@@ -51,6 +50,7 @@ public class MemberServiceImpl implements MemberService {
             ) {
         this.userService = userService;
         this.userPasswordService = userPasswordService;
+        this.userValidationService = userValidationService;
         this.roleService = roleService;
         this.modelMapper = modelMapper;
         this.membershipService = membershipService;
@@ -64,8 +64,8 @@ public class MemberServiceImpl implements MemberService {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
         User user = buildMember(tenant, requestDto);
-        validateCredentials(user, requestDto);
 
+        userValidationService.validateGlobalAndTenantScopedCredentials(requestDto.getEmail(), requestDto.getPhone(), tenant.getId());
         userPasswordService.setupMemberInitialPassword(user);
 
         Membership membership = createAndLinkMembershipToUser(tenant, user);
@@ -215,30 +215,6 @@ public class MemberServiceImpl implements MemberService {
         user.getRoles().add(role);
 
         return user;
-    }
-
-    //TODO: extract this method
-    private void validateCredentials(User user, UserCreateRequestDto requestDto) {
-        Map<String, String> errors = new HashMap<>();
-
-        if (userService.existsByEmail(requestDto.getEmail())) {
-            LOGGER.warn("User with email {} already exists", requestDto.getEmail());
-            errors.put("email", "Email is already registered ");
-        }
-
-        if (userService.existsByEmailAndTenant(requestDto.getEmail(), user.getTenant().getId())) {
-            LOGGER.warn("User with email {} already exists in tenant with ID: {}", requestDto.getEmail(), user.getTenant().getId());
-            errors.put("email", "Email is already registered in this tenant");
-        }
-
-        if (userService.existsByPhoneAndTenant(requestDto.getPhone(), user.getTenant().getId())) {
-            LOGGER.warn("User with phone {} already exists", user.getPhone());
-            errors.put("phone", "Phone used from another user");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new MultipleValidationException(errors);
-        }
     }
 
     private static Membership createAndLinkMembershipToUser(Tenant tenant, User user) {
