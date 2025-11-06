@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.validation.constraints.*;
 
@@ -36,6 +37,8 @@ public class UserCreateRequestDto {
             message = "Phone number must be 7 to 15 digits and may start with '+'"
     )
     private String phone;
+
+    private EmployeeRole employeeRole;
 
     public UserCreateRequestDto() {
     }
@@ -100,6 +103,15 @@ public class UserCreateRequestDto {
 
     public UserCreateRequestDto setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public EmployeeRole getEmployeeRole() {
+        return employeeRole;
+    }
+
+    public UserCreateRequestDto setEmployeeRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
         return this;
     }
 }

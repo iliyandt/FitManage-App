@@ -38,7 +38,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                     EmployeeRepository employeeRepository,
                     TenantService tenantService,
                     RoleService roleService,
-                    UserService userService, UserValidationService userValidationService,
+                    UserService userService,
+                    UserValidationService userValidationService,
                     UserPasswordService userPasswordService,
                     ModelMapper modelMapper
             ) {
@@ -53,7 +54,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public EmployeeResponseDto createEmployee(EmployeeCreateRequestDto requestDto) {
+    public EmployeeResponseDto createEmployee(UserCreateRequestDto requestDto) {
         User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
@@ -125,7 +126,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .setName(employee.getUser().getFirstName() + " " + employee.getUser().getLastName());
     }
 
-    private Employee createAndLinkStaffProfileToUser(Tenant tenant, User user, EmployeeCreateRequestDto requestDto) {
+    private Employee createAndLinkStaffProfileToUser(Tenant tenant, User user, UserCreateRequestDto requestDto) {
         Employee employee = new Employee()
                 .setTenant(tenant)
                 .setUser(user)

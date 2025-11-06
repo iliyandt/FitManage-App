@@ -6,6 +6,7 @@ import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
@@ -35,7 +36,7 @@ public class    EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody UserCreateRequestDto requestDto) {
         EmployeeResponseDto responseDto = staffProfileService.createEmployee(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
