@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequest;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
@@ -22,20 +23,19 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF') " +
         "and (@accessGuard.hasValidSubscription('GROWTH') " +
         "or @accessGuard.hasValidSubscription('PRO'))")
-public class EmployeeController {
-    private final EmployeeService staffProfileService;
+public class EmployeeController { ;
     private final TableHelper tableHelper;
     private final EmployeeService employeeService;
 
-    public EmployeeController(EmployeeService staffProfileService, TableHelper tableHelper, EmployeeService employeeService) {
-        this.staffProfileService = staffProfileService;
+    public EmployeeController(TableHelper tableHelper, EmployeeService employeeService) {
+
         this.tableHelper = tableHelper;
         this.employeeService = employeeService;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody UserCreateRequestDto requestDto) {
-        EmployeeResponseDto responseDto = staffProfileService.createEmployee(requestDto);
+    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequest requestDto) {
+        EmployeeResponseDto responseDto = employeeService.createEmployee(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));

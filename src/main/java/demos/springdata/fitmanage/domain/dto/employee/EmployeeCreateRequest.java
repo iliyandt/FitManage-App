@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.domain.dto.users;
+package demos.springdata.fitmanage.domain.dto.employee;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.OffsetDateTime;
 
-public class UserCreateRequestDto {
+public class EmployeeCreateRequest {
     @NotBlank(message = "First name must not be blank")
     @Size(min = 2, max = 15, message = "First Name must be between 2 and 15 characters")
     private String firstName;
@@ -38,15 +38,16 @@ public class UserCreateRequestDto {
     )
     private String phone;
 
+    private EmployeeRole employeeRole;
 
-    public UserCreateRequestDto() {
+    public EmployeeCreateRequest() {
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public UserCreateRequestDto setFirstName(String firstName) {
+    public EmployeeCreateRequest setFirstName(String firstName) {
         this.firstName = firstName;
         return this;
     }
@@ -55,7 +56,7 @@ public class UserCreateRequestDto {
         return lastName;
     }
 
-    public UserCreateRequestDto setLastName(String lastName) {
+    public EmployeeCreateRequest setLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
@@ -64,7 +65,7 @@ public class UserCreateRequestDto {
         return username;
     }
 
-    public UserCreateRequestDto setUsername(String username) {
+    public EmployeeCreateRequest setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -73,7 +74,7 @@ public class UserCreateRequestDto {
         return email;
     }
 
-    public UserCreateRequestDto setEmail(String email) {
+    public EmployeeCreateRequest setEmail(String email) {
         this.email = email;
         return this;
     }
@@ -82,7 +83,7 @@ public class UserCreateRequestDto {
         return gender;
     }
 
-    public UserCreateRequestDto setGender(Gender gender) {
+    public EmployeeCreateRequest setGender(Gender gender) {
         this.gender = gender;
         return this;
     }
@@ -91,7 +92,7 @@ public class UserCreateRequestDto {
         return birthDate;
     }
 
-    public UserCreateRequestDto setBirthDate(OffsetDateTime birthDate) {
+    public EmployeeCreateRequest setBirthDate(OffsetDateTime birthDate) {
         this.birthDate = birthDate;
         return this;
     }
@@ -100,8 +101,17 @@ public class UserCreateRequestDto {
         return phone;
     }
 
-    public UserCreateRequestDto setPhone(String phone) {
+    public EmployeeCreateRequest setPhone(String phone) {
         this.phone = phone;
+        return this;
+    }
+
+    public EmployeeRole getEmployeeRole() {
+        return employeeRole;
+    }
+
+    public EmployeeCreateRequest setEmployeeRole(EmployeeRole employeeRole) {
+        this.employeeRole = employeeRole;
         return this;
     }
 }

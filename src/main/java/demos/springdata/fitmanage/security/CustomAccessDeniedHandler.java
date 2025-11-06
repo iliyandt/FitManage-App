@@ -2,7 +2,6 @@ package demos.springdata.fitmanage.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +23,8 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         this.objectMapper = objectMapper;
     }
 
-
-
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
+    public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 

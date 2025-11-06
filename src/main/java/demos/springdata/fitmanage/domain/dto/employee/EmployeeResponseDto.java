@@ -24,7 +24,6 @@ public class EmployeeResponseDto {
     private String phone;
     private String address;
     private String city;
-    private Integer membersCount;
     private EmployeeRole employeeRole;
 
     public EmployeeResponseDto() {
@@ -147,14 +146,6 @@ public class EmployeeResponseDto {
         return this;
     }
 
-    public Integer getMembersCount() {
-        return membersCount;
-    }
-
-    public EmployeeResponseDto setMembersCount(Integer membersCount) {
-        this.membersCount = membersCount;
-        return this;
-    }
 
     public EmployeeRole getEmployeeRole() {
         return employeeRole;
