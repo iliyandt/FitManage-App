@@ -5,9 +5,7 @@ import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequestDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -24,7 +22,7 @@ import java.util.List;
 @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF') " +
         "and (@accessGuard.hasValidSubscription('GROWTH') " +
         "or @accessGuard.hasValidSubscription('PRO'))")
-public class    EmployeeController {
+public class EmployeeController {
     private final EmployeeService staffProfileService;
     private final TableHelper tableHelper;
     private final EmployeeService employeeService;

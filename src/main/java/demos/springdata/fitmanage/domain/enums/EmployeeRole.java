@@ -21,14 +21,4 @@ public enum EmployeeRole {
     public String getDisplayName() {
         return displayName;
     }
-
-    @JsonCreator
-    public static SubscriptionPlan fromString(String value) {
-        return SubscriptionPlan.valueOf(value.toUpperCase());
-    }
-
-    @JsonValue
-    public String toJson() {
-        return displayName;
-    }
 }
