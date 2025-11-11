@@ -1,9 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.training;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-
 import java.time.Instant;
-import java.util.Set;
 
 public record TrainingResponse(
         String title,
@@ -13,7 +11,7 @@ public record TrainingResponse(
         Integer capacity,
         Integer spots,
         @DropDown(url = "employees/role")
-        String trainer,
+        String trainerId,
         Boolean joined
 ) {
 }
