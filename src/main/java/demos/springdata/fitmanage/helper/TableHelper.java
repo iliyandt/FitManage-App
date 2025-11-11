@@ -148,7 +148,7 @@ public class TableHelper {
                     "date",
                     "duration",
                     "capacity",
-                    "trainerId"
+                    "trainer"
             )
     );
 
