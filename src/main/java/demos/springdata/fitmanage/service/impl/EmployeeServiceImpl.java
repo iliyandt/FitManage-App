@@ -4,7 +4,9 @@ import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequest;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
+import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.domain.entity.*;
+import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.ApiErrorCode;
 import demos.springdata.fitmanage.exception.FitManageAppException;
@@ -110,6 +112,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee getEmployeeById(Long id, Tenant tenant) {
         return employeeRepository.findByIdAndTenant(id, tenant).orElseThrow(() -> new FitManageAppException("Employee not found", ApiErrorCode.NOT_FOUND));
+    }
+
+    @Override
+    @Transactional
+    public List<UserLookupDto> findEmployeesByEmployeeRole(String employeeRole) {
+        List<User> staffUsers = userService.findUsersWithRoles(Set.of("STAFF"));
+        EmployeeRole targetRole = EmployeeRole.valueOf(employeeRole);
+
+        List<User> employeesWithRole = staffUsers.stream()
+                .filter(employee -> employee.getEmployees().get(0).getEmployeeRole().equals(targetRole))
+                .toList();
+
+        return employeesWithRole.stream().map(empl -> {
+            return new UserLookupDto()
+                    .setTitle(String.format("%s %s",empl.getFirstName(), empl.getLastName()))
+                    .setValue(empl.getId().toString());
+        }).toList();
     }
 
     private List<EmployeeName> getAllEmployeesForTenant(Long tenantId) {

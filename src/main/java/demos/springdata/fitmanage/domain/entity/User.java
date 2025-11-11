@@ -79,6 +79,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "author")
     private Set<News> authoredNews = new HashSet<>();
 
+    @ManyToMany(mappedBy = "participants")
+    private Set<Training> trainings = new HashSet<>();
+
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
@@ -291,6 +294,15 @@ public class User extends BaseEntity {
 
     public User setAuthoredNews(Set<News> authoredNews) {
         this.authoredNews = authoredNews;
+        return this;
+    }
+
+    public Set<Training> getTrainings() {
+        return trainings;
+    }
+
+    public User setTrainings(Set<Training> trainings) {
+        this.trainings = trainings;
         return this;
     }
 }

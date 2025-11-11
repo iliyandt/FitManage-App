@@ -44,4 +44,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findUsersByRolesAndTenant(@Param("roles") Set<Role> roles, @Param("tenantId") Long tenantId);
 
 
+
+
 }

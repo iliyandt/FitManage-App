@@ -42,6 +42,13 @@ public class UserController {
 
     @GetMapping("/lookup")
     public ResponseEntity<ApiResponse<List<UserLookupDto>>> getUsersForLookUp(@RequestParam Set<String> roleNames) {
-        return ResponseEntity.ok(ApiResponse.success(userService.findUsersWithRoles(roleNames)));
+
+        List<UserLookupDto> response = userService.findUsersWithRoles(roleNames).stream()
+                .map(user -> new UserLookupDto()
+                        .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
+                        .setValue(user.getId().toString()))
+                .toList();
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

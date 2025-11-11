@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.domain.dto.employee;
 
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;

@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserLookupDto> findUsersWithRoles(Set<String> roleNames) {
+    public List<User> findUsersWithRoles(Set<String> roleNames) {
         Set<RoleType> roleTypes = roleNames.stream()
                 .map(RoleType::valueOf)
                 .collect(Collectors.toSet());
@@ -139,14 +139,7 @@ public class UserServiceImpl implements UserService {
 
         Long tenantId = this.getCurrentUser().getTenant().getId();
 
-        List<User> users = userRepository.findUsersByRolesAndTenant(roles, tenantId);
-
-        return users
-                .stream()
-                .map(user -> new UserLookupDto()
-                        .setTitle(String.format("%s %s", user.getFirstName(), user.getLastName()))
-                        .setValue(user.getId().toString()))
-                .toList();
+        return userRepository.findUsersByRolesAndTenant(roles, tenantId);
     }
 
     @Override

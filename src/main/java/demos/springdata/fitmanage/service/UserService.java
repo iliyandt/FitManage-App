@@ -28,6 +28,6 @@ public interface UserService {
     Long countByGenderForTenant(Gender gender);
     Long countAllUsersByTenant();
     User findByEmail(String email);
-    List<UserLookupDto> findUsersWithRoles(Set<String> roleNames);
+    List<User> findUsersWithRoles(Set<String> roleNames);
     boolean existsByEmail(String email);
 }

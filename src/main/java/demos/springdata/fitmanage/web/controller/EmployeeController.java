@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
+import com.beust.ah.A;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequest;
@@ -7,6 +8,7 @@ import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -50,6 +52,13 @@ public class EmployeeController { ;
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<EmployeeName>>> getEmployeesFullNames() {
         return ResponseEntity.ok(ApiResponse.success(employeeService.getEmployeesFullNames()));
+    }
+
+    @GetMapping("/role")
+    public ResponseEntity<ApiResponse<List<UserLookupDto>>> getEmployeesWithRole(@RequestParam String employeeRole) {
+        List<UserLookupDto> employeesByEmployeeRole = employeeService.findEmployeesByEmployeeRole(employeeRole);
+
+        return ResponseEntity.ok(ApiResponse.success(employeesByEmployeeRole));
     }
 
     private TableResponseDto buildTableResponse(List<EmployeeTableDto> members) {

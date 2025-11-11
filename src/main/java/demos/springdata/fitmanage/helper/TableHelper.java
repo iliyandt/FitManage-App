@@ -4,6 +4,8 @@ import demos.springdata.fitmanage.domain.dto.common.config.*;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
+import demos.springdata.fitmanage.domain.dto.training.TrainingRequest;
+import demos.springdata.fitmanage.domain.dto.training.TrainingResponse;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +140,17 @@ public class TableHelper {
                     "birthDate",
                     "phone",
                     "employeeRole"
+            ),
+
+            TrainingResponse.class, Set.of(
+                    "title",
+                    "category",
+                    "date",
+                    "duration",
+                    "capacity",
+                    "spots",
+                    "trainer",
+                    "joined"
             )
     );
 
@@ -145,7 +158,8 @@ public class TableHelper {
             MemberTableDto.class, Set.of("id", "firstName", "lastName", "phone", "subscriptionStatus"),
             EmployeeTableDto.class, Set.of("id", "firstName", "lastName", "gender", "employeeRole"),
             MembershipPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
-            VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone")
+            VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone"),
+            TrainingResponse.class, Set.of("title", "category", "date", "duration", "capacity", "spots", "trainer", "joined")
     );
 
 
