@@ -74,7 +74,7 @@ public class TableColumnBuilder {
             return "number";
         } else if (type == Boolean.class || type == boolean.class) {
             return "boolean";
-        } else if (type.getName().contains("LocalDate") || type.getName().contains("Date")) {
+        } else if (type.getName().contains("LocalDate") || type.getName().contains("Date") || type.getName().contains("Instant")) {
             return "date";
         } else if (type.isEnum()) {
             return "enum";
