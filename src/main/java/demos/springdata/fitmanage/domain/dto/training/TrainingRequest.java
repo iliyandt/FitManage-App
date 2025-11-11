@@ -4,8 +4,8 @@ import java.time.Instant;
 
 public record TrainingRequest
         (
-                Long trainerId,
-                String name,
+                Long trainer,
+                String title,
                 String category,
                 Instant date,
                 Integer duration,

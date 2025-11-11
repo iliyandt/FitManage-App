@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TrainingServiceImpl implements TrainingService {
@@ -30,12 +29,12 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     public TrainingResponse create(UserData user, TrainingRequest request) {
 
-        User trainer = userService.findUserById(request.trainerId());
+        User trainer = userService.findUserById(request.trainer());
         User currentUser = userService.findUserById(user.getId());
 
         Training training = new Training()
                 .setTenant(currentUser.getTenant())
-                .setTitle(request.name())
+                .setTitle(request.title())
                 .setCategory(request.category())
                 .setDate(request.date())
                 .setDuration(request.duration())
