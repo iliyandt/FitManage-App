@@ -44,7 +44,7 @@ public class TrainingController {
     private TableResponseDto buildTableResponse(List<TrainingResponse> trainings) {
         TableResponseDto response = new TableResponseDto();
         response.setConfig(tableHelper.buildTableConfig("/trainings", TrainingResponse.class));
-        response.setColumns(TableColumnBuilder.buildColumns(MemberTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(TrainingResponse.class));
         response.setRows(tableHelper.buildRows(trainings, tableHelper::buildRowMap));
         return response;
     }
