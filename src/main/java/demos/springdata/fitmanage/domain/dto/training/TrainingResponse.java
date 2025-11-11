@@ -12,7 +12,7 @@ public record TrainingResponse(
         Integer duration,
         Integer capacity,
         Integer spots,
-        @DropDown(url = "/employees/role")
+        @DropDown(url = "employees/role")
         String trainer,
         Boolean joined
 ) {
