@@ -55,8 +55,8 @@ public class EmployeeController { ;
     }
 
     @GetMapping("/role")
-    public ResponseEntity<ApiResponse<List<UserLookupDto>>> getEmployeesWithRole(@RequestParam String employeeRole) {
-        List<UserLookupDto> employeesByEmployeeRole = employeeService.findEmployeesByEmployeeRole(employeeRole);
+    public ResponseEntity<ApiResponse<List<UserLookupDto>>> getEmployeesWithRole() {
+        List<UserLookupDto> employeesByEmployeeRole = employeeService.findEmployeesByEmployeeRole("TRAINER");
 
         return ResponseEntity.ok(ApiResponse.success(employeesByEmployeeRole));
     }
