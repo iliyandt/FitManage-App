@@ -6,6 +6,7 @@ import java.time.Instant;
 public record TrainingResponse(
         String title,
         String category,
+        String location,
         Instant date,
         Integer duration,
         Integer capacity,

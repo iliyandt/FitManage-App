@@ -35,6 +35,7 @@ public class TrainingServiceImpl implements TrainingService {
         Training training = new Training()
                 .setTenant(currentUser.getTenant())
                 .setTitle(request.title())
+                .setLocation(request.location())
                 .setCategory(request.category())
                 .setDate(request.date())
                 .setDuration(request.duration())
@@ -52,6 +53,7 @@ public class TrainingServiceImpl implements TrainingService {
                 (
                         training.getTitle(),
                         training.getCategory(),
+                        training.getLocation(),
                         training.getDate(),
                         training.getDuration(),
                         training.getCapacity(),
@@ -75,6 +77,7 @@ public class TrainingServiceImpl implements TrainingService {
                     return new TrainingResponse(
                             training.getTitle(),
                             training.getCategory(),
+                            training.getLocation(),
                             training.getDate(),
                             training.getDuration(),
                             training.getCapacity(),

@@ -7,6 +7,7 @@ public record TrainingRequest
                 Long trainer,
                 String title,
                 String category,
+                String location,
                 Instant date,
                 Integer duration,
                 Integer capacity
