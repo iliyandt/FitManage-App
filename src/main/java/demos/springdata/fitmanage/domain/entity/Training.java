@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.domain.entity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class Training extends BaseEntity {
     private String location;
 
     @Column(name = "date", nullable = false)
-    private Instant date;
+    private LocalDateTime date;
 
     @Column(name = "duration", nullable = false)
     private Integer duration;
@@ -80,11 +81,11 @@ public class Training extends BaseEntity {
         return this;
     }
 
-    public Instant getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public Training setDate(Instant startTime) {
+    public Training setDate(LocalDateTime startTime) {
         this.date = startTime;
         return this;
     }

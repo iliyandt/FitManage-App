@@ -145,6 +145,7 @@ public class TableHelper {
             TrainingResponse.class, Set.of(
                     "title",
                     "category",
+                    "location",
                     "date",
                     "duration",
                     "capacity",
@@ -157,7 +158,7 @@ public class TableHelper {
             EmployeeTableDto.class, Set.of("id", "firstName", "lastName", "gender", "employeeRole"),
             MembershipPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
             VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone"),
-            TrainingResponse.class, Set.of("name", "category", "date", "duration", "capacity", "spots", "trainer", "joined")
+            TrainingResponse.class, Set.of("name", "category", "date", "duration", "capacity", "spots", "trainer", "joined", "location")
     );
 
 

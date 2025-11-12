@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.training;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public record TrainingRequest
         (
@@ -8,7 +8,7 @@ public record TrainingRequest
                 String title,
                 String category,
                 String location,
-                Instant date,
+                LocalDateTime date,
                 Integer duration,
                 Integer capacity
         ) {
