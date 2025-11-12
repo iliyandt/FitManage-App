@@ -8,5 +8,8 @@ import java.util.List;
 
 public interface TrainingService {
     TrainingResponse create(UserData user, TrainingRequest request);
+    TrainingResponse update(Long id, TrainingRequest update);
+    void delete(Long id);
     List<TrainingResponse> getTrainings(UserData user);
+
 }

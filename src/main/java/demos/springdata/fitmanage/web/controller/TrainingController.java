@@ -34,9 +34,21 @@ public class TrainingController {
     @GetMapping
     public ResponseEntity<ApiResponse<TableResponseDto>> getTrainings(@AuthenticationPrincipal UserData user) {
         List<TrainingResponse> trainings = trainingService.getTrainings(user);
-
         TableResponseDto response = buildTableResponse(trainings);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<TrainingResponse>> update(Long id, @RequestBody TrainingRequest update) {
+        TrainingResponse response = trainingService.update(id, update);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<String>> update(Long id) {
+        trainingService.delete(id);
+        return ResponseEntity.ok(ApiResponse.success("Training successfully deleted!"));
     }
 
     private TableResponseDto buildTableResponse(List<TrainingResponse> trainings) {

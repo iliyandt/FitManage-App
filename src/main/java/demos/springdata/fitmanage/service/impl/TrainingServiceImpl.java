@@ -4,6 +4,8 @@ import demos.springdata.fitmanage.domain.dto.training.TrainingRequest;
 import demos.springdata.fitmanage.domain.dto.training.TrainingResponse;
 import demos.springdata.fitmanage.domain.entity.Training;
 import demos.springdata.fitmanage.domain.entity.User;
+import demos.springdata.fitmanage.exception.ApiErrorCode;
+import demos.springdata.fitmanage.exception.FitManageAppException;
 import demos.springdata.fitmanage.repository.TrainingRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.TrainingService;
@@ -44,24 +46,31 @@ public class TrainingServiceImpl implements TrainingService {
 
         trainingRepository.save(training);
 
-        int spots = training.getCapacity() - training.getParticipants().size();
-
-        boolean joined = training.getParticipants().stream()
-                .anyMatch(participant -> participant.getId().equals(user.getId()));
-
-        return new TrainingResponse
-                (
-                        training.getTitle(),
-                        training.getCategory(),
-                        training.getLocation(),
-                        training.getDate(),
-                        training.getDuration(),
-                        training.getCapacity(),
-                        spots,
-                        String.format("%s %s",trainer.getFirstName(), trainer.getLastName()),
-                        joined
-                );
+        return createTrainingResponse(training, false);
     }
+
+
+
+    @Override
+    @Transactional
+    public TrainingResponse update(Long id, TrainingRequest update) {
+        Training training = trainingRepository.findById(id).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+
+        updateTrainingEntity(update, training);
+
+        Training updatedTraining = trainingRepository.save(training);
+
+        return createTrainingResponse(updatedTraining, false);
+    }
+
+
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Training training = trainingRepository.findById(id).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+        trainingRepository.delete(training);
+    }
+
 
     @Override
     @Transactional
@@ -74,19 +83,42 @@ public class TrainingServiceImpl implements TrainingService {
                     boolean joined = training.getParticipants().stream()
                             .anyMatch(participant -> participant.getId().equals(user.getId()));
 
-                    return new TrainingResponse(
-                            training.getTitle(),
-                            training.getCategory(),
-                            training.getLocation(),
-                            training.getDate(),
-                            training.getDuration(),
-                            training.getCapacity(),
-                            training.getCapacity() - training.getParticipants().size(),
-                            String.format("%s %s", training.getTrainer().getFirstName(), training.getTrainer().getLastName()),
-                            joined
-                    );
+                    return createTrainingResponse(training, joined);
                 })
                 .toList();
+    }
+
+
+
+
+    private static TrainingResponse createTrainingResponse(Training training, boolean joined) {
+        return new TrainingResponse
+                (
+                        training.getId(),
+                        training.getTitle(),
+                        training.getCategory(),
+                        training.getLocation(),
+                        training.getDate(),
+                        training.getDuration(),
+                        training.getCapacity(),
+                        training.getCapacity() - training.getParticipants().size(),
+                        String.format("%s %s", training.getTrainer().getFirstName(), training.getTrainer().getLastName()),
+                        joined
+                );
+    }
+
+    private void updateTrainingEntity(TrainingRequest update, Training training) {
+        if (update.trainer() != null) {
+            User trainer = userService.findUserById(update.trainer());
+            training.setTrainer(trainer);
+        }
+
+        training.setTitle(update.title() != null ? update.title() : training.getTitle());
+        training.setCategory(update.category() != null ? update.category() : training.getCategory());
+        training.setLocation(update.location() != null ? update.location() : training.getLocation());
+        training.setDate(update.date() != null ? update.date() : training.getDate());
+        training.setDuration(update.duration() != null ? update.duration() : training.getDuration());
+        training.setCapacity(update.capacity() != null ? update.capacity() : training.getCapacity());
     }
 
 

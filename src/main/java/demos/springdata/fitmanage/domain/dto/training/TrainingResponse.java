@@ -4,6 +4,7 @@ import demos.springdata.fitmanage.annotation.DropDown;
 import java.time.Instant;
 
 public record TrainingResponse(
+        Long id,
         String title,
         String category,
         String location,
