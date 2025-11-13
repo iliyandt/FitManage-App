@@ -71,6 +71,16 @@ public class TrainingServiceImpl implements TrainingService {
         trainingRepository.delete(training);
     }
 
+    @Override
+    @Transactional
+    public void joinTraining(UserData user, Long trainingId) {
+
+        Training training = trainingRepository.findById(trainingId).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+        User currentUser = userService.findUserById(user.getId());
+
+        training.getParticipants().add(currentUser);
+    }
+
 
     @Override
     @Transactional

@@ -68,6 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         LOGGER.info("Successfully added staff with ID {} to facility '{}'", member.getId(), tenant.getName());
 
         return new EmployeeResponseDto()
+                .setId(member.getId())
                 .setFirstName(member.getFirstName())
                 .setLastName(member.getLastName())
                 .setUsername(member.getUsername())

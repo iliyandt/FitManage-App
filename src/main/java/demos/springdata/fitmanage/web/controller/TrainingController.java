@@ -9,6 +9,7 @@ import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.TrainingService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +26,13 @@ public class TrainingController {
         this.tableHelper = tableHelper;
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PostMapping
     public ResponseEntity<ApiResponse<TrainingResponse>> create(@AuthenticationPrincipal UserData user, @RequestBody TrainingRequest request) {
         TrainingResponse response = trainingService.create(user, request);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'MEMBER')")
     @GetMapping
     public ResponseEntity<ApiResponse<TableResponseDto>> getTrainings(@AuthenticationPrincipal UserData user) {
         List<TrainingResponse> trainings = trainingService.getTrainings(user);
@@ -38,17 +40,25 @@ public class TrainingController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PutMapping
     public ResponseEntity<ApiResponse<TrainingResponse>> update(Long id, @RequestBody TrainingRequest update) {
         TrainingResponse response = trainingService.update(id, update);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @DeleteMapping
     public ResponseEntity<ApiResponse<String>> update(Long id) {
         trainingService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Training successfully deleted!"));
+    }
+
+    @PreAuthorize("hasAuthority('MEMBER')")
+    @PostMapping("/join/{trainingId}")
+    public ResponseEntity<ApiResponse<String>> join(@AuthenticationPrincipal UserData user, @PathVariable Long trainingId) {
+        trainingService.joinTraining(user, trainingId);
+        return ResponseEntity.ok(ApiResponse.success("Joined!"));
     }
 
     private TableResponseDto buildTableResponse(List<TrainingResponse> trainings) {

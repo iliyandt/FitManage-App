@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
-
+//TODO: Refactor and fix this to return DtoResponses not ?
 @RestControllerAdvice
-public class ApplicationExceptionHandler {
+public class GlobalControllerAdvice {
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -51,6 +51,11 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(MultipleValidationException.class)
     public ApiResponse<?> handleMultipleValidationException(MultipleValidationException ex) {
         return ApiResponse.failure(ex.getMessage(), "BAD_REQUEST", ex.getErrors());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ApiResponse<?> handleLeftOverExceptions(Exception ex) {
+        return ApiResponse.failure(ex.getMessage(), "INTERNAL_ERROR");
     }
 
 

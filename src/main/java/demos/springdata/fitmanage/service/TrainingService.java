@@ -10,6 +10,7 @@ public interface TrainingService {
     TrainingResponse create(UserData user, TrainingRequest request);
     TrainingResponse update(Long id, TrainingRequest update);
     void delete(Long id);
+    void joinTraining(UserData user, Long trainingId);
     List<TrainingResponse> getTrainings(UserData user);
 
 }
