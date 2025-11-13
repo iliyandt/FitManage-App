@@ -75,8 +75,8 @@ public class TrainingServiceImpl implements TrainingService {
     @Transactional
     public void joinTraining(UserData user, Long trainingId) {
 
-        Training training = trainingRepository.findById(trainingId).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
         User currentUser = userService.findUserById(user.getId());
+        Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant()).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
 
         training.getParticipants().add(currentUser);
     }
