@@ -185,6 +185,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         User user = employee.getUser();
 
         return new EmployeeTableDto()
+                .setId(user.getId())
                 .setFirstName(user.getFirstName())
                 .setLastName(user.getLastName())
                 .setEmail(user.getEmail())
