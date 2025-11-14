@@ -64,7 +64,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
 
         UserDetails authenticatedUser = authenticationService.authenticateUser(loginRequestDto);
 
@@ -75,7 +75,7 @@ public class AuthController {
                 .refreshToken(refreshToken.getToken())
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
 
