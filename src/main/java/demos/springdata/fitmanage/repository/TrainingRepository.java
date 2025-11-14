@@ -10,6 +10,5 @@ import java.util.Optional;
 @Repository
 public interface TrainingRepository extends JpaRepository<Training, Long> {
     List<Training> findAllByTenant(Tenant tenant);
-
     Optional<Training> findByIdAndTenant(Long id, Tenant tenant);
 }

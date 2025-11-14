@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.domain.dto.accountsettings;
 import java.util.Map;
 
 public class AccountSettingsDto {
+
     private Map<String, Object> settings;
 
     public AccountSettingsDto() {}

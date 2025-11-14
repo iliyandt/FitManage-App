@@ -58,7 +58,15 @@ public class TrainingController {
     @PostMapping("/join/{trainingId}")
     public ResponseEntity<ApiResponse<String>> join(@AuthenticationPrincipal UserData user, @PathVariable Long trainingId) {
         trainingService.joinTraining(user, trainingId);
-        return ResponseEntity.ok(ApiResponse.success("Joined!"));
+        return ResponseEntity.ok(ApiResponse.success("Joined"));
+    }
+
+    @PreAuthorize("hasAuthority('MEMBER')")
+    @PostMapping("/cancel/{trainingId}")
+    public ResponseEntity<ApiResponse<String>> cancel(@AuthenticationPrincipal UserData user, @PathVariable Long trainingId) {
+        trainingService.cancelTraining(user, trainingId);
+
+        return ResponseEntity.ok(ApiResponse.success("Canceled"));
     }
 
     private TableResponseDto buildTableResponse(List<TrainingResponse> trainings) {

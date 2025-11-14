@@ -67,7 +67,8 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Transactional
     public void delete(Long id) {
-        Training training = trainingRepository.findById(id).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+        Training training = trainingRepository.findById(id)
+                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
         trainingRepository.delete(training);
     }
 
@@ -76,9 +77,20 @@ public class TrainingServiceImpl implements TrainingService {
     public void joinTraining(UserData user, Long trainingId) {
 
         User currentUser = userService.findUserById(user.getId());
-        Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant()).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+        Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
+                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
 
         training.getParticipants().add(currentUser);
+    }
+
+    @Override
+    @Transactional
+    public void cancelTraining(UserData user, Long trainingId) {
+        User currentUser = userService.findUserById(user.getId());
+        Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
+                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+
+        training.getParticipants().remove(currentUser);
     }
 
 

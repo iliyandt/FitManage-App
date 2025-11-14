@@ -1,6 +1,4 @@
 package demos.springdata.fitmanage.domain.dto.error;
-
-
 //TODO
-public record ErrorResponse() {
+public record ErrorResponse(String message) {
 }

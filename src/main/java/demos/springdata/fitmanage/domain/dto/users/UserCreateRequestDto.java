@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.validation.constraints.*;
 

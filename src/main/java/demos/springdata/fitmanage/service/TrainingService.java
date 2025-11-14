@@ -11,6 +11,7 @@ public interface TrainingService {
     TrainingResponse update(Long id, TrainingRequest update);
     void delete(Long id);
     void joinTraining(UserData user, Long trainingId);
+    void cancelTraining(UserData user, Long trainingId);
     List<TrainingResponse> getTrainings(UserData user);
 
 }
