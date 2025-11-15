@@ -8,14 +8,14 @@ import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,7 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee getEmployeeById(Long id, Tenant tenant) {
-        return employeeRepository.findByIdAndTenant(id, tenant).orElseThrow(() -> new FitManageAppException("Employee not found", ApiErrorCode.NOT_FOUND));
+        return employeeRepository.findByIdAndTenant(id, tenant).orElseThrow(() -> new DamilSoftException("Employee not found", HttpStatus.NOT_FOUND));
     }
 
     @Override

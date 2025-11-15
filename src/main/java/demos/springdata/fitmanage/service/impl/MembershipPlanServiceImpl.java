@@ -7,8 +7,8 @@ import demos.springdata.fitmanage.domain.entity.MembershipPlan;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.MembershipPlanRepository;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.UserService;
@@ -81,7 +81,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     @Override
     public void deletePlan(Long planId) {
         MembershipPlan currentPlan = membershipPlanRepository.findById(planId)
-                .orElseThrow(() -> new FitManageAppException(String.format("No plan with ID: %d", planId), ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException(String.format("No plan with ID: %d", planId), HttpStatus.NOT_FOUND));
 
         LOGGER.info("Deleting plan with ID {}", planId);
 

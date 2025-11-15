@@ -4,8 +4,7 @@ import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.RoleService;
@@ -16,13 +15,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getCurrentUser() {
         UserData user = (UserData) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findById(user.getId()).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+        return userRepository.findById(user.getId()).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
     @Transactional
@@ -57,7 +56,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserProfileByEmail(String email) {
         LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
-                .findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+                .findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
 
         Set<RoleType> roles = UserRoleHelper.extractRoleTypes(user);
 
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+        return userRepository.findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -150,7 +149,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
         return userRepository.findByIdAndTenantId(memberId, tenantId)
-                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -166,7 +165,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(Long memberId) {
         return userRepository.findById(memberId)
-                .orElseThrow(() -> new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
     private UserResponseDto mapBaseProfile(User user, Set<RoleType> roles) {

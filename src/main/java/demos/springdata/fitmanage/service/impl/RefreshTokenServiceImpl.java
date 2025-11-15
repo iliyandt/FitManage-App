@@ -1,10 +1,9 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
 import demos.springdata.fitmanage.service.RefreshTokenService;
 import demos.springdata.fitmanage.service.UserService;
@@ -72,7 +71,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             refreshTokenRepository.delete(token);
             refreshTokenRepository.flush();
             LOGGER.info("Deleting expired refresh token for gym ID: {}", token.getUser());
-            throw new FitManageAppException("Token is expired. Please make new sign in request", ApiErrorCode.CONFLICT);
+            throw new DamilSoftException("Token is expired. Please make new sign in request", HttpStatus.CONFLICT);
         }
 
         return token;

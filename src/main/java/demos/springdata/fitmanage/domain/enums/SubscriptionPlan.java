@@ -1,9 +1,7 @@
 package demos.springdata.fitmanage.domain.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import org.springframework.http.HttpStatus;
 
 public enum SubscriptionPlan {
@@ -40,15 +38,13 @@ public enum SubscriptionPlan {
 
     @JsonCreator
     public static SubscriptionPlan fromString(String value) {
-        //return SubscriptionPlan.valueOf(value.toUpperCase());
-
         for (SubscriptionPlan plan : SubscriptionPlan.values()) {
             if (plan.name().equalsIgnoreCase(value) || plan.displayName.equalsIgnoreCase(value)) {
                 return plan;
             }
         }
 
-        throw new FitManageAppException("Unknown subscription plan: " + value, ApiErrorCode.NOT_FOUND);
+        throw new DamilSoftException("Unknown subscription plan: " + value, HttpStatus.NOT_FOUND);
     }
 
     @JsonValue

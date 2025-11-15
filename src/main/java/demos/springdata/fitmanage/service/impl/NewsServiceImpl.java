@@ -8,19 +8,17 @@ import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.NewsRepository;
 import demos.springdata.fitmanage.service.NewsService;
 import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -127,7 +125,7 @@ public class NewsServiceImpl implements NewsService {
         }
 
         if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null && recipientsIds == null)){
-            throw new FitManageAppException("Targeted news must specify at least one role or recipient ID.", ApiErrorCode.CONFLICT);
+            throw new DamilSoftException("Targeted news must specify at least one role or recipient ID.", HttpStatus.CONFLICT);
         }
 
         return news;

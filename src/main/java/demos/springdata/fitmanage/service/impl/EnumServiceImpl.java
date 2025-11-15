@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.EnumService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ public class EnumServiceImpl implements EnumService {
             LOGGER.info("Resolved enum class: {}", clazz);
 
             if (!clazz.isEnum()) {
-                throw new FitManageAppException("Provided type is not an enum", ApiErrorCode.BAD_REQUEST);
+                throw new DamilSoftException("Provided type is not an enum", HttpStatus.BAD_REQUEST);
             }
 
             return Arrays.stream(clazz.getEnumConstants())
@@ -42,7 +42,7 @@ public class EnumServiceImpl implements EnumService {
 
         } catch (ClassNotFoundException e) {
             LOGGER.error("Enum not found: {}", enumName, e);
-            throw new FitManageAppException("Enum not found: " + enumName, ApiErrorCode.NOT_FOUND);
+            throw new DamilSoftException("Enum not found: " + enumName, HttpStatus.NOT_FOUND);
         }
     }
 

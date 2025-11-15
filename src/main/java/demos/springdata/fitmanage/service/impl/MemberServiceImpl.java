@@ -9,8 +9,8 @@ import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.support.MemberSpecification;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.UserRoleHelper;
@@ -127,7 +127,7 @@ public class MemberServiceImpl implements MemberService {
         User authenticatedUser = userService.getCurrentUser();
         User member = userService.findUserById(memberId);
 
-        Membership membership = member.getMemberships().stream().findFirst().orElseThrow(() -> new FitManageAppException("Member has no membership created.", ApiErrorCode.CONFLICT));
+        Membership membership = member.getMemberships().stream().findFirst().orElseThrow(() -> new DamilSoftException("Member has no membership created.", HttpStatus.CONFLICT));
 
         modelMapper.map(updateRequest, member);
         userService.save(member);
@@ -174,7 +174,7 @@ public class MemberServiceImpl implements MemberService {
         List<User> memberList = userService.findMembersByFilter(spec);
 
         if (memberList.isEmpty())
-            throw new FitManageAppException("No members found for the given filter", ApiErrorCode.NOT_FOUND);
+            throw new DamilSoftException("No members found for the given filter", HttpStatus.NOT_FOUND);
 
         Role facilityMemberRole = roleService.findByName(RoleType.MEMBER);
 

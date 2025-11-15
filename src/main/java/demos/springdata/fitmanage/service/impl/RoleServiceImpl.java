@@ -2,14 +2,13 @@ package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.RoleRepository;
 import demos.springdata.fitmanage.service.RoleService;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -31,7 +30,7 @@ public class RoleServiceImpl implements RoleService {
         return roleRepository.findByName(name)
                 .orElseThrow(() -> {
                     LOGGER.warn("Role with name {} not found", name);
-                    return new FitManageAppException("Role with name " + name + " not found", ApiErrorCode.NOT_FOUND);
+                    return new DamilSoftException("Role with name " + name + " not found", HttpStatus.NOT_FOUND);
                 });
     }
 

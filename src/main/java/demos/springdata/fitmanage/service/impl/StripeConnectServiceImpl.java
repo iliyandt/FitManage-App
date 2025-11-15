@@ -18,13 +18,13 @@ import demos.springdata.fitmanage.domain.dto.payment.ConnectedCheckoutRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.StripeConnectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -152,12 +152,12 @@ public class StripeConnectServiceImpl implements StripeConnectService {
             event = ApiResource.GSON.fromJson(payload, Event.class);
         } catch (JsonSyntaxException ex) {
             LOGGER.warn("Invalid payload: {}", payload);
-            throw new FitManageAppException("Invalid payload", ApiErrorCode.BAD_REQUEST);
+            throw new DamilSoftException("Invalid payload", HttpStatus.BAD_REQUEST);
         }
 
         if (signatureHeader == null || endpointSecret == null) {
             LOGGER.warn("Webhook signature or secret is missing.");
-            throw new FitManageAppException("Missing webhook signature/secret", ApiErrorCode.BAD_REQUEST);
+            throw new DamilSoftException("Missing webhook signature/secret", HttpStatus.BAD_REQUEST);
         }
 
         try {
@@ -167,7 +167,7 @@ public class StripeConnectServiceImpl implements StripeConnectService {
 
         } catch (SignatureVerificationException ex) {
             LOGGER.warn("Webhook error while validating signature.", ex);
-            throw new FitManageAppException("Invalid signature", ApiErrorCode.BAD_REQUEST);
+            throw new DamilSoftException("Invalid signature", HttpStatus.BAD_REQUEST);
         }
 
 
@@ -178,7 +178,7 @@ public class StripeConnectServiceImpl implements StripeConnectService {
             stripeObject = dataObjectDeserializer.getObject().get();
         } else {
             LOGGER.error("Failed to deserialize event data object. API version mismatch? Event ID: {}", event.getId());
-            throw new FitManageAppException("Event deserialization failed", ApiErrorCode.INTERNAL_ERROR);
+            throw new DamilSoftException("Event deserialization failed", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         LOGGER.info("Handling Stripe event: {} ({})", event.getType(), event.getId());

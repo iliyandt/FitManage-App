@@ -13,20 +13,19 @@ import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.SecurityCodeGenerator;
-import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -116,7 +115,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .map(user -> modelMapper.map(user, EmailResponseDto.class))
                 .orElseThrow(() -> {
                     LOGGER.warn("Account with email: {} does not exists", userEmailRequestDto.getEmail());
-                    return new FitManageAppException(String.format("Account with email: %s does not exists.", userEmailRequestDto.getEmail()), ApiErrorCode.NOT_FOUND);
+                    return new DamilSoftException(String.format("Account with email: %s does not exists.", userEmailRequestDto.getEmail()), HttpStatus.NOT_FOUND);
                 });
     }
 
@@ -148,7 +147,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userService.findByEmail(email);
 
         if (user.isEnabled()) {
-            throw new FitManageAppException("Account is already verified", ApiErrorCode.OK);
+            throw new DamilSoftException("Account is already verified", HttpStatus.OK);
         }
         LOGGER.info("Resending verification code to: {}", email);
 
@@ -166,11 +165,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        User user = userService.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw  new FitManageAppException("Old password is incorrect", ApiErrorCode.NOT_FOUND);
+            throw  new DamilSoftException("Old password is incorrect", HttpStatus.NOT_FOUND);
         }
 
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
-            throw new FitManageAppException("New password cannot be the same as old password", ApiErrorCode.NOT_FOUND);
+            throw new DamilSoftException("New password cannot be the same as old password", HttpStatus.NOT_FOUND);
         }
 
         encryptUserPassword(user, request.getNewPassword());
@@ -192,7 +191,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Map<String, String> errors = new HashMap<>();
         if (user.getVerificationCodeExpiresAt() == null) {
             LOGGER.warn("Account with email {} is already verified", user.getUsername());
-            throw new FitManageAppException("Account is already verified", ApiErrorCode.CONFLICT);
+            throw new DamilSoftException("Account is already verified", HttpStatus.CONFLICT);
         }
 
         if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
@@ -216,7 +215,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     LOGGER.error("Verification failed: User not found");
-                    return new FitManageAppException("User not found", ApiErrorCode.NOT_FOUND);
+                    return new DamilSoftException("User not found", HttpStatus.NOT_FOUND);
                 });
     }
 
@@ -230,15 +229,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             );
         } catch (AuthenticationException ex) {
             LOGGER.warn("Login failed for email: {}", loginRequestDto.getEmail());
-            throw new FitManageAppException("Invalid email or password", ApiErrorCode.UNAUTHORIZED);
+            throw new DamilSoftException("Invalid email or password", HttpStatus.UNAUTHORIZED);
         }
     }
 
     private static void verifyAccountStatus(UserDetails authUser) {
         if (authUser instanceof UserData user) {
             if (!user.isEnabled()) {
-                throw new FitManageAppException("Account not verified. Please verify your account"
-                        , ApiErrorCode.UNAUTHORIZED);
+                throw new DamilSoftException("Account not verified. Please verify your account"
+                        , HttpStatus.UNAUTHORIZED);
             }
         }
     }
@@ -290,7 +289,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant());
             tenant.setStripeAccountId(stripeAccount.getId());
         } catch (StripeException e) {
-            throw new FitManageAppException("Unsuccessful creation of stripe account: " + e.getMessage(), ApiErrorCode.BAD_REQUEST);
+            throw new DamilSoftException("Unsuccessful creation of stripe account: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }

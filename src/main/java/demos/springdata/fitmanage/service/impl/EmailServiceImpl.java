@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -47,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
             this.prepareAndSendEmail(user.getEmail(), subject, htmlMessage);
         } catch (MessagingException e) {
             LOGGER.error("Failed to send password to: {}", user.getEmail(), e);
-            throw new FitManageAppException("Failed to send password to user", ApiErrorCode.INTERNAL_ERROR);
+            throw new DamilSoftException("Failed to send password to user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

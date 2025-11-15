@@ -5,8 +5,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.domain.dto.auth.response.LoginResponse;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
@@ -53,7 +52,7 @@ public class AuthController {
 
     @PostMapping("verification-code/{email}")
     public ResponseEntity<VerificationResponseDto> resendVerificationCode(@PathVariable String email) {
-        return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), HttpStatus.CREATED);
+        return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), org.springframework.http.HttpStatus.CREATED);
     }
 
     @PostMapping("/validate_email")
@@ -89,7 +88,7 @@ public class AuthController {
                             .accessToken(accessToken)
                             .refreshToken(refreshTokenRequestDto.getToken())
                             .build();
-                }).orElseThrow(() -> new FitManageAppException("Refresh token is not in the database", ApiErrorCode.NOT_FOUND));
+                }).orElseThrow(() -> new DamilSoftException("Refresh token is not in the database", HttpStatus.NOT_FOUND));
     }
 
 }

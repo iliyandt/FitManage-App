@@ -6,7 +6,6 @@ public class ApiResponse<T> {
     private boolean success;
     private String message;
     private T data;
-    private Map<String, String> validationErrors;
 
     public boolean isSuccess() {
         return success;
@@ -32,21 +31,12 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
-    public Map<String, String> getValidationErrors() {
-        return validationErrors;
-    }
-
-    public void setValidationErrors(Map<String, String> validationErrors) {
-        this.validationErrors = validationErrors;
-    }
-
 
     public static <T> ApiResponse<T> success(T data) {
         ApiResponse<T> response = new ApiResponse<>();
         response.setSuccess(true);
         response.setData(data);
         response.setMessage("Success");
-        response.setValidationErrors(null);
         return response;
     }
 
@@ -56,7 +46,6 @@ public class ApiResponse<T> {
         response.setSuccess(false);
         response.setMessage(message);
         response.setData(null);
-        response.setValidationErrors(null);
         return response;
     }
 
@@ -65,7 +54,6 @@ public class ApiResponse<T> {
         response.setSuccess(false);
         response.setMessage(message);
         response.setData(null);
-        response.setValidationErrors(errors);
         return response;
     }
 

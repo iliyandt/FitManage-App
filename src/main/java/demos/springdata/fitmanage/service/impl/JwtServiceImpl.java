@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,6 +11,7 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -49,7 +50,7 @@ public class JwtServiceImpl implements JwtService {
                     .getBody();
         } catch (Exception e) {
             LOGGER.error("Error parsing JWT token", e);
-            throw new FitManageAppException("Invalid JWT token", ApiErrorCode.INVALID_TOKEN);
+            throw new DamilSoftException("Invalid JWT token", HttpStatus.NOT_FOUND);
         }
 
     }

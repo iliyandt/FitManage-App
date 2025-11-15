@@ -4,13 +4,13 @@ import demos.springdata.fitmanage.domain.dto.training.TrainingRequest;
 import demos.springdata.fitmanage.domain.dto.training.TrainingResponse;
 import demos.springdata.fitmanage.domain.entity.Training;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.TrainingRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.TrainingService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +54,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @Transactional
     public TrainingResponse update(Long id, TrainingRequest update) {
-        Training training = trainingRepository.findById(id).orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+        Training training = trainingRepository.findById(id).orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
 
         updateTrainingEntity(update, training);
 
@@ -68,7 +68,7 @@ public class TrainingServiceImpl implements TrainingService {
     @Transactional
     public void delete(Long id) {
         Training training = trainingRepository.findById(id)
-                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
         trainingRepository.delete(training);
     }
 
@@ -78,7 +78,7 @@ public class TrainingServiceImpl implements TrainingService {
 
         User currentUser = userService.findUserById(user.getId());
         Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
-                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
 
         training.getParticipants().add(currentUser);
     }
@@ -88,7 +88,7 @@ public class TrainingServiceImpl implements TrainingService {
     public void cancelTraining(UserData user, Long trainingId) {
         User currentUser = userService.findUserById(user.getId());
         Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
-                .orElseThrow(() -> new FitManageAppException("Training not found.", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
 
         training.getParticipants().remove(currentUser);
     }

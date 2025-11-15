@@ -6,8 +6,8 @@ import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.entity.Visit;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.VisitRepository;
 import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.service.VisitService;
@@ -37,7 +37,7 @@ public class VisitServiceImpl implements VisitService {
     @Override
     public List<VisitDto> findVisitsForMember(Long memberId) {
         List<Visit> visitList = visitRepository.findByUser_Id(memberId)
-                .orElseThrow(() -> new FitManageAppException("No visits for this member", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("No visits for this member", HttpStatus.NOT_FOUND));
 
         return visitList.stream().map(v -> modelMapper.map(v, VisitDto.class)).toList();
     }

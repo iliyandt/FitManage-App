@@ -6,8 +6,7 @@ import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
 import demos.springdata.fitmanage.domain.enums.RoleType;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.util.UserRoleHelper;
@@ -16,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +37,7 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public Tenant getTenantById(Long tenantId) {
-        return this.tenantRepository.findById(tenantId).orElseThrow(()-> new FitManageAppException("Tenant not found", ApiErrorCode.NOT_FOUND));
+        return this.tenantRepository.findById(tenantId).orElseThrow(()-> new DamilSoftException("Tenant not found", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -101,11 +101,11 @@ public class TenantServiceImpl implements TenantService {
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
 
-        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new FitManageAppException("Not found", ApiErrorCode.NOT_FOUND));
+        Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new DamilSoftException("Not found", HttpStatus.NOT_FOUND));
         LOGGER.info("Tenant found");
 
         if (tenant.getAbonnement() != null) {
-            throw new FitManageAppException("Tenant already has active subscription", ApiErrorCode.CONFLICT);
+            throw new DamilSoftException("Tenant already has active subscription", HttpStatus.CONFLICT);
         } else {
             tenant.setAbonnement(planName);
             tenant.setAbonnementDuration(AbonnementDuration.valueOf(duration));

@@ -8,8 +8,7 @@ import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.MembershipRepository;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
@@ -18,6 +17,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +50,7 @@ public class MembershipServiceImpl implements MembershipService {
         Tenant tenant = user.getTenant();
 
         Membership membership = membershipRepository.findByUserAndTenant(user, tenant)
-                .orElseThrow(() -> new FitManageAppException("User has no created membership.", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("User has no created membership.", HttpStatus.NOT_FOUND));
 
         validateSubscriptionChange(membership, requestDto);
         activateMembership(membership, user, requestDto);
@@ -93,7 +93,7 @@ public class MembershipServiceImpl implements MembershipService {
         return memberships.stream()
                 .filter(Membership::isActive)
                 .findFirst()
-                .orElseThrow(() -> new FitManageAppException("User doesn't have active membership", ApiErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException("User doesn't have active membership", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -193,18 +193,18 @@ public class MembershipServiceImpl implements MembershipService {
         if (currentPlan != null && currentPlan.isTimeBased()) {
             LocalDateTime now = LocalDateTime.now();
             if (membership.getSubscriptionEndDate() != null && now.truncatedTo(ChronoUnit.DAYS).isBefore(membership.getSubscriptionEndDate())) {
-                throw new FitManageAppException(
+                throw new DamilSoftException(
                         "Cannot change time-based plan before current period ends.",
-                        ApiErrorCode.UNAUTHORIZED
+                        HttpStatus.UNAUTHORIZED
                 );
             }
         }
 
         if (currentPlan != null && currentPlan.isVisitBased()) {
             if (membership.getRemainingVisits() != null && membership.getRemainingVisits() > 0) {
-                throw new FitManageAppException(
+                throw new DamilSoftException(
                         "Cannot change visit-based plan until all visits are used.",
-                        ApiErrorCode.UNAUTHORIZED
+                        HttpStatus.UNAUTHORIZED
                 );
             }
         }

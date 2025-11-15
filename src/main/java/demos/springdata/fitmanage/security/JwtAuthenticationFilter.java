@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.security;
 
-import demos.springdata.fitmanage.exception.ApiErrorCode;
-import demos.springdata.fitmanage.exception.FitManageAppException;
+import org.springframework.http.HttpStatus;
+import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -61,7 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 
                 if (!userDetails.isEnabled()) {
-                    throw new FitManageAppException("User is disabled", ApiErrorCode.UNAUTHORIZED);
+                    throw new DamilSoftException("User is disabled", HttpStatus.UNAUTHORIZED);
                 }
 
 
