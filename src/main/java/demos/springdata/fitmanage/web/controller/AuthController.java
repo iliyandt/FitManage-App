@@ -36,29 +36,30 @@ public class AuthController {
     @PostMapping( "/register")
     public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
         RegistrationResponseDto response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     @PutMapping("/change-password")
     public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        return ResponseEntity.ok(ApiResponse.success(authenticationService.changePassword(request)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(authenticationService.changePassword(request)));
     }
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<VerificationResponseDto>> verifyUser(@Valid @RequestBody VerificationRequestDto verificationRequestDto) {
         VerificationResponseDto response = authenticationService.verifyUserRegistration(verificationRequestDto);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
     @PostMapping("verification-code/{email}")
-    public ResponseEntity<VerificationResponseDto> resendVerificationCode(@PathVariable String email) {
-        return new ResponseEntity<>(authenticationService.resendUserVerificationCode(email), org.springframework.http.HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<VerificationResponseDto>> resendVerificationCode(@PathVariable String email) {
+        VerificationResponseDto dto = authenticationService.resendUserVerificationCode(email);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(dto));
     }
 
     @PostMapping("/validate_email")
     public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
         EmailResponseDto response = authenticationService.findUserEmail(userEmailRequestDto);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
     @PostMapping("/login")
@@ -73,7 +74,7 @@ public class AuthController {
                 .refreshToken(refreshToken.getToken())
                 .build();
 
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
 
