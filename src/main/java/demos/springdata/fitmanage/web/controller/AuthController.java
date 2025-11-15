@@ -2,8 +2,8 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
-import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
-import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
+import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.domain.dto.auth.response.LoginResponse;
@@ -34,8 +34,8 @@ public class AuthController {
     }
 
     @PostMapping( "/register")
-    public ResponseEntity<ApiResponse<RegistrationResponseDto>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
-        RegistrationResponseDto response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
+        RegisterResponse response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
@@ -45,27 +45,27 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<ApiResponse<VerificationResponseDto>> verifyUser(@Valid @RequestBody VerificationRequestDto verificationRequestDto) {
-        VerificationResponseDto response = authenticationService.verifyUserRegistration(verificationRequestDto);
+    public ResponseEntity<ApiResponse<VerificationResponse>> verifyUser(@Valid @RequestBody VerificationRequest verificationRequest) {
+        VerificationResponse response = authenticationService.verifyUserRegistration(verificationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
     @PostMapping("verification-code/{email}")
-    public ResponseEntity<ApiResponse<VerificationResponseDto>> resendVerificationCode(@PathVariable String email) {
-        VerificationResponseDto dto = authenticationService.resendUserVerificationCode(email);
+    public ResponseEntity<ApiResponse<VerificationResponse>> resendVerificationCode(@PathVariable String email) {
+        VerificationResponse dto = authenticationService.resendUserVerificationCode(email);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(dto));
     }
 
     @PostMapping("/validate_email")
-    public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody UserEmailRequestDto userEmailRequestDto) {
-        EmailResponseDto response = authenticationService.findUserEmail(userEmailRequestDto);
+    public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody EmailValidationRequest emailValidationRequest) {
+        EmailResponseDto response = authenticationService.findUserEmail(emailValidationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
 
-        UserDetails authenticatedUser = authenticationService.authenticateUser(loginRequestDto);
+        UserDetails authenticatedUser = authenticationService.authenticateUser(loginRequest);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(authenticatedUser.getUsername());
 
@@ -79,15 +79,15 @@ public class AuthController {
 
 
     @PostMapping("/refresh_token")
-    public LoginResponse refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto) {
-        return refreshTokenService.findByToken(refreshTokenRequestDto.getToken())
+    public LoginResponse refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
+        return refreshTokenService.findByToken(refreshTokenRequest.token())
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String accessToken = jwtService.generateToken(customUserDetailsService.loadUserByUsername(user.getEmail()));
                     return LoginResponse.builder()
                             .accessToken(accessToken)
-                            .refreshToken(refreshTokenRequestDto.getToken())
+                            .refreshToken(refreshTokenRequest.token())
                             .build();
                 }).orElseThrow(() -> new DamilSoftException("Refresh token is not in the database", HttpStatus.NOT_FOUND));
     }

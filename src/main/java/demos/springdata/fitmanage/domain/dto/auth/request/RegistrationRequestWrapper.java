@@ -5,18 +5,18 @@ import jakarta.validation.Valid;
 
 public class RegistrationRequestWrapper {
     @Valid
-    private RegistrationRequestDto userDto;
+    private RegisterRequest userDto;
     @Valid
     private TenantDto tenantDto;
 
     public RegistrationRequestWrapper() {
     }
 
-    public RegistrationRequestDto getUserDto() {
+    public RegisterRequest getUserDto() {
         return userDto;
     }
 
-    public RegistrationRequestWrapper setUserDto(RegistrationRequestDto userDto) {
+    public RegistrationRequestWrapper setUserDto(RegisterRequest userDto) {
         this.userDto = userDto;
         return this;
     }

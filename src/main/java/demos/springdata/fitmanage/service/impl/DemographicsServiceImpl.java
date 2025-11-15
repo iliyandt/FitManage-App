@@ -63,12 +63,7 @@ public class DemographicsServiceImpl implements DemographicsService {
         demographics.put("subscriptionStatus", subscriptionStatus);
         demographics.put("plan", subscriptionPlan);
         
-        DemographicDataResponse dataResponse = new DemographicDataResponse();
-
-        return DemographicDataResponse
-                .builder()
-                .ratios(demographics)
-                .build();
+        return new DemographicDataResponse(demographics);
     }
 
 

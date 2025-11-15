@@ -7,7 +7,6 @@ import demos.springdata.fitmanage.repository.UserPreferencesRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.UserPreferencesService;
 import demos.springdata.fitmanage.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

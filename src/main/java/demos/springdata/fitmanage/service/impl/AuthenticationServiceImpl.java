@@ -5,8 +5,8 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
-import demos.springdata.fitmanage.domain.dto.auth.response.RegistrationResponseDto;
-import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
+import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -85,7 +85,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Transactional
     @Override
-    public RegistrationResponseDto registerUser(RegistrationRequestDto registrationRequest, TenantDto tenantDto) {
+    public RegisterResponse registerUser(RegisterRequest registrationRequest, TenantDto tenantDto) {
         Stripe.apiKey = apiKey;
         LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
         validateCredentials(registrationRequest);
@@ -103,47 +103,47 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         LOGGER.info("Registration successful for user: {}", user.getEmail());
 
-        return new RegistrationResponseDto(
+        return new RegisterResponse(
                 user.getEmail(),
                 user.getVerificationCode()
         );
     }
 
     @Override
-    public EmailResponseDto findUserEmail(UserEmailRequestDto userEmailRequestDto) {
-        return this.userRepository.findByEmail(userEmailRequestDto.getEmail())
+    public EmailResponseDto findUserEmail(EmailValidationRequest emailValidationRequest) {
+        return this.userRepository.findByEmail(emailValidationRequest.email())
                 .map(user -> modelMapper.map(user, EmailResponseDto.class))
                 .orElseThrow(() -> {
-                    LOGGER.warn("Account with email: {} does not exists", userEmailRequestDto.getEmail());
-                    return new DamilSoftException(String.format("Account with email: %s does not exists.", userEmailRequestDto.getEmail()), HttpStatus.NOT_FOUND);
+                    LOGGER.warn("Account with email: {} does not exists", emailValidationRequest.email());
+                    return new DamilSoftException(String.format("Account with email: %s does not exists.", emailValidationRequest.email()), HttpStatus.NOT_FOUND);
                 });
     }
 
     @Override
-    public UserDetails authenticateUser(LoginRequestDto loginRequestDto) {
-        LOGGER.info("Login attempt for email: {}", loginRequestDto.getEmail());
-        UserDetails authUser = customUserDetailsService.loadUserByUsername(loginRequestDto.getEmail());
+    public UserDetails authenticateUser(LoginRequest loginRequest) {
+        LOGGER.info("Login attempt for email: {}", loginRequest.getEmail());
+        UserDetails authUser = customUserDetailsService.loadUserByUsername(loginRequest.getEmail());
         verifyAccountStatus(authUser);
-        authenticateCredentials(loginRequestDto);
-        LOGGER.info("Login successful for user: {}", loginRequestDto.getEmail());
+        authenticateCredentials(loginRequest);
+        LOGGER.info("Login successful for user: {}", loginRequest.getEmail());
         return authUser;
     }
 
     @Override
-    public VerificationResponseDto verifyUserRegistration(VerificationRequestDto verificationRequestDto) {
-        LOGGER.info("Verification attempt for user: {}", verificationRequestDto.getEmail());
+    public VerificationResponse verifyUserRegistration(VerificationRequest verificationRequest) {
+        LOGGER.info("Verification attempt for user: {}", verificationRequest.email());
 
-        User user = getUserByEmailOrElseThrow(verificationRequestDto.getEmail());
-        validateVerificationCode(user, verificationRequestDto.getVerificationCode());
+        User user = getUserByEmailOrElseThrow(verificationRequest.email());
+        validateVerificationCode(user, verificationRequest.verificationCode());
         enableUserAccount(user);
 
         LOGGER.info("User successfully verified: {}", user.getEmail());
 
-        return new VerificationResponseDto("Account verified successfully", true);
+        return new VerificationResponse("Account verified successfully", true);
     }
 
     @Override
-    public VerificationResponseDto resendUserVerificationCode(String email) {
+    public VerificationResponse resendUserVerificationCode(String email) {
         User user = userService.findByEmail(email);
 
         if (user.isEnabled()) {
@@ -157,7 +157,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
 
 
-        return new VerificationResponseDto("New verification code successfully delivered", true);
+        return new VerificationResponse("New verification code successfully delivered", true);
     }
 
     @Override
@@ -219,16 +219,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 });
     }
 
-    private void authenticateCredentials(LoginRequestDto loginRequestDto) {
+    private void authenticateCredentials(LoginRequest loginRequest) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            loginRequestDto.getEmail(),
-                            loginRequestDto.getPassword()
+                            loginRequest.getEmail(),
+                            loginRequest.getPassword()
                     )
             );
         } catch (AuthenticationException ex) {
-            LOGGER.warn("Login failed for email: {}", loginRequestDto.getEmail());
+            LOGGER.warn("Login failed for email: {}", loginRequest.getEmail());
             throw new DamilSoftException("Invalid password", HttpStatus.UNAUTHORIZED);
         }
     }
@@ -242,7 +242,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private User initializeNewUser(RegistrationRequestDto requestDto) {
+    private User initializeNewUser(RegisterRequest requestDto) {
         User user = mapUser(requestDto)
                 .setGender(Gender.NOT_SPECIFIED)
                 .setCreatedAt(LocalDateTime.now())
@@ -259,7 +259,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return user;
     }
 
-    private void validateCredentials(RegistrationRequestDto request) {
+    private void validateCredentials(RegisterRequest request) {
         Map<String, String> errors = new HashMap<>();
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             LOGGER.warn("User with email {} already exists", request.getEmail());
@@ -280,7 +280,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(rawPassword));
     }
 
-    private User mapUser(RegistrationRequestDto dto) {
+    private User mapUser(RegisterRequest dto) {
         return modelMapper.map(dto, User.class);
     }
 
