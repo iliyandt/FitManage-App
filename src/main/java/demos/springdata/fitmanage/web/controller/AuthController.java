@@ -1,5 +1,4 @@
 package demos.springdata.fitmanage.web.controller;
-
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;

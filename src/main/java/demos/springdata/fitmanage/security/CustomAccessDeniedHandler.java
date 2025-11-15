@@ -29,8 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ApiResponse<?> apiResponse = ApiResponse.failure(
-                "Access denied. Your current subscription plan does not allow access to this functionality.",
-                "FORBIDDEN"
+                "Access denied. Your current subscription plan does not allow access to this functionality."
         );
 
         String json = objectMapper.writeValueAsString(apiResponse);

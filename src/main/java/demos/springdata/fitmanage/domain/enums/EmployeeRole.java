@@ -1,12 +1,8 @@
 package demos.springdata.fitmanage.domain.enums;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum EmployeeRole {
     MANAGER("Manager"),
     NUTRITIONIST("Nutritionist"),
-    MASSAGE_THERAPIST("Massage Therapist"),
     TRAINER("Trainer"),
     RECEPTIONIST("Receptionist"),
     CLEANER("Cleaner"),

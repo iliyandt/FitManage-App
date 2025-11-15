@@ -25,7 +25,7 @@ public class GlobalControllerAdvice {
         ex.getBindingResult().getFieldErrors().forEach(error ->{
             errors.put(error.getField(), error.getDefaultMessage());
         });
-        return ApiResponse.failure("Validation failed", "BAD_REQUEST", errors);
+        return ApiResponse.failure("Validation failed", errors);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -37,25 +37,25 @@ public class GlobalControllerAdvice {
             String message = violation.getMessage();
             errors.put(field, message);
         });
-        return ApiResponse.failure(ex.getMessage(), "BAD_REQUEST", errors);
+        return ApiResponse.failure(ex.getMessage(), errors);
     }
 
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(FitManageAppException.class)
     public ApiResponse<?> handleFitManageAppException(FitManageAppException ex) {
-        return ApiResponse.failure(ex.getMessage(), ex.getErrorCode().name());
+        return ApiResponse.failure(ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(MultipleValidationException.class)
     public ApiResponse<?> handleMultipleValidationException(MultipleValidationException ex) {
-        return ApiResponse.failure(ex.getMessage(), "BAD_REQUEST", ex.getErrors());
+        return ApiResponse.failure(ex.getMessage(), ex.getErrors());
     }
 
     @ExceptionHandler(Exception.class)
     public ApiResponse<?> handleLeftOverExceptions(Exception ex) {
-        return ApiResponse.failure(ex.getMessage(), "INTERNAL_ERROR");
+        return ApiResponse.failure(ex.getMessage());
     }
 
 
