@@ -1,13 +1,20 @@
 package demos.springdata.fitmanage.domain.dto.tenant;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 
 public class TenantDto {
     private Long id;
     private String stripeAccountId;
+    @NotNull
     private String name;
+    @Email
     private String businessEmail;
+    @NotNull
     private String address;
+    @NotNull
     private String city;
     private String abonnement;
     private String abonnementDuration;

@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Entity
 @Table(name = "account_settings")
-public class AccountSettings extends BaseEntity {
+public class UserPreferences extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
@@ -17,14 +17,14 @@ public class AccountSettings extends BaseEntity {
     @Convert(converter = MapToJsonConverter.class)
     private Map<String, Object> settings = new HashMap<>();
 
-    public AccountSettings() {
+    public UserPreferences() {
     }
 
     public User getUser() {
         return user;
     }
 
-    public AccountSettings setUser(User user) {
+    public UserPreferences setUser(User user) {
         this.user = user;
         return this;
     }
@@ -33,7 +33,7 @@ public class AccountSettings extends BaseEntity {
         return settings;
     }
 
-    public AccountSettings setSettings(Map<String, Object> settings) {
+    public UserPreferences setSettings(Map<String, Object> settings) {
         this.settings = settings;
         return this;
     }

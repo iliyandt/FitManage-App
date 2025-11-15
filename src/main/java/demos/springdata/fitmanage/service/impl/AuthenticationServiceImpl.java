@@ -229,7 +229,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             );
         } catch (AuthenticationException ex) {
             LOGGER.warn("Login failed for email: {}", loginRequestDto.getEmail());
-            throw new DamilSoftException("Invalid email or password", HttpStatus.UNAUTHORIZED);
+            throw new DamilSoftException("Invalid password", HttpStatus.UNAUTHORIZED);
         }
     }
 

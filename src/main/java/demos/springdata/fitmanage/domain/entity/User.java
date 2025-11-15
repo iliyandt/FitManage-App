@@ -49,7 +49,7 @@ public class User extends BaseEntity {
     private Tenant tenant;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private AccountSettings accountSettings;
+    private UserPreferences userPreferences;
 
     @OneToOne(mappedBy = "user")
     private RefreshToken refreshToken;
@@ -180,12 +180,12 @@ public class User extends BaseEntity {
         return this;
     }
 
-    public AccountSettings getAccountSettings() {
-        return accountSettings;
+    public UserPreferences getAccountSettings() {
+        return userPreferences;
     }
 
-    public User setAccountSettings(AccountSettings accountSettings) {
-        this.accountSettings = accountSettings;
+    public User setAccountSettings(UserPreferences userPreferences) {
+        this.userPreferences = userPreferences;
         return this;
     }
 

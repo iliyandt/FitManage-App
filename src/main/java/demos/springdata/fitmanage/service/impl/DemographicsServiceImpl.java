@@ -1,11 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.analytics.UserRatioAnalyticsDto;
+import demos.springdata.fitmanage.domain.dto.analytics.DemographicDataResponse;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
-import demos.springdata.fitmanage.service.AnalyticsService;
+import demos.springdata.fitmanage.service.DemographicsService;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +16,21 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class AnalyticsServiceImpl implements AnalyticsService {
+public class DemographicsServiceImpl implements DemographicsService {
     private final UserService userService;
     private final MembershipService membershipService;
 
     @Autowired
-    public AnalyticsServiceImpl(UserService userService, MembershipService membershipService) {
+    public DemographicsServiceImpl(UserService userService, MembershipService membershipService) {
         this.userService = userService;
         this.membershipService = membershipService;
     }
 
     @Override
-    public UserRatioAnalyticsDto calculateUserRatios() {
+    public DemographicDataResponse calculateDemographics() {
         Long totalUsers = userService.countAllUsersByTenant();
 
-        Map<String, Map<String, Double>> analytics = new HashMap<>();
+        Map<String, Map<String, Double>> demographics = new HashMap<>();
 
         Map<String, Double> gendersCount = new HashMap<>();
         if (totalUsers == 0) {
@@ -58,12 +58,17 @@ public class AnalyticsServiceImpl implements AnalyticsService {
                 membershipService::countBySubscriptionPlanForTenant
         );
 
-        analytics.put("gender", gendersCount);
-        analytics.put("employment", employmentCount);
-        analytics.put("subscriptionStatus", subscriptionStatus);
-        analytics.put("plan", subscriptionPlan);
+        demographics.put("gender", gendersCount);
+        demographics.put("employment", employmentCount);
+        demographics.put("subscriptionStatus", subscriptionStatus);
+        demographics.put("plan", subscriptionPlan);
+        
+        DemographicDataResponse dataResponse = new DemographicDataResponse();
 
-        return new UserRatioAnalyticsDto().setRatios(analytics);
+        return DemographicDataResponse
+                .builder()
+                .ratios(demographics)
+                .build();
     }
 
 
