@@ -82,6 +82,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public UserResponse deleteMember(Long memberId) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
