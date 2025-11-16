@@ -165,11 +165,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
        User user = userService.getCurrentUser();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw  new DamilSoftException("Old password is incorrect", HttpStatus.NOT_FOUND);
+            throw  new DamilSoftException("Old password is incorrect", HttpStatus.UNAUTHORIZED);
         }
 
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
-            throw new DamilSoftException("New password cannot be the same as old password", HttpStatus.NOT_FOUND);
+            throw new DamilSoftException("New password cannot be the same as old password", HttpStatus.CONFLICT);
+        }
+
+        if (!passwordEncoder.matches(request.getNewPassword(), request.getConfirmPassword())) {
+            throw new DamilSoftException("New password and confirm password do not match!", HttpStatus.CONFLICT);
         }
 
         encryptUserPassword(user, request.getNewPassword());

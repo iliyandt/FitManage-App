@@ -1,9 +1,9 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.member.request.CreateMemberRequest;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 
 public interface AccessRequestService {
-    MemberResponseDto requestAccess(Long tenantId, CreateMemberRequest createMemberRequest);
+    MemberResponseDto requestAccess(Long tenantId, CreateUser createMemberRequest);
     MemberResponseDto processAccessRequest(Long membershipId, boolean approve);
 }

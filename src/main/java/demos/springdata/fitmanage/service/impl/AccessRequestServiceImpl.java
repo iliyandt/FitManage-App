@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.member.request.CreateMemberRequest;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -55,7 +55,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public MemberResponseDto requestAccess(Long tenantId, CreateMemberRequest createRequest) {
+    public MemberResponseDto requestAccess(Long tenantId, CreateUser createRequest) {
 
         Tenant tenant = tenantService.getTenantById(tenantId);
 
