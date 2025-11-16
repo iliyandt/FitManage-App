@@ -144,7 +144,7 @@ public class MemberServiceImpl implements MemberService {
                 .setSubscriptionEndDate(membership.getSubscriptionEndDate())
                 .setEmployment(membership.getEmployment())
                 .setLastCheckInAt(membership.getLastCheckInAt())
-                .setRoles(UserRoleHelper.extractRoleTypes(authenticatedUser));
+                .setRoles(UserRoleHelper.extractRoleTypes(member));
     }
 
     @Transactional
