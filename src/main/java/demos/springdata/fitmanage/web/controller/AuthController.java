@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
@@ -57,8 +57,8 @@ public class AuthController {
     }
 
     @PostMapping("/validate_email")
-    public ResponseEntity<ApiResponse<EmailResponseDto>> validateEmail(@Valid @RequestBody EmailValidationRequest emailValidationRequest) {
-        EmailResponseDto response = authenticationService.findUserEmail(emailValidationRequest);
+    public ResponseEntity<ApiResponse<EmailResponse>> validateEmail(@Valid @RequestBody EmailValidationRequest emailValidationRequest) {
+        EmailResponse response = authenticationService.findUserEmail(emailValidationRequest);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
     }
 

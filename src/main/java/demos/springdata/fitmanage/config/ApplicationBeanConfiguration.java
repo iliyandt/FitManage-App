@@ -1,12 +1,10 @@
 package demos.springdata.fitmanage.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.gson.Gson;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.service.impl.CustomUserDetailsServiceImpl;
@@ -45,8 +43,8 @@ public class ApplicationBeanConfiguration {
                 })
                 .setPropertyCondition(Conditions.isNotNull());
 
-        modelMapper.typeMap(User.class, EmployeeResponseDto.class).addMappings(mapper ->
-                mapper.map(User::getUsername, EmployeeResponseDto::setUsername)
+        modelMapper.typeMap(User.class, EmployeeDataResponse.class).addMappings(mapper ->
+                mapper.map(User::getUsername, EmployeeDataResponse::setUsername)
         ).setPropertyCondition(Conditions.isNotNull());
 
         configureUserMapper(modelMapper);
@@ -54,8 +52,8 @@ public class ApplicationBeanConfiguration {
     }
 
     private void configureUserMapper(ModelMapper modelMapper) {
-        modelMapper.typeMap(User.class, UserResponseDto.class)
-                .addMappings(mapper -> mapper.map(User::getUsername, UserResponseDto::setUsername))
+        modelMapper.typeMap(User.class, UserResponse.class)
+                .addMappings(mapper -> mapper.map(User::getUsername, UserResponse::setUsername))
                 .setPropertyCondition(Conditions.isNotNull());
     }
 

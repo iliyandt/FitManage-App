@@ -1,8 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanUpdateDto;
-import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
-import demos.springdata.fitmanage.domain.dto.membershipplan.PlanPriceResponse;
+import demos.springdata.fitmanage.domain.dto.membershipplan.UpdateRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PriceResponse;
 import demos.springdata.fitmanage.domain.entity.MembershipPlan;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Employment;
@@ -44,16 +44,16 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     }
 
     @Override
-    public List<MembershipPlanDto> createPlans(List<MembershipPlanDto> plansDto) {
+    public List<PlanRequest> createPlans(List<PlanRequest> requests) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
-        List<MembershipPlanDto> savedPlans = new ArrayList<>();
+        List<PlanRequest> savedPlans = new ArrayList<>();
 
-        for (MembershipPlanDto planDto : plansDto) {
-            MembershipPlan plan = modelMapper.map(planDto, MembershipPlan.class);
+        for (PlanRequest request : requests) {
+            MembershipPlan plan = modelMapper.map(request, MembershipPlan.class);
             plan.setTenant(tenant);
             MembershipPlan saved = membershipPlanRepository.save(plan);
-            savedPlans.add(modelMapper.map(saved, MembershipPlanDto.class));
+            savedPlans.add(modelMapper.map(saved, PlanRequest.class));
         }
 
         return savedPlans;
@@ -61,21 +61,21 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
 
     @Override
-    public List<MembershipPlanDto> getPlansData() {
+    public List<PlanRequest> getPlansData() {
         Tenant tenant = userService.getCurrentUser().getTenant();
         List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByTenant(tenant);
 
         return plans.stream()
-                .map(p -> modelMapper.map(p, MembershipPlanDto.class)).toList();
+                .map(p -> modelMapper.map(p, PlanRequest.class)).toList();
     }
 
 
     @Override
-    public MembershipPlanUpdateDto updatePlanPrices(Long planId, MembershipPlanUpdateDto dto) {
+    public UpdateRequest updatePlanPrices(Long planId, UpdateRequest request) {
         MembershipPlan membershipPlan = membershipPlanRepository.getMembershipPlanById(planId);
-        modelMapper.map(dto, membershipPlan);
+        modelMapper.map(request, membershipPlan);
         membershipPlanRepository.save(membershipPlan);
-        return dto;
+        return request;
     }
 
     @Override
@@ -91,10 +91,9 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     }
 
     @Override
-    public PlanPriceResponse getPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
+    public PriceResponse getPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         BigDecimal specificPlanPrice = membershipPlanRepository.findPriceByTenantAndSubscriptionPlanAndEmployment(tenant, subscriptionPlan, employment.name());
-        PlanPriceResponse planPriceResponse = new PlanPriceResponse();
-        return planPriceResponse.setPrice(specificPlanPrice);
+        return new PriceResponse(specificPlanPrice);
     }
 }

@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantNonAuthInfoDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantLookUp;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 
@@ -12,6 +12,6 @@ public interface TenantService {
     Tenant getTenantByEmail(String email);
     TenantDto getTenantDtoByEmail();
     List<TenantDto> getAllTenants();
-    List<TenantNonAuthInfoDto> getShortInfoForAllTenants();
+    List<TenantLookUp> getShortInfoForAllTenants();
     void createAbonnement(Long tenantId, Abonnement planName, String duration);
 }

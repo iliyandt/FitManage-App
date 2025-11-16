@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserResponseDto getUserProfileByEmail(String email) {
+    public UserResponse getUserProfileByEmail(String email) {
         LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateProfile(UserUpdateDto dto) {
+    public UserResponse updateProfile(UserUpdate dto) {
 
         User currentlyLoggedUser = this.getCurrentUser();
 
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
         User savedUser = userRepository.save(currentlyLoggedUser);
 
-        UserResponseDto response = modelMapper.map(savedUser, UserResponseDto.class);
+        UserResponse response = modelMapper.map(savedUser, UserResponse.class);
 
         response.setRoles(UserRoleHelper.extractRoleTypes(currentlyLoggedUser));
 
@@ -168,8 +168,8 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
-    private UserResponseDto mapBaseProfile(User user, Set<RoleType> roles) {
-        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
+    private UserResponse mapBaseProfile(User user, Set<RoleType> roles) {
+        UserResponse dto = modelMapper.map(user, UserResponse.class);
         dto.setBirthDate(user.getBirthDate());
         dto.setUsername(user.getUsername());
         dto.setRoles(roles);

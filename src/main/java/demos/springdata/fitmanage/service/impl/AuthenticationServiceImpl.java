@@ -4,7 +4,7 @@ import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
-import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponseDto;
+import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
@@ -110,9 +110,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public EmailResponseDto findUserEmail(EmailValidationRequest emailValidationRequest) {
+    public EmailResponse findUserEmail(EmailValidationRequest emailValidationRequest) {
         return this.userRepository.findByEmail(emailValidationRequest.email())
-                .map(user -> modelMapper.map(user, EmailResponseDto.class))
+                .map(user -> new EmailResponse(user.getEmail()))
                 .orElseThrow(() -> {
                     LOGGER.warn("Account with email: {} does not exists", emailValidationRequest.email());
                     return new DamilSoftException(String.format("Account with email: %s does not exists.", emailValidationRequest.email()), HttpStatus.NOT_FOUND);

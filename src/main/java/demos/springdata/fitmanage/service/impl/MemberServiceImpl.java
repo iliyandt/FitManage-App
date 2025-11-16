@@ -1,11 +1,11 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
@@ -60,7 +60,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberResponseDto createMember(UserCreateRequestDto requestDto) {
+    public MemberResponseDto create(CreateUser requestDto) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
         User user = buildMember(tenant, requestDto);
@@ -82,7 +82,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public UserResponseDto removeMember(Long memberId) {
+    public UserResponse deleteMember(Long memberId) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
 
@@ -90,20 +90,21 @@ public class MemberServiceImpl implements MemberService {
         userService.delete(user);
         LOGGER.info("Member with ID {} deleted successfully", memberId);
 
-        return new UserResponseDto()
-                .setId(user.getId())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setUsername(user.getUsername())
-                .setEmail(user.getEmail())
-                .setGender(user.getGender())
-                .setRoles(UserRoleHelper.extractRoleTypes(user))
-                .setBirthDate(user.getBirthDate())
-                .setCreatedAt(user.getCreatedAt())
-                .setUpdatedAt(user.getUpdatedAt())
-                .setPhone(user.getPhone())
-                .setAddress(user.getAddress())
-                .setCity(user.getCity());
+        return UserResponse.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .roles(UserRoleHelper.extractRoleTypes(user))
+                .birthDate(user.getBirthDate())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .phone(user.getPhone())
+                .address(user.getAddress())
+                .city(user.getCity())
+                .build();
     }
 
     @Transactional
@@ -123,7 +124,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponseDto updateMemberDetails(Long memberId, MemberUpdateDto updateRequest) {
+    public MemberResponseDto updateMember(Long memberId, MemberUpdate updateRequest) {
         User authenticatedUser = userService.getCurrentUser();
         User member = userService.findUserById(memberId);
 
@@ -147,7 +148,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public List<MemberTableDto> getAllMembersForTable() {
+    public List<MemberTableDto> findMembersTableView() {
         LOGGER.info("Prepare list of all members for table view");
 
         Tenant tenant = userService.getCurrentUser().getTenant();
@@ -163,7 +164,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public List<MemberTableDto> getMembersByFilter(MemberFilterRequestDto filter) {
+    public List<MemberTableDto> getMembersByFilter(MemberFilter filter) {
         LOGGER.info("Search for users with filter: {}", filter);
 
         Tenant tenant = userService.getCurrentUser().getTenant();
@@ -187,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public List<MemberResponseDto> findMember(MemberFilterRequestDto filter) {
+    public List<MemberResponseDto> findMember(MemberFilter filter) {
         List<User> users = findFirstMemberByFilter(filter);
 
 
@@ -203,7 +204,7 @@ public class MemberServiceImpl implements MemberService {
         }).toList();
     }
 
-    private User buildMember(Tenant tenant, UserCreateRequestDto requestDto) {
+    private User buildMember(Tenant tenant, CreateUser requestDto) {
 
         User user = modelMapper.map(requestDto, User.class);
         user.setTenant(tenant)
@@ -229,7 +230,7 @@ public class MemberServiceImpl implements MemberService {
         return membership;
     }
 
-    private List<User> findFirstMemberByFilter(MemberFilterRequestDto filter) {
+    private List<User> findFirstMemberByFilter(MemberFilter filter) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
         LOGGER.warn("Searching users with filter: {}", filter);

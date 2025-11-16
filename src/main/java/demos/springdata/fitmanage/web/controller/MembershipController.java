@@ -3,8 +3,8 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
+import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.MembershipService;
 import jakarta.validation.Valid;
@@ -29,14 +29,14 @@ public class MembershipController {
     @PutMapping("/{memberId}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> update(
             @PathVariable Long memberId,
-            @RequestBody @Valid MemberSubscriptionRequestDto dto) {
+            @RequestBody @Valid SubscriptionRequest dto) {
         MemberResponseDto response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<EnumOption>>> getPlansForTenant() {
-        List<MembershipPlanDto> planPriceDtoList = membershipPlanService.getPlansData();
+        List<PlanRequest> planPriceDtoList = membershipPlanService.getPlansData();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
                 .toList();

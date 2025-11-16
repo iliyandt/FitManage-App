@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.training;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 public record TrainingResponse(

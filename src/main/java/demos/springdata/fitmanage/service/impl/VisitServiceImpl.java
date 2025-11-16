@@ -77,15 +77,14 @@ public class VisitServiceImpl implements VisitService {
 
     private VisitTableResponse manualMapDto(Visit visit) {
         Membership membership = visit.getMembership();
+        User user = membership.getUser();
 
-        VisitTableResponse dto = new VisitTableResponse();
-
-        dto.setId(visit.getUser().getId())
-                .setFirstName(membership.getUser().getFirstName())
-                .setLastName(membership.getUser().getLastName())
-                .setPhone(membership.getUser().getPhone())
-                .setSubscriptionPlan(membership.getSubscriptionPlan());
-
-        return dto;
+        return VisitTableResponse.builder()
+                .id(visit.getUser().getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .build();
     }
 }

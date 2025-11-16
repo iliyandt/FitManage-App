@@ -2,9 +2,8 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantNonAuthInfoDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantLookUp;
 import demos.springdata.fitmanage.service.TenantService;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +22,8 @@ public class TenantController {
     }
 
     @GetMapping("/lookup")
-    public ResponseEntity<ApiResponse<List<TenantNonAuthInfoDto>>> getShortInfoForAllTenants() {
-        List<TenantNonAuthInfoDto> tenants = tenantService.getShortInfoForAllTenants();
+    public ResponseEntity<ApiResponse<List<TenantLookUp>>> getShortInfoForAllTenants() {
+        List<TenantLookUp> tenants = tenantService.getShortInfoForAllTenants();
         return ResponseEntity.ok(ApiResponse.success(tenants));
     }
 

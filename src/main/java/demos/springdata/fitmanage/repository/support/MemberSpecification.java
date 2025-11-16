@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.repository.support;
 
-import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.Gender;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberSpecification {
-    public static Specification<User> build(MemberFilterRequestDto filter) {
+    public static Specification<User> build(MemberFilter filter) {
         List<Specification<User>> specs = new ArrayList<>();
         if (filter.getId() != null) {
             specs.add(id(filter.getId()));

@@ -12,7 +12,7 @@ import com.stripe.net.Webhook;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.dto.payment.AccountLinkResponse;
 import demos.springdata.fitmanage.domain.dto.payment.ConnectedCheckoutRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -187,13 +187,14 @@ public class StripeConnectServiceImpl implements StripeConnectService {
                 Session session = (Session) stripeObject;
                 LOGGER.info("Payment for {} succeeded.", session.getAmountTotal());
 
-                MemberSubscriptionRequestDto requestDto = new MemberSubscriptionRequestDto()
-                        .setSubscriptionPlan(SubscriptionPlan.valueOf(session.getMetadata().get("subscriptionPlan")))
-                        .setEmployment(Employment.valueOf(session.getMetadata().get("employment")))
-                        .setAllowedVisits(Integer.valueOf(session.getMetadata().get("allowedVisits")));
+                SubscriptionRequest request = new SubscriptionRequest(
+                        Integer.valueOf(session.getMetadata().get("allowedVisits")),
+                        SubscriptionPlan.valueOf(session.getMetadata().get("subscriptionPlan")),
+                        Employment.valueOf(session.getMetadata().get("employment"))
+                );
 
 
-                membershipService.setupMembershipPlan(Long.valueOf(session.getMetadata().get("userId")), requestDto);
+                membershipService.setupMembershipPlan(Long.valueOf(session.getMetadata().get("userId")), request);
 
                 LOGGER.info("Abonnement {} created for tenant with ID: {}", session.getMetadata().get("planName"), session.getMetadata().get("tenantId"));
                 break;

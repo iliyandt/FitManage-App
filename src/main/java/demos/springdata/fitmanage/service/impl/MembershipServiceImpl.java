@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberSubscriptionRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -45,7 +45,7 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Transactional
     @Override
-    public MemberResponseDto setupMembershipPlan(Long memberId, MemberSubscriptionRequestDto requestDto) {
+    public MemberResponseDto setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
@@ -124,17 +124,17 @@ public class MembershipServiceImpl implements MembershipService {
         return membershipRepository.getMembershipById(membershipId);
     }
 
-    private void initializeVisitBasedSubscription(Membership membership, MemberSubscriptionRequestDto requestDto) {
+    private void initializeVisitBasedSubscription(Membership membership, SubscriptionRequest requestDto) {
         LOGGER.info("Visit-based subscription detected. Initializing visits...");
 
-        Integer allowedVisits = requestDto.getAllowedVisits() != null
-                ? requestDto.getAllowedVisits()
+        Integer allowedVisits = requestDto.allowedVisits() != null
+                ? requestDto.allowedVisits()
                 : SubscriptionPlan.VISIT_PASS.getDefaultVisits();
 
         membership
-                .setSubscriptionPlan(requestDto.getSubscriptionPlan())
+                .setSubscriptionPlan(requestDto.subscriptionPlan())
                 .setSubscriptionStatus(SubscriptionStatus.ACTIVE)
-                .setEmployment(requestDto.getEmployment())
+                .setEmployment(requestDto.employment())
                 .setAllowedVisits(allowedVisits)
                 .setRemainingVisits(allowedVisits)
                 .setSubscriptionStartDate(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS))
@@ -170,23 +170,23 @@ public class MembershipServiceImpl implements MembershipService {
         return memberResponse;
     }
 
-    private void activateMembership(Membership membership, User user, MemberSubscriptionRequestDto requestDto) {
+    private void activateMembership(Membership membership, User user, SubscriptionRequest requestDto) {
         LOGGER.info("Activating membership for user with username: {}", user.getUsername());
-        SubscriptionPlan plan = requestDto.getSubscriptionPlan();
+        SubscriptionPlan plan = requestDto.subscriptionPlan();
 
         if (plan.isVisitBased()) {
             initializeVisitBasedSubscription(membership, requestDto);
         } else {
-            membership.setEmployment(requestDto.getEmployment());
+            membership.setEmployment(requestDto.employment());
             membership.setSubscriptionPlan(plan);
             initializeTimeBasedSubscription(membership);
         }
 
     }
 
-    private void validateSubscriptionChange(Membership membership, MemberSubscriptionRequestDto updateRequest) {
+    private void validateSubscriptionChange(Membership membership, SubscriptionRequest updateRequest) {
         SubscriptionPlan currentPlan = membership.getSubscriptionPlan();
-        SubscriptionPlan newPlan = updateRequest.getSubscriptionPlan();
+        SubscriptionPlan newPlan = updateRequest.subscriptionPlan();
 
         if (currentPlan == newPlan) return;
 

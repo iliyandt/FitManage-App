@@ -2,12 +2,12 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberFilterRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdateDto;
-import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.users.UserResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -34,25 +34,25 @@ public class MemberController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<TableResponseDto>> getMembers(
-            @ModelAttribute @Valid MemberFilterRequestDto filter) {
+            @ModelAttribute @Valid MemberFilter filter) {
 
         List<MemberTableDto> members = (!isFilterEmpty(filter))
                 ? memberService.getMembersByFilter(filter)
-                : memberService.getAllMembersForTable();
+                : memberService.findMembersTableView();
 
         TableResponseDto response = buildTableResponse(members);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> searchMember(@ModelAttribute @Valid MemberFilterRequestDto filter) {
+    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> searchMember(@ModelAttribute @Valid MemberFilter filter) {
         List<MemberResponseDto> response = memberService.findMember(filter);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody UserCreateRequestDto requestDto) {
-        MemberResponseDto responseDto = memberService.createMember(requestDto);
+    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody CreateUser requestDto) {
+        MemberResponseDto responseDto = memberService.create(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
@@ -66,14 +66,14 @@ public class MemberController {
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdateDto memberUpdateDto) {
-        MemberResponseDto userProfileDto = memberService.updateMemberDetails(memberId, memberUpdateDto);
+    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdate memberUpdate) {
+        MemberResponseDto userProfileDto = memberService.updateMember(memberId, memberUpdate);
         return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponseDto>> deleteMember(@PathVariable Long id) {
-        UserResponseDto response = memberService.removeMember(id);
+    public ResponseEntity<ApiResponse<UserResponse>> deleteMember(@PathVariable Long id) {
+        UserResponse response = memberService.deleteMember(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -85,7 +85,7 @@ public class MemberController {
         return response;
     }
 
-    private boolean isFilterEmpty(MemberFilterRequestDto filter) {
+    private boolean isFilterEmpty(MemberFilter filter) {
         return filter.getId() == null &&
                 filter.getFirstName() == null &&
                 filter.getLastName() == null &&

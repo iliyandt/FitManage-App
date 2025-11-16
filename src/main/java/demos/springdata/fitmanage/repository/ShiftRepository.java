@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.repository;
 
-import demos.springdata.fitmanage.domain.dto.shift.ShiftResponseDto;
 import demos.springdata.fitmanage.domain.entity.Shift;
 import demos.springdata.fitmanage.domain.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

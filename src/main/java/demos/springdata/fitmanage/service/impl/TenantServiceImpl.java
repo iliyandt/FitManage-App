@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantNonAuthInfoDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantLookUp;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -52,23 +51,26 @@ public class TenantServiceImpl implements TenantService {
         return this.tenantRepository.findAll()
                 .stream()
                 .map(tenant -> {
-                    TenantDto dto = this.modelMapper.map(tenant, TenantDto.class);
-                    if (tenant.getAbonnement() != null) {
-                         dto
-                                 .setAbonnement(tenant.getAbonnement().name())
-                                 .setAbonnementDuration(tenant.getSubscriptionValidUntil().toString())
-                                 .setMembersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant));
-                    }
-                    return dto;
+                    return TenantDto.builder()
+                            .id(tenant.getId())
+                            .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
+                            .name(tenant.getName())
+                            .businessEmail(tenant.getBusinessEmail())
+                            .address(tenant.getAddress())
+                            .city(tenant.getCity())
+                            .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
+                            .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
+                            .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
+                            .build();
                 }).toList();
 
     }
 
     @Override
-    public List<TenantNonAuthInfoDto> getShortInfoForAllTenants() {
+    public List<TenantLookUp> getShortInfoForAllTenants() {
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> this.modelMapper.map(tenant, TenantNonAuthInfoDto.class))
+                .map(tenant -> this.modelMapper.map(tenant, TenantLookUp.class))
                 .toList();
     }
 
@@ -78,17 +80,17 @@ public class TenantServiceImpl implements TenantService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = getTenantByEmail(email);
 
-        Long countUsersWithRoleMember = getCountOfUsersWithRoleMemberWithinATenant(tenant);
-
-        TenantDto dto = modelMapper.map(tenant, TenantDto.class)
-                .setMembersCount(countUsersWithRoleMember);
-
-        if (tenant.getAbonnement() != null) {
-            dto.setAbonnement(tenant.getAbonnement().name());
-            dto.setAbonnementDuration(tenant.getAbonnementDuration().name());
-        }
-
-        return dto;
+        return TenantDto.builder()
+                .id(tenant.getId())
+                .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
+                .name(tenant.getName())
+                .businessEmail(tenant.getBusinessEmail())
+                .address(tenant.getAddress())
+                .city(tenant.getCity())
+                .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
+                .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
+                .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
+                .build();
     }
 
     private Long getCountOfUsersWithRoleMemberWithinATenant(Tenant tenant) {

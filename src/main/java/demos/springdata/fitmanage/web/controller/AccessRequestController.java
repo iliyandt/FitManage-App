@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberCreateRequestDto;
+import demos.springdata.fitmanage.domain.dto.member.request.CreateMemberRequest;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.service.AccessRequestService;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ public class AccessRequestController {
     @PostMapping("/{tenantId}")
     public ResponseEntity<ApiResponse<MemberResponseDto>> requestAccess(
             @PathVariable Long tenantId,
-            @Valid @RequestBody MemberCreateRequestDto requestDto) {
+            @Valid @RequestBody CreateMemberRequest requestDto) {
         MemberResponseDto response = accessRequestService.requestAccess(tenantId, requestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

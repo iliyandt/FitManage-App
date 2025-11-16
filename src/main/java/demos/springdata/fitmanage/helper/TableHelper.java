@@ -1,10 +1,9 @@
 package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.config.*;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.membershipplan.MembershipPlanTableDto;
-import demos.springdata.fitmanage.domain.dto.training.TrainingRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanTable;
 import demos.springdata.fitmanage.domain.dto.training.TrainingResponse;
 import demos.springdata.fitmanage.domain.dto.visit.VisitTableResponse;
 import org.slf4j.Logger;
@@ -29,17 +28,16 @@ public class TableHelper {
     }
 
     public <T> ConfigDto buildTableConfig(String basePath, Class<T> dtoClass) {
-        PaginationConfigDto pagination = new PaginationConfigDto();
-        pagination.setPageSize(10);
+        PaginationConfig pagination = new PaginationConfig(10);
 
-        List<ActionConfigDto> actions = List.of(
-                new ActionConfigDto("details", "Details", basePath + "/{id}"),
-                new ActionConfigDto("edit", "Edit", basePath + "/{id}"),
-                new ActionConfigDto("delete", "Delete", basePath + "/{id}")
+        List<ActionConfig> actions = List.of(
+                new ActionConfig("details", "Details", basePath + "/{id}"),
+                new ActionConfig("edit", "Edit", basePath + "/{id}"),
+                new ActionConfig("delete", "Delete", basePath + "/{id}")
         );
 
         Map<String, Boolean> columnVisibility = buildColumnVisibility(dtoClass, true);
-        ColumnsLayoutConfigDto columnsLayoutConfig = new ColumnsLayoutConfigDto(columnVisibility);
+        ColumnsLayoutConfig columnsLayoutConfig = new ColumnsLayoutConfig(columnVisibility);
         Map<String, Boolean> createFields = buildCreateFields(dtoClass);
 
         SortingConfigDto sortingConfig = sortingConfigMap.getOrDefault(
@@ -124,14 +122,14 @@ public class TableHelper {
             ),
 
 
-            MembershipPlanTableDto.class, Set.of(
+            PlanTable.class, Set.of(
                     "price",
                     "studentPrice",
                     "seniorPrice",
                     "handicapPrice"
             ),
 
-            EmployeeTableDto.class, Set.of(
+            EmployeeTable.class, Set.of(
                     "firstName",
                     "lastName",
                     "email",
@@ -155,8 +153,8 @@ public class TableHelper {
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
             MemberTableDto.class, Set.of("id", "firstName", "lastName", "phone", "subscriptionStatus"),
-            EmployeeTableDto.class, Set.of("id", "firstName", "lastName", "gender", "employeeRole"),
-            MembershipPlanTableDto.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
+            EmployeeTable.class, Set.of("id", "firstName", "lastName", "gender", "employeeRole"),
+            PlanTable.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
             VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone"),
             TrainingResponse.class, Set.of("name", "category", "date", "duration", "capacity", "spots", "trainer", "joined", "location")
     );

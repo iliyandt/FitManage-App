@@ -3,7 +3,6 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.news.NewsRequest;
 import demos.springdata.fitmanage.domain.dto.news.NewsResponse;
-import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
 import demos.springdata.fitmanage.service.NewsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,14 +1,12 @@
 package demos.springdata.fitmanage.web.controller;
 
-import com.beust.ah.A;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequest;
+import demos.springdata.fitmanage.domain.dto.employee.CreateEmployee;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
-import demos.springdata.fitmanage.domain.dto.users.UserCreateRequestDto;
-import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
+import demos.springdata.fitmanage.domain.dto.users.UserLookup;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -36,8 +34,8 @@ public class EmployeeController { ;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EmployeeResponseDto>> createEmployee(@Valid @RequestBody EmployeeCreateRequest requestDto) {
-        EmployeeResponseDto responseDto = employeeService.createEmployee(requestDto);
+    public ResponseEntity<ApiResponse<EmployeeDataResponse>> createEmployee(@Valid @RequestBody CreateEmployee requestDto) {
+        EmployeeDataResponse responseDto = employeeService.createEmployee(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
@@ -55,16 +53,16 @@ public class EmployeeController { ;
     }
 
     @GetMapping("/role")
-    public ResponseEntity<ApiResponse<List<UserLookupDto>>> getEmployeesWithRole() {
-        List<UserLookupDto> employeesByEmployeeRole = employeeService.findEmployeesByEmployeeRole("TRAINER");
+    public ResponseEntity<ApiResponse<List<UserLookup>>> getEmployeesWithRole() {
+        List<UserLookup> employeesByEmployeeRole = employeeService.findEmployeesByEmployeeRole("TRAINER");
 
         return ResponseEntity.ok(ApiResponse.success(employeesByEmployeeRole));
     }
 
-    private TableResponseDto buildTableResponse(List<EmployeeTableDto> members) {
+    private TableResponseDto buildTableResponse(List<EmployeeTable> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/employees", EmployeeTableDto.class));
-        response.setColumns(TableColumnBuilder.buildColumns(EmployeeTableDto.class));
+        response.setConfig(tableHelper.buildTableConfig("/employees", EmployeeTable.class));
+        response.setColumns(TableColumnBuilder.buildColumns(EmployeeTable.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;
     }

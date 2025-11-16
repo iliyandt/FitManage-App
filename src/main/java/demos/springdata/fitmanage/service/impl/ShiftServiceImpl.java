@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.shift.ShiftCreateRequest;
-import demos.springdata.fitmanage.domain.dto.shift.ShiftResponseDto;
+import demos.springdata.fitmanage.domain.dto.shift.CreateShift;
+import demos.springdata.fitmanage.domain.dto.shift.ShiftResponse;
 import demos.springdata.fitmanage.domain.entity.Employee;
 import demos.springdata.fitmanage.domain.entity.Shift;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -45,7 +45,7 @@ public class ShiftServiceImpl implements ShiftService {
 
 
     @Override
-    public ShiftResponseDto createShift(ShiftCreateRequest createRequest) {
+    public ShiftResponse createShift(CreateShift createRequest) {
         User user = userService.getCurrentUser();
         Tenant tenant = user.getTenant();
 
@@ -59,15 +59,16 @@ public class ShiftServiceImpl implements ShiftService {
                 .setApproved(false);
 
         Shift savedShift = shiftRepository.save(shift);
-        ShiftResponseDto mappedShift = modelMapper.map(savedShift, ShiftResponseDto.class);
-        return mappedShift.setFirstName(employee.getUser().getFirstName())
-                .setLastName(employee.getUser().getLastName())
-                .setRole(employee.getEmployeeRole().getDisplayName());
+        ShiftResponse mappedShift = modelMapper.map(savedShift, ShiftResponse.class);
+        mappedShift.setFirstName(employee.getUser().getFirstName());
+        mappedShift.setLastName(employee.getUser().getLastName());
+        mappedShift.setRole(employee.getEmployeeRole().getDisplayName());
+        return mappedShift;
     }
 
     @Override
     @Transactional
-    public List<ShiftResponseDto> getShiftsForCurrentUser() {
+    public List<ShiftResponse> getShiftsForCurrentUser() {
         LOGGER.info("Get shifts information for current user");
         User user = userService.getCurrentUser();
 
@@ -75,12 +76,12 @@ public class ShiftServiceImpl implements ShiftService {
 
 
         return employeeShifts.stream().map(shift -> {
-            ShiftResponseDto currentShift = modelMapper.map(shift, ShiftResponseDto.class);
+            ShiftResponse currentShift = modelMapper.map(shift, ShiftResponse.class);
             Employee employee = shift.getEmployee();
 
-            currentShift.setFirstName(user.getFirstName())
-                    .setLastName(user.getLastName())
-                    .setRole(employee.getEmployeeRole().getDisplayName());
+            currentShift.setFirstName(user.getFirstName());
+            currentShift.setLastName(user.getLastName());
+            currentShift.setRole(employee.getEmployeeRole().getDisplayName());
 
             return currentShift;
         }).toList();

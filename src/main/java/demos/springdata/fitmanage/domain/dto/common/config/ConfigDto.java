@@ -1,47 +1,34 @@
 package demos.springdata.fitmanage.domain.dto.common.config;
 
+import lombok.*;
+
 import java.util.List;
 import java.util.Map;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConfigDto {
     private SortingConfigDto sortable;
-    private List<ActionConfigDto> actions;
-    private ColumnsLayoutConfigDto columnsLayoutConfig;
+    private List<ActionConfig> actions;
+    private ColumnsLayoutConfig columnsLayoutConfig;
     private Map<String, Boolean> createFields;
-    private PaginationConfigDto pagination;
-
-    public ConfigDto() {
-    }
-
-    public SortingConfigDto getSortable() {
-        return sortable;
-    }
+    private PaginationConfig pagination;
 
     public ConfigDto setSortable(SortingConfigDto sortable) {
         this.sortable = sortable;
         return this;
     }
 
-    public List<ActionConfigDto> getActions() {
-        return actions;
-    }
-
-    public ConfigDto setActions(List<ActionConfigDto> actions) {
+    public ConfigDto setActions(List<ActionConfig> actions) {
         this.actions = actions;
         return this;
     }
 
-    public ColumnsLayoutConfigDto getColumnsLayoutConfig() {
-        return columnsLayoutConfig;
-    }
-
-    public ConfigDto setColumnsLayoutConfig(ColumnsLayoutConfigDto columnsLayoutConfig) {
+    public ConfigDto setColumnsLayoutConfig(ColumnsLayoutConfig columnsLayoutConfig) {
         this.columnsLayoutConfig = columnsLayoutConfig;
         return this;
-    }
-
-    public Map<String, Boolean> getCreateFields() {
-        return createFields;
     }
 
     public ConfigDto setCreateFields(Map<String, Boolean> createFields) {
@@ -49,11 +36,7 @@ public class ConfigDto {
         return this;
     }
 
-    public PaginationConfigDto getPagination() {
-        return pagination;
-    }
-
-    public ConfigDto setPagination(PaginationConfigDto pagination) {
+    public ConfigDto setPagination(PaginationConfig pagination) {
         this.pagination = pagination;
         return this;
     }

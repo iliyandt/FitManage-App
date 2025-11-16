@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.shift.ShiftCreateRequest;
-import demos.springdata.fitmanage.domain.dto.shift.ShiftResponseDto;
+import demos.springdata.fitmanage.domain.dto.shift.CreateShift;
+import demos.springdata.fitmanage.domain.dto.shift.ShiftResponse;
 import demos.springdata.fitmanage.service.ShiftService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,14 +23,14 @@ public class ShiftController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ApiResponse<ShiftResponseDto>> createShift(ShiftCreateRequest request) {
+    public ResponseEntity<ApiResponse<ShiftResponse>> createShift(CreateShift request) {
         return ResponseEntity.ok(ApiResponse.success(shiftService.createShift(request)));
     }
 
     @GetMapping
     @PreAuthorize("hasAuthority('STAFF')")
-    public ResponseEntity<ApiResponse<List<ShiftResponseDto>>> getMyShifts() {
-        List<ShiftResponseDto> shifts = shiftService.getShiftsForCurrentUser();
+    public ResponseEntity<ApiResponse<List<ShiftResponse>>> getMyShifts() {
+        List<ShiftResponse> shifts = shiftService.getShiftsForCurrentUser();
         return ResponseEntity.ok(ApiResponse.success(shifts));
     }
 }

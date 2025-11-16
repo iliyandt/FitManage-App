@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.util;
 
 import demos.springdata.fitmanage.annotation.DropDown;
-import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfigDto;
+import demos.springdata.fitmanage.domain.dto.common.config.ColumnConfig;
 import demos.springdata.fitmanage.domain.dto.common.config.DropDownConfig;
 import lombok.experimental.UtilityClass;
 
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class TableColumnBuilder {
 
-    public static <T> List<ColumnConfigDto> buildColumns(Class<T> clazz) {
+    public static <T> List<ColumnConfig> buildColumns(Class<T> clazz) {
         return Arrays.stream(clazz.getDeclaredFields())
                 .map(field -> {
                     String fieldName = field.getName();
@@ -23,13 +23,13 @@ public class TableColumnBuilder {
                     DropDownConfig dropDownConfig = resolveDropDownConfig(field);;
                     String type = resolveDropDownType(field, dropDownConfig);
 
-                    return new ColumnConfigDto(fieldName, header, type, dropDownConfig);
+                    return new ColumnConfig(fieldName, header, type, dropDownConfig);
                 })
                 .toList();
     }
 
     private static String resolveDropDownType(Field field, DropDownConfig dropDownConfig) {
-        if (dropDownConfig != null && dropDownConfig.isFromAnnotation()) {
+        if (dropDownConfig != null && dropDownConfig.fromAnnotation()) {
             return "dropdown";
         }
 

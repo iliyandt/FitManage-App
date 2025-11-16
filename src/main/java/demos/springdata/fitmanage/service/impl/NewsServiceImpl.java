@@ -159,18 +159,19 @@ public class NewsServiceImpl implements NewsService {
                 .stream().map(Role::getName)
                 .collect(Collectors.toSet());
 
-        return  new NewsResponse()
-                .setNewsId(news.getId())
-                .setTitle(news.getTitle())
-                .setContent(news.getContent())
-                .setAuthorId(news.getAuthor().getId())
-                .setPublishedAt(news.getPublishedAt())
-                .setStatus(news.getStatus())
-                .setPublicationType(news.getPublicationType())
-                .setRecipientsIds(recipientIds)
-                .setImportance(news.getImportance())
-                .setExpiresOn(news.getExpiresOn())
-                .setTargetSpecific(news.isTargetSpecific())
-                .setTargetRoles(targetedRoles);
+        return NewsResponse.builder()
+                .newsId(news.getId())
+                .title(news.getTitle())
+                .content(news.getContent())
+                .authorId(news.getAuthor().getId())
+                .publishedAt(news.getPublishedAt())
+                .status(news.getStatus())
+                .publicationType(news.getPublicationType())
+                .recipientsIds(recipientIds)
+                .importance(news.getImportance())
+                .expiresOn(news.getExpiresOn())
+                .targetSpecific(news.isTargetSpecific())
+                .targetRoles(targetedRoles)
+                .build();
     }
 }

@@ -4,10 +4,18 @@ import demos.springdata.fitmanage.domain.enums.NewsImportance;
 import demos.springdata.fitmanage.domain.enums.NewsStatus;
 import demos.springdata.fitmanage.domain.enums.PublicationType;
 import demos.springdata.fitmanage.domain.enums.RoleType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Set;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class NewsResponse {
     private Long newsId;
     private String title;
@@ -21,116 +29,4 @@ public class NewsResponse {
     private NewsImportance importance;
     private boolean targetSpecific;
     private Instant expiresOn;
-
-    public NewsResponse() {
-    }
-
-    public Long getNewsId() {
-        return newsId;
-    }
-
-    public NewsResponse setNewsId(Long newsId) {
-        this.newsId = newsId;
-        return this;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public NewsResponse setTitle(String title) {
-        this.title = title;
-        return this;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public NewsResponse setContent(String content) {
-        this.content = content;
-        return this;
-    }
-
-    public Long getAuthorId() {
-        return authorId;
-    }
-
-    public NewsResponse setAuthorId(Long authorId) {
-        this.authorId = authorId;
-        return this;
-    }
-
-    public Instant getPublishedAt() {
-        return publishedAt;
-    }
-
-    public NewsResponse setPublishedAt(Instant publishedAt) {
-        this.publishedAt = publishedAt;
-        return this;
-    }
-
-    public NewsStatus getStatus() {
-        return status;
-    }
-
-    public NewsResponse setStatus(NewsStatus status) {
-        this.status = status;
-        return this;
-    }
-
-    public PublicationType getPublicationType() {
-        return publicationType;
-    }
-
-    public NewsResponse setPublicationType(PublicationType publicationType) {
-        this.publicationType = publicationType;
-        return this;
-    }
-
-    public Set<Long> getRecipientsIds() {
-        return recipientsIds;
-    }
-
-    public NewsResponse setRecipientsIds(Set<Long> recipientsIds) {
-        this.recipientsIds = recipientsIds;
-        return this;
-    }
-
-    public NewsImportance getImportance() {
-        return importance;
-    }
-
-    public NewsResponse setImportance(NewsImportance importance) {
-        this.importance = importance;
-        return this;
-    }
-
-    public boolean isTargetSpecific() {
-        return targetSpecific;
-    }
-
-    public NewsResponse setTargetSpecific(boolean targetSpecific) {
-        this.targetSpecific = targetSpecific;
-        return this;
-    }
-
-    public Instant getExpiresOn() {
-        return expiresOn;
-    }
-
-    public NewsResponse setExpiresOn(Instant expiresOn) {
-        this.expiresOn = expiresOn;
-        return this;
-    }
-
-
-    public Set<RoleType> getTargetRoles() {
-        return targetRoles;
-    }
-
-    public NewsResponse setTargetRoles(Set<RoleType> targetRoles) {
-        this.targetRoles = targetRoles;
-        return this;
-    }
 }

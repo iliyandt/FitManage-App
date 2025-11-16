@@ -1,10 +1,10 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeCreateRequest;
+import demos.springdata.fitmanage.domain.dto.employee.CreateEmployee;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponseDto;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
-import demos.springdata.fitmanage.domain.dto.users.UserLookupDto;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
+import demos.springdata.fitmanage.domain.dto.users.UserLookup;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -52,7 +52,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public EmployeeResponseDto createEmployee(EmployeeCreateRequest requestDto) {
+    public EmployeeDataResponse createEmployee(CreateEmployee requestDto) {
         User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
@@ -67,26 +67,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         LOGGER.info("Successfully added staff with ID {} to facility '{}'", member.getId(), tenant.getName());
 
-        return new EmployeeResponseDto()
-                .setId(member.getId())
-                .setFirstName(member.getFirstName())
-                .setLastName(member.getLastName())
-                .setUsername(member.getUsername())
-                .setEmail(member.getEmail())
-                .setGender(member.getGender())
-                .setRoles(UserRoleHelper.extractRoleTypes(member))
-                .setBirthDate(member.getBirthDate())
-                .setCreatedAt(member.getCreatedAt())
-                .setUpdatedAt(member.getUpdatedAt())
-                .setPhone(member.getPhone())
-                .setAddress(member.getAddress())
-                .setCity(member.getCity())
-                .setEmployeeRole(employee.getEmployeeRole());
+        return EmployeeDataResponse.builder()
+                .id(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .roles(UserRoleHelper.extractRoleTypes(member))
+                .birthDate(member.getBirthDate())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .phone(member.getPhone())
+                .address(member.getAddress())
+                .city(member.getCity())
+                .employeeRole(employee.getEmployeeRole())
+                .build();
     }
 
     @Transactional
     @Override
-    public List<EmployeeTableDto> getAllEmployees() {
+    public List<EmployeeTable> getAllEmployees() {
         LOGGER.info("Fetching all members..");
         User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
@@ -117,7 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public List<UserLookupDto> findEmployeesByEmployeeRole(String employeeRole) {
+    public List<UserLookup> findEmployeesByEmployeeRole(String employeeRole) {
         List<User> staffUsers = userService.findUsersWithRoles(Set.of("STAFF"));
         EmployeeRole targetRole = EmployeeRole.valueOf(employeeRole);
 
@@ -125,11 +126,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .filter(employee -> employee.getEmployees().get(0).getEmployeeRole().equals(targetRole))
                 .toList();
 
-        return employeesWithRole.stream().map(empl -> {
-            return new UserLookupDto()
-                    .setTitle(String.format("%s %s",empl.getFirstName(), empl.getLastName()))
-                    .setValue(empl.getId().toString());
-        }).toList();
+        return employeesWithRole.stream()
+                .map(empl -> new UserLookup(String.format("%s %s",empl.getFirstName(), empl.getLastName()),empl.getId().toString()))
+                .toList();
     }
 
     private List<EmployeeName> getAllEmployeesForTenant(Long tenantId) {
@@ -145,12 +144,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     private EmployeeName buildResponse(Employee employee) {
-        return new EmployeeName()
-                .setId(employee.getId())
-                .setName(employee.getUser().getFirstName() + " " + employee.getUser().getLastName());
+        return new EmployeeName(
+                employee.getId(),
+                employee.getUser().getFirstName() + " " + employee.getUser().getLastName()
+        );
     }
 
-    private Employee linkEmployeeToUser(Tenant tenant, User user, EmployeeCreateRequest requestDto) {
+    private Employee linkEmployeeToUser(Tenant tenant, User user, CreateEmployee requestDto) {
         Employee employee = new Employee()
                 .setTenant(tenant)
                 .setUser(user)
@@ -160,7 +160,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    private User buildEmployee(Tenant tenant, EmployeeCreateRequest requestDto) {
+    private User buildEmployee(Tenant tenant, CreateEmployee requestDto) {
 
         User user = new User()
                 .setFirstName(requestDto.getFirstName())
@@ -181,17 +181,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         return user;
     }
 
-    private EmployeeTableDto buildTableResponse(Employee employee) {
+    private EmployeeTable buildTableResponse(Employee employee) {
         User user = employee.getUser();
 
-        return new EmployeeTableDto()
-                .setId(user.getId())
-                .setFirstName(user.getFirstName())
-                .setLastName(user.getLastName())
-                .setEmail(user.getEmail())
-                .setGender(user.getGender())
-                .setPhone(user.getPhone())
-                .setBirthDate(user.getBirthDate())
-                .setEmployeeRole(employee.getEmployeeRole());
+        return EmployeeTable.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .gender(user.getGender())
+                .phone(user.getPhone())
+                .birthDate(user.getBirthDate())
+                .employeeRole(employee.getEmployeeRole())
+                .build();
     }
 }
