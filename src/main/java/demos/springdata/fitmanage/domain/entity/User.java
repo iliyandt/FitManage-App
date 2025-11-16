@@ -19,23 +19,18 @@ import java.util.*;
 public class User extends BaseEntity {
     @Column(name = "qr_token", unique = true)
     private String qrToken;
-
     private String firstName;
     private String lastName;
     private String username;
     private String email;
-
     @Column(nullable = false)
     @Size(min = 8, message = "Password must be at least 8 characters")
     @NotBlank(message = "Password is required")
     private String password;
-
     @Column(name = "verification_code")
     private String verificationCode;
-
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
-
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
@@ -43,42 +38,32 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tenant_id")
     private Tenant tenant;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserPreferences userPreferences;
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private RefreshToken refreshToken;
-
     private String phone;
     private String address;
     private String city;
     private boolean enabled;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @Column(name = "birth_date")
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
     private OffsetDateTime birthDate;
     private LocalDateTime updatedAt;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private Set<Membership> memberships = new HashSet<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Employee> employees = new ArrayList<>();
-
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<News> authoredNews = new HashSet<>();
-
     @ManyToMany(mappedBy = "participants")
     private Set<Training> trainings = new HashSet<>();
 

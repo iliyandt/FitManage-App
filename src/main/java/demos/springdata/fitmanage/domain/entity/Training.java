@@ -27,7 +27,7 @@ public class Training extends BaseEntity {
     @Column(name = "duration", nullable = false)
     private Integer duration;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "trainer_id", nullable = false)
     private User trainer;
 

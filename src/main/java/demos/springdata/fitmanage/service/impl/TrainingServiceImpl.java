@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TrainingServiceImpl implements TrainingService {
@@ -110,7 +111,15 @@ public class TrainingServiceImpl implements TrainingService {
                 .toList();
     }
 
+    @Override
+    public Training save(Training training) {
+        return trainingRepository.save(training);
+    }
 
+    @Override
+    public Set<Training> findAllByTrainer(User foundUser) {
+        return trainingRepository.findAllByTrainer(foundUser);
+    }
 
 
     private static TrainingResponse createTrainingResponse(Training training, boolean joined) {

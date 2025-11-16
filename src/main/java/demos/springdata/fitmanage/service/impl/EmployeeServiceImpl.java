@@ -1,15 +1,13 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.employee.CreateEmployee;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
+import demos.springdata.fitmanage.domain.dto.employee.*;
 import demos.springdata.fitmanage.domain.dto.users.UserLookup;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
+import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -31,6 +30,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
+    private final TrainingService trainingService;
 
     @Autowired
     public EmployeeServiceImpl
@@ -40,14 +40,15 @@ public class EmployeeServiceImpl implements EmployeeService {
                     RoleService roleService,
                     UserService userService,
                     UserValidationService userValidationService,
-                    UserPasswordService userPasswordService
-            ) {
+                    UserPasswordService userPasswordService,
+                    TrainingService trainingService) {
         this.employeeRepository = employeeRepository;
         this.tenantService = tenantService;
         this.roleService = roleService;
         this.userService = userService;
         this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
+        this.trainingService = trainingService;
     }
 
     @Transactional
@@ -84,6 +85,61 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .employeeRole(employee.getEmployeeRole())
                 .build();
     }
+
+
+    @Transactional
+    @Override
+    public void updateEmployee(Long id, UpdateEmployee updateDto) {
+
+        User employeeUser = userService.findUserById(id);
+
+        if (updateDto.firstName() != null) {
+            employeeUser.setFirstName(updateDto.firstName());
+        }
+        if (updateDto.lastName() != null) {
+            employeeUser.setLastName(updateDto.lastName());
+        }
+        if (updateDto.email() != null || updateDto.phone() != null) {
+            userValidationService.validateGlobalAndTenantScopedCredentials(updateDto.email(), updateDto.phone(), employeeUser.getTenant().getId());
+            employeeUser.setEmail(updateDto.email());
+            employeeUser.setPhone(updateDto.phone());
+        }
+
+        if (updateDto.gender() != null) {
+            employeeUser.setGender(updateDto.gender());
+        }
+        if (updateDto.birthDate() != null) {
+            employeeUser.setBirthDate(updateDto.birthDate());
+        }
+
+        if (updateDto.employeeRole() != null) {
+            Employee employee = employeeRepository.findByUser(employeeUser);
+            employee.setEmployeeRole(updateDto.employeeRole());
+            employeeRepository.save(employee);
+        }
+
+        userService.save(employeeUser);
+    }
+
+
+//    @Override
+//    @Transactional
+//    public void deleteEmployee(Long id) {
+//        User foundUser = userService.findUserById(id);
+//
+//        Set<Training> trainingsAsTrainer = trainingService.findAllByTrainer(foundUser);
+//
+//        for (Training training : trainingsAsTrainer) {
+    //TODO: trainer can not be null,
+    // if no more trainers the trainer can not be deleted! If other trainers are available user should choose first.
+//            training.setTrainer(null);
+//            trainingService.save(training);
+//        }
+//
+//
+//
+//        userService.delete(foundUser);
+//    }
 
     @Transactional
     @Override
@@ -127,7 +183,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .toList();
 
         return employeesWithRole.stream()
-                .map(empl -> new UserLookup(String.format("%s %s",empl.getFirstName(), empl.getLastName()),empl.getId().toString()))
+                .map(empl -> new UserLookup(String.format("%s %s", empl.getFirstName(), empl.getLastName()), empl.getId().toString()))
                 .toList();
     }
 

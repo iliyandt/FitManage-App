@@ -2,18 +2,17 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.employee.CreateEmployee;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeName;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
+import demos.springdata.fitmanage.domain.dto.employee.*;
 import demos.springdata.fitmanage.domain.dto.users.UserLookup;
 import demos.springdata.fitmanage.helper.TableHelper;
+import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -46,6 +45,19 @@ public class EmployeeController { ;
         TableResponseDto response = buildTableResponse(employeeService.getAllEmployees());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> update(@PathVariable Long id, UpdateEmployee update) {
+        employeeService.updateEmployee(id, update);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Successfully updated."));
+    }
+
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<ApiResponse<String>> delete(@PathVariable Long id) {
+//        employeeService.deleteEmployee(user, id);
+//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Successfully deleted."));
+//    }
 
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<EmployeeName>>> getEmployeesFullNames() {
