@@ -13,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Component
 @Order(2)
 public class SuperAdminDataInitializer implements ApplicationRunner {
@@ -40,21 +42,20 @@ public class SuperAdminDataInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if (!userRepository.existsByRoles_Name(RoleType.ADMINISTRATOR)) {
-            Role role = roleService.findByName(RoleType.ADMINISTRATOR);
-            User admin = new User();
 
-            admin
-                    .setFirstName("Iliyan")
-                    .setLastName("Todorov")
-                    .setEmail(email)
-                    .setUsername(username)
-                    .setPassword(passwordEncoder.encode(password))
-                    .setVerificationCode(null)
-                    .setVerificationCodeExpiresAt(null)
-                    .setEnabled(true)
-                    .getRoles().add(role);
+            User administratorUser = User.builder()
+                    .firstName("Iliyan")
+                    .lastName("Todorov")
+                    .email(email)
+                    .username(username)
+                    .password(passwordEncoder.encode(password))
+                    .verificationCode(null)
+                    .verificationCodeExpiresAt(null)
+                    .enabled(true)
+                    .roles(Set.of(roleService.findByName(RoleType.ADMINISTRATOR)))
+                    .build();
 
-            userRepository.save(admin);
+            userRepository.save(administratorUser);
         }
     }
 }

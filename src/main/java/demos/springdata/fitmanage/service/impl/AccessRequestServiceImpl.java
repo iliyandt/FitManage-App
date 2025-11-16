@@ -1,9 +1,8 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.entity.Membership;
-import demos.springdata.fitmanage.domain.entity.Role;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.RoleType;
@@ -18,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Set;
 
 
 @Service
@@ -55,23 +55,20 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public MemberResponseDto requestAccess(Long tenantId, CreateUser createRequest) {
-
+    public MemberResponse requestAccess(Long tenantId, CreateUser request) {
         Tenant tenant = tenantService.getTenantById(tenantId);
 
-        User member = new User()
-                .setFirstName(createRequest.getFirstName())
-                .setLastName(createRequest.getLastName())
-                .setGender(createRequest.getGender())
-                .setBirthDate(createRequest.getBirthDate())
-                .setEmail(createRequest.getEmail())
-                .setPhone(createRequest.getPhone())
-                .setTenant(tenant)
-                .setEnabled(false);
-
-
-        Role role = roleService.findByName(RoleType.MEMBER);
-        member.getRoles().add(role);
+        User member = User.builder()
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .gender(request.getGender())
+                .birthDate(request.getBirthDate())
+                .email(request.getEmail())
+                .phone(request.getPhone())
+                .tenant(tenant)
+                .enabled(false)
+                .roles(Set.of(roleService.findByName(RoleType.MEMBER)))
+                .build();
 
         Membership membership = new Membership()
                 .setTenant(tenant)
@@ -81,21 +78,40 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .setRemainingVisits(0);
         member.getMemberships().add(membership);
 
-        userValidationService.validateTenantScopedCredentials(createRequest.getEmail(), createRequest.getPhone(), tenantId);
+        userValidationService.validateTenantScopedCredentials(request.getEmail(), request.getPhone(), tenantId);
         userPasswordService.setupMemberInitialPassword(member);
         userService.save(member);
         membershipService.save(membership);
 
         LOGGER.info("Access request created for user {} in facility {}", member.getEmail(), tenant.getName());
-        MemberResponseDto responseDto = modelMapper.map(member, MemberResponseDto.class);
-        responseDto.getRoles().add(RoleType.MEMBER);
-
-        return responseDto;
+        return MemberResponse.builder()
+                .id(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .roles(Set.of(RoleType.MEMBER))
+                .birthDate(member.getBirthDate())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .phone(member.getPhone())
+                .address(member.getAddress())
+                .city(member.getCity())
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
     }
 
     @Transactional
     @Override
-    public MemberResponseDto processAccessRequest(Long userId, boolean approve) {
+    public MemberResponse processAccessRequest(Long userId, boolean approve) {
         User member = userService.findUserById(userId);
 
         Membership membership = member.getMemberships().stream().findFirst().get();
@@ -127,7 +143,28 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             LOGGER.warn("Access request rejected for user {}", member.getEmail());
         }
 
-
-        return modelMapper.map(member, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(member));
+        return MemberResponse.builder()
+                .id(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .roles(Set.of(RoleType.MEMBER))
+                .birthDate(member.getBirthDate())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .phone(member.getPhone())
+                .address(member.getAddress())
+                .city(member.getCity())
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
     }
 }

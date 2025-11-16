@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.auth.request;
 
+import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,8 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RegisterRequest {
     @NotBlank
-    @Email(message = "Email must be valid")
+    @Email(message = "Please enter valid email.")
     private String email;
+    private Gender gender;
     @NotNull(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;

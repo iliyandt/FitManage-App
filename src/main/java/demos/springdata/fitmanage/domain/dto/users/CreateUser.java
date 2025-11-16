@@ -25,7 +25,6 @@ public class CreateUser {
     @Size(min = 2, max = 15, message = "Username must be  between 2 and 15 characters")
     private String username;
 
-    @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
     private String email;
 

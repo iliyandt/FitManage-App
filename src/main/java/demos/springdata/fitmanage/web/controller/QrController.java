@@ -1,9 +1,6 @@
 package demos.springdata.fitmanage.web.controller;
 
-import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.service.MemberService;
 import demos.springdata.fitmanage.service.QrService;
 import demos.springdata.fitmanage.service.UserService;
 import org.springframework.http.MediaType;

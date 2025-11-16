@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -45,7 +45,7 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Transactional
     @Override
-    public MemberResponseDto setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
+    public MemberResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
@@ -161,8 +161,8 @@ public class MembershipServiceImpl implements MembershipService {
         };
     }
 
-    private MemberResponseDto getMappedUserAndMembershipDetails(User user, Membership savedMembership) {
-        MemberResponseDto memberResponse = modelMapper.map(user, MemberResponseDto.class);
+    private MemberResponse getMappedUserAndMembershipDetails(User user, Membership savedMembership) {
+        MemberResponse memberResponse = modelMapper.map(user, MemberResponse.class);
         modelMapper.map(savedMembership, memberResponse);
         memberResponse.setUsername(user.getUsername());
         memberResponse.setRoles(UserRoleHelper.extractRoleTypes(user));

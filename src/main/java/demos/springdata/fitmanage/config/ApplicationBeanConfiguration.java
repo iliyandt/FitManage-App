@@ -3,7 +3,7 @@ package demos.springdata.fitmanage.config;
 import com.google.gson.Gson;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeDataResponse;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -32,9 +32,9 @@ public class ApplicationBeanConfiguration {
         modelMapper.getConfiguration()
                 .setPropertyCondition(Conditions.isNotNull());
 
-        modelMapper.typeMap(Membership.class, MemberResponseDto.class)
+        modelMapper.typeMap(Membership.class, MemberResponse.class)
                 .addMappings(mapper -> {
-                    mapper.skip(MemberResponseDto::setId);
+                    mapper.skip(MemberResponse::setId);
                 })
                 .setPropertyCondition(Conditions.isNotNull());
         modelMapper.typeMap(Membership.class, MemberTableDto.class)

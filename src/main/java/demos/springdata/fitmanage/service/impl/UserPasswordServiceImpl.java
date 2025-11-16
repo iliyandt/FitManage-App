@@ -36,6 +36,7 @@ public class UserPasswordServiceImpl implements UserPasswordService {
 
         emailService.sendInitialPassword(user, initialPassword);
 
-        user.setPassword(passwordEncoder.encode(initialPassword)).setUpdatedAt(LocalDateTime.now());
+        user.setPassword(passwordEncoder.encode(initialPassword));
+        user.setUpdatedAt(LocalDateTime.now());
     }
 }

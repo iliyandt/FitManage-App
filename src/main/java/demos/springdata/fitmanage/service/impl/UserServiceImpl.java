@@ -68,9 +68,9 @@ public class UserServiceImpl implements UserService {
 
         User currentlyLoggedUser = this.getCurrentUser();
 
-
         LOGGER.info("Updating basic info for user with id: {}", currentlyLoggedUser.getId());
 
+        //TODO: refactor
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(dto, currentlyLoggedUser);
         currentlyLoggedUser.setUpdatedAt(LocalDateTime.now());

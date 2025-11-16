@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
@@ -45,29 +45,29 @@ public class MemberController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<MemberResponseDto>>> searchMember(@ModelAttribute @Valid MemberFilter filter) {
-        List<MemberResponseDto> response = memberService.findMember(filter);
+    public ResponseEntity<ApiResponse<List<MemberResponse>>> searchMember(@ModelAttribute @Valid MemberFilter filter) {
+        List<MemberResponse> response = memberService.findMember(filter);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponseDto>> createMember(@Valid @RequestBody CreateUser requestDto) {
-        MemberResponseDto responseDto = memberService.create(requestDto);
+    public ResponseEntity<ApiResponse<MemberResponse>> createMember(@Valid @RequestBody CreateUser requestDto) {
+        MemberResponse responseDto = memberService.create(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
     }
 
     @PostMapping("/{memberId}/check-in")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> checkInMember(
+    public ResponseEntity<ApiResponse<MemberResponse>> checkInMember(
             @PathVariable Long memberId) {
-        MemberResponseDto result = memberService.checkInMember(memberId);
+        MemberResponse result = memberService.checkInMember(memberId);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponseDto>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdate memberUpdate) {
-        MemberResponseDto userProfileDto = memberService.updateMember(memberId, memberUpdate);
+    public ResponseEntity<ApiResponse<MemberResponse>> updateMember(@PathVariable Long memberId, @Valid @RequestBody MemberUpdate memberUpdate) {
+        MemberResponse userProfileDto = memberService.updateMember(memberId, memberUpdate);
         return ResponseEntity.ok(ApiResponse.success(userProfileDto));
     }
 

@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponseDto;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
@@ -60,25 +60,44 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberResponseDto create(CreateUser requestDto) {
+    public MemberResponse create(CreateUser requestDto) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
-        User user = buildMember(tenant, requestDto);
+        User member = buildMember(tenant, requestDto);
 
         userValidationService.validateGlobalAndTenantScopedCredentials(requestDto.getEmail(), requestDto.getPhone(), tenant.getId());
-        userPasswordService.setupMemberInitialPassword(user);
+        userPasswordService.setupMemberInitialPassword(member);
 
-        Membership membership = createAndLinkMembershipToUser(tenant, user);
+        Membership membership = createAndLinkMembershipToUser(tenant, member);
 
-        userService.save(user);
+        userService.save(member);
         membershipService.save(membership);
 
-        LOGGER.info("Successfully added member with ID {} to facility '{}'", user.getId(), tenant.getName());
+        LOGGER.info("Successfully added member with ID {} to facility '{}'", member.getId(), tenant.getName());
 
-        MemberResponseDto mappedMember = modelMapper.map(user, MemberResponseDto.class).setRoles(UserRoleHelper.extractRoleTypes(user));
-        modelMapper.map(membership, mappedMember);
-
-        return mappedMember;
+        return MemberResponse.builder()
+                .id(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .roles(Set.of(RoleType.MEMBER))
+                .birthDate(member.getBirthDate())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .phone(member.getPhone())
+                .address(member.getAddress())
+                .city(member.getCity())
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
     }
 
     @Override
@@ -110,7 +129,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public MemberResponseDto checkInMember(Long memberId) {
+    public MemberResponse checkInMember(Long memberId) {
         User user = userService.findUserById(memberId);
         Membership activeMembership = membershipService.getRequiredActiveMembership(user.getMemberships());
 
@@ -125,8 +144,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberResponseDto updateMember(Long memberId, MemberUpdate updateRequest) {
-        User authenticatedUser = userService.getCurrentUser();
+    public MemberResponse updateMember(Long memberId, MemberUpdate updateRequest) {
         User member = userService.findUserById(memberId);
 
         Membership membership = member.getMemberships().stream().findFirst().orElseThrow(() -> new DamilSoftException("Member has no membership created.", HttpStatus.CONFLICT));
@@ -134,17 +152,29 @@ public class MemberServiceImpl implements MemberService {
         modelMapper.map(updateRequest, member);
         userService.save(member);
 
-        MemberResponseDto response = modelMapper.map(member, MemberResponseDto.class);
-
-        return response.setSubscriptionPlan(membership.getSubscriptionPlan())
-                .setAllowedVisits(membership.getAllowedVisits())
-                .setRemainingVisits(membership.getRemainingVisits())
-                .setSubscriptionStatus(membership.getSubscriptionStatus())
-                .setSubscriptionStartDate(membership.getSubscriptionStartDate())
-                .setSubscriptionEndDate(membership.getSubscriptionEndDate())
-                .setEmployment(membership.getEmployment())
-                .setLastCheckInAt(membership.getLastCheckInAt())
-                .setRoles(UserRoleHelper.extractRoleTypes(member));
+        return MemberResponse.builder()
+                .id(member.getId())
+                .firstName(member.getFirstName())
+                .lastName(member.getLastName())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .gender(member.getGender())
+                .roles(Set.of(RoleType.MEMBER))
+                .birthDate(member.getBirthDate())
+                .createdAt(member.getCreatedAt())
+                .updatedAt(member.getUpdatedAt())
+                .phone(member.getPhone())
+                .address(member.getAddress())
+                .city(member.getCity())
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
     }
 
     @Transactional
@@ -189,7 +219,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public List<MemberResponseDto> findMember(MemberFilter filter) {
+    public List<MemberResponse> findMember(MemberFilter filter) {
         List<User> users = findFirstMemberByFilter(filter);
 
 
@@ -198,25 +228,28 @@ public class MemberServiceImpl implements MemberService {
                     .max(Comparator.comparing(Membership::getCreatedAt))
                     .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
-            MemberResponseDto dto = mapToResponseDto(user, membership, null);
+            MemberResponse dto = mapToResponseDto(user, membership, null);
             dto.setUsername(user.getUsername());
             dto.setRoles(UserRoleHelper.extractRoleTypes(user));
             return dto;
         }).toList();
     }
 
-    private User buildMember(Tenant tenant, CreateUser requestDto) {
-
-        User user = modelMapper.map(requestDto, User.class);
-        user.setTenant(tenant)
-                .setCreatedAt(LocalDateTime.now())
-                .setUpdatedAt(LocalDateTime.now())
-                .setEnabled(true);
-
-        Role role = roleService.findByName(RoleType.MEMBER);
-        user.getRoles().add(role);
-
-        return user;
+    private User buildMember(Tenant tenant, CreateUser request) {
+        return User.builder()
+                .tenant(tenant)
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .gender(request.getGender())
+                .birthDate(request.getBirthDate())
+                .phone(request.getPhone())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .roles(Set.of(roleService.findByName(RoleType.MEMBER)))
+                .enabled(true)
+                .build();
     }
 
     private static Membership createAndLinkMembershipToUser(Tenant tenant, User user) {
@@ -243,8 +276,8 @@ public class MemberServiceImpl implements MemberService {
         return userService.findFirstMemberByFilter(spec);
     }
 
-    private MemberResponseDto mapToResponseDto(User user, Membership updatedMembership, Visit visit) {
-        MemberResponseDto mappedUser = modelMapper.map(user, MemberResponseDto.class);
+    private MemberResponse mapToResponseDto(User user, Membership updatedMembership, Visit visit) {
+        MemberResponse mappedUser = modelMapper.map(user, MemberResponse.class);
         modelMapper.map(updatedMembership, mappedUser);
 
         if (visit != null) {

@@ -9,6 +9,7 @@ import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,25 +217,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    private User buildEmployee(Tenant tenant, CreateEmployee requestDto) {
+    private User buildEmployee(Tenant tenant, CreateEmployee request) {
 
-        User user = new User()
-                .setFirstName(requestDto.getFirstName())
-                .setLastName(requestDto.getLastName())
-                .setUsername(requestDto.getUsername())
-                .setEmail(requestDto.getEmail())
-                .setGender(requestDto.getGender())
-                .setBirthDate(requestDto.getBirthDate())
-                .setPhone(requestDto.getPhone())
-                .setTenant(tenant)
-                .setCreatedAt(LocalDateTime.now())
-                .setUpdatedAt(LocalDateTime.now())
-                .setEnabled(true);
-
-        Role role = roleService.findByName(RoleType.STAFF);
-        user.getRoles().add(role);
-
-        return user;
+        return User.builder()
+                .tenant(tenant)
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .gender(request.getGender())
+                .birthDate(request.getBirthDate())
+                .phone(request.getPhone())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .roles(Set.of(roleService.findByName(RoleType.STAFF)))
+                .enabled(true)
+                .build();
     }
 
     private EmployeeTable buildTableResponse(Employee employee) {

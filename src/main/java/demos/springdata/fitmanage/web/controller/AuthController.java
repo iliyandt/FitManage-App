@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping( "/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegistrationRequestWrapper requestWrapper) {
-        RegisterResponse response = authenticationService.registerUser(requestWrapper.getUserDto(), requestWrapper.getTenantDto());
+        RegisterResponse response = authenticationService.registerUser(requestWrapper.userDto(), requestWrapper.tenantDto());
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 

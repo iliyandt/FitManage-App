@@ -85,17 +85,17 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Transactional
     @Override
-    public RegisterResponse registerUser(RegisterRequest registrationRequest, TenantDto tenantDto) {
+    public RegisterResponse registerUser(RegisterRequest request, TenantDto tenantDto) {
         Stripe.apiKey = apiKey;
-        LOGGER.info("Registration attempt for email: {}", registrationRequest.getEmail());
-        validateCredentials(registrationRequest);
+        LOGGER.info("Registration attempt for email: {}", request.getEmail());
+        validateCredentials(request);
 
         Tenant tenant = new Tenant();
         modelMapper.map(tenantDto, tenant);
 
         tenantRepository.save(tenant);
 
-        User user = initializeNewUser(registrationRequest);
+        User user = initializeNewUser(request);
         user.setTenant(tenant);
 
         createTenantStripeAccount(user, tenant);
@@ -103,10 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         userRepository.save(user);
         LOGGER.info("Registration successful for user: {}", user.getEmail());
 
-        return new RegisterResponse(
-                user.getEmail(),
-                user.getVerificationCode()
-        );
+        return new RegisterResponse(user.getEmail(), user.getVerificationCode());
     }
 
     @Override
@@ -240,26 +237,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static void verifyAccountStatus(UserDetails authUser) {
         if (authUser instanceof UserData user) {
             if (!user.isEnabled()) {
-                throw new DamilSoftException("Account not verified. Please verify your account"
-                        , HttpStatus.UNAUTHORIZED);
+                throw new DamilSoftException("Account not verified. Please verify your account!", HttpStatus.UNAUTHORIZED);
             }
         }
     }
 
-    private User initializeNewUser(RegisterRequest requestDto) {
-        User user = mapUser(requestDto)
-                .setGender(Gender.NOT_SPECIFIED)
-                .setCreatedAt(LocalDateTime.now())
-                .setUpdatedAt(LocalDateTime.now());
-        encryptUserPassword(user, requestDto.getPassword());
+    private User initializeNewUser(RegisterRequest request) {
 
-        Role gymAdminRole = roleService.findByName(RoleType.ADMIN);
-        user.getRoles().add(gymAdminRole);
-        user.setVerificationCode(SecurityCodeGenerator.generateVerificationCode());
-        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+        User user = User.builder()
+                .email(request.getEmail())
+                .gender(request.getGender())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(Set.of(roleService.findByName(RoleType.ADMIN)))
+                .verificationCode(SecurityCodeGenerator.generateVerificationCode())
+                .verificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15))
+                .build();
 
         emailService.sendVerificationEmail(user);
-
         return user;
     }
 
@@ -282,10 +278,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void encryptUserPassword(User user, String rawPassword) {
         user.setPassword(passwordEncoder.encode(rawPassword));
-    }
-
-    private User mapUser(RegisterRequest dto) {
-        return modelMapper.map(dto, User.class);
     }
 
     private void createTenantStripeAccount(User user, Tenant tenant) {
