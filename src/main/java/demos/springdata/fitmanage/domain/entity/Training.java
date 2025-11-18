@@ -1,8 +1,6 @@
 package demos.springdata.fitmanage.domain.entity;
 
 import jakarta.persistence.*;
-
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
