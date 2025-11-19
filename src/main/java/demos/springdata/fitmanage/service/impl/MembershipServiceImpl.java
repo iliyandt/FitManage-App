@@ -1,7 +1,9 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
+import demos.springdata.fitmanage.domain.dto.mapper.MemberMapper;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -30,22 +32,21 @@ import java.util.Set;
 @Service
 public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
-    private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(MembershipServiceImpl.class);
     private final UserService userService;
+    private final MemberMapper memberMapper;
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, ModelMapper modelMapper, UserService userService) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, UserService userService, MemberMapper memberMapper) {
         this.membershipRepository = membershipRepository;
-
-        this.modelMapper = modelMapper;
         this.userService = userService;
+        this.memberMapper = memberMapper;
     }
 
 
     @Transactional
     @Override
-    public MemberResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
+    public UserResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
@@ -58,7 +59,7 @@ public class MembershipServiceImpl implements MembershipService {
         Membership savedMembership = membershipRepository.save(membership);
         user.getMemberships().add(savedMembership);
 
-        return getMappedUserAndMembershipDetails(user, savedMembership);
+        return memberMapper.toResponse(savedMembership, user);
     }
 
     @Override
@@ -71,17 +72,20 @@ public class MembershipServiceImpl implements MembershipService {
                         .setSubscriptionStartDate(null)
                         .setSubscriptionEndDate(null);
                 return membershipRepository.save(membership);
+            } else {
+                membership.setLastCheckInAt(LocalDateTime.now());
             }
         }
 
         if (membership.getSubscriptionPlan().isVisitBased()) {
-            if (membership.getRemainingVisits() <= 0) {
+            if (membership.getRemainingVisits() == 0) {
                 membership.setSubscriptionPlan(null);
                 membership.setSubscriptionStatus(SubscriptionStatus.INACTIVE);
                 return membershipRepository.save(membership);
             }else {
                 int remaining = membership.getRemainingVisits() - 1;
-                membership.setRemainingVisits(remaining);
+                membership.setRemainingVisits(remaining)
+                        .setLastCheckInAt(LocalDateTime.now());
             }
         }
 
@@ -159,15 +163,6 @@ public class MembershipServiceImpl implements MembershipService {
             case ANNUAL -> start.plusYears(1);
             default -> throw new IllegalArgumentException("Unhandled subscription plan: " + subscriptionPlan);
         };
-    }
-
-    private MemberResponse getMappedUserAndMembershipDetails(User user, Membership savedMembership) {
-        MemberResponse memberResponse = modelMapper.map(user, MemberResponse.class);
-        modelMapper.map(savedMembership, memberResponse);
-        memberResponse.setUsername(user.getUsername());
-        memberResponse.setRoles(UserRoleHelper.extractRoleTypes(user));
-
-        return memberResponse;
     }
 
     private void activateMembership(Membership membership, User user, SubscriptionRequest requestDto) {

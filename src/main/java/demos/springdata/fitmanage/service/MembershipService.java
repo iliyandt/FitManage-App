@@ -1,7 +1,8 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -11,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface MembershipService {
-    MemberResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto);
+    UserResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto);
 
     Membership checkIn(Membership membership);
 

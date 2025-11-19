@@ -1,8 +1,9 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.service.AccessRequestService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,26 +22,26 @@ public class AccessRequestController {
     }
 
     @PostMapping("/{tenantId}")
-    public ResponseEntity<ApiResponse<MemberResponse>> requestAccess(
+    public ResponseEntity<ApiResponse<UserResponse>> requestAccess(
             @PathVariable Long tenantId,
             @Valid @RequestBody CreateUser requestDto) {
-        MemberResponse response = accessRequestService.requestAccess(tenantId, requestDto);
+        UserResponse response = accessRequestService.requestAccess(tenantId, requestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/approve")
-    public ResponseEntity<ApiResponse<MemberResponse>> approveAccess(
+    public ResponseEntity<ApiResponse<UserResponse>> approveAccess(
             @PathVariable Long userId) {
-        MemberResponse response = accessRequestService.processAccessRequest(userId, true);
+        UserResponse response = accessRequestService.processAccessRequest(userId, true);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/reject")
-    public ResponseEntity<ApiResponse<MemberResponse>> rejectAccess(
+    public ResponseEntity<ApiResponse<UserResponse>> rejectAccess(
             @PathVariable Long userId) {
-        MemberResponse response = accessRequestService.processAccessRequest(userId, false);
+        UserResponse response = accessRequestService.processAccessRequest(userId, false);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

@@ -66,13 +66,17 @@ public class User extends BaseEntity {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @OrderBy("createdAt DESC")
-    private Set<Membership> memberships;
+    @Builder.Default
+    private Set<Membership> memberships = new LinkedHashSet<>();
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Employee> employees;
+    @Builder.Default
+    private List<Employee> employees = new ArrayList<>();
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<News> authoredNews;
+    @Builder.Default
+    private Set<News> authoredNews = new LinkedHashSet<>();
     @ManyToMany(mappedBy = "participants")
-    private Set<Training> trainings;
+    @Builder.Default
+    private Set<Training> trainings = new LinkedHashSet<>();
 
     public User() {
     }
@@ -291,5 +295,12 @@ public class User extends BaseEntity {
     public User setTrainings(Set<Training> trainings) {
         this.trainings = trainings;
         return this;
+    }
+
+
+    public Membership getCurrentMembership() {
+        return this.memberships.stream()
+                .findFirst()
+                .orElse(null);
     }
 }

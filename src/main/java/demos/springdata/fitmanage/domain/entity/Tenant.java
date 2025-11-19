@@ -3,6 +3,8 @@ package demos.springdata.fitmanage.domain.entity;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "tenants")
+@Builder
+@AllArgsConstructor
 public class Tenant extends BaseEntity {
 
     @Column(unique = true)

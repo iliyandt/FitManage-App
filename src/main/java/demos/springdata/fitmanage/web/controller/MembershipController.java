@@ -2,9 +2,10 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.MembershipService;
 import jakarta.validation.Valid;
@@ -27,10 +28,10 @@ public class MembershipController {
     }
 
     @PutMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<MemberResponse>> update(
+    public ResponseEntity<ApiResponse<UserResponse>> update(
             @PathVariable Long memberId,
             @RequestBody @Valid SubscriptionRequest dto) {
-        MemberResponse response = membershipService.setupMembershipPlan(memberId, dto);
+        UserResponse response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

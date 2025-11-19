@@ -5,11 +5,11 @@ import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantRegisterRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthenticationService {
-    RegisterResponse registerUser(RegisterRequest registerRequest, TenantDto tenantDto);
+    RegisterResponse registerUser(UserRegisterRequest userRegisterRequest, TenantRegisterRequest tenantRequest);
     EmailResponse findUserEmail(EmailValidationRequest emailValidationRequest);
     UserDetails authenticateUser(LoginRequest loginRequest);
     VerificationResponse verifyUserRegistration(VerificationRequest verificationRequest);

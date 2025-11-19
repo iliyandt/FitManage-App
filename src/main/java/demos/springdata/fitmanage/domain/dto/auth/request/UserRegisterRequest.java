@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RegisterRequest {
+public class UserRegisterRequest {
     @NotBlank
     @Email(message = "Please enter valid email.")
     private String email;

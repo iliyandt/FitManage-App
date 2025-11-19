@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
-
-import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -10,15 +10,12 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import org.springframework.http.HttpStatus;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.UserRoleHelper;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
-
 
 @Service
 public class AccessRequestServiceImpl implements AccessRequestService {
@@ -28,7 +25,6 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     private final UserService userService;
     private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
-    private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
 
     @Autowired
@@ -39,8 +35,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                     RoleService roleService,
                     UserService userService,
                     UserValidationService userValidationService,
-                    UserPasswordService userPasswordService,
-                    ModelMapper modelMapper
+                    UserPasswordService userPasswordService
             )
     {
         this.tenantService = tenantService;
@@ -49,13 +44,11 @@ public class AccessRequestServiceImpl implements AccessRequestService {
         this.userService = userService;
         this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
-        this.modelMapper = modelMapper;
     }
-
 
     @Transactional
     @Override
-    public MemberResponse requestAccess(Long tenantId, CreateUser request) {
+    public UserResponse requestAccess(Long tenantId, CreateUser request) {
         Tenant tenant = tenantService.getTenantById(tenantId);
 
         User member = User.builder()
@@ -84,7 +77,19 @@ public class AccessRequestServiceImpl implements AccessRequestService {
         membershipService.save(membership);
 
         LOGGER.info("Access request created for user {} in facility {}", member.getEmail(), tenant.getName());
-        return MemberResponse.builder()
+
+        MemberDetails memberDetails = MemberDetails.builder()
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
+
+        return UserResponse.builder()
                 .id(member.getId())
                 .firstName(member.getFirstName())
                 .lastName(member.getLastName())
@@ -98,20 +103,13 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .phone(member.getPhone())
                 .address(member.getAddress())
                 .city(member.getCity())
-                .subscriptionPlan(membership.getSubscriptionPlan())
-                .subscriptionStatus(membership.getSubscriptionStatus())
-                .subscriptionStartDate(membership.getSubscriptionStartDate())
-                .subscriptionEndDate(membership.getSubscriptionEndDate())
-                .allowedVisits(membership.getAllowedVisits())
-                .remainingVisits(membership.getRemainingVisits())
-                .lastCheckInAt(membership.getLastCheckInAt())
-                .employment(membership.getEmployment())
+                .memberDetails(memberDetails)
                 .build();
     }
 
     @Transactional
     @Override
-    public MemberResponse processAccessRequest(Long userId, boolean approve) {
+    public UserResponse processAccessRequest(Long userId, boolean approve) {
         User member = userService.findUserById(userId);
 
         Membership membership = member.getMemberships().stream().findFirst().get();
@@ -143,7 +141,18 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             LOGGER.warn("Access request rejected for user {}", member.getEmail());
         }
 
-        return MemberResponse.builder()
+        MemberDetails memberDetails = MemberDetails.builder()
+                .subscriptionPlan(membership.getSubscriptionPlan())
+                .subscriptionStatus(membership.getSubscriptionStatus())
+                .subscriptionStartDate(membership.getSubscriptionStartDate())
+                .subscriptionEndDate(membership.getSubscriptionEndDate())
+                .allowedVisits(membership.getAllowedVisits())
+                .remainingVisits(membership.getRemainingVisits())
+                .lastCheckInAt(membership.getLastCheckInAt())
+                .employment(membership.getEmployment())
+                .build();
+
+        return UserResponse.builder()
                 .id(member.getId())
                 .firstName(member.getFirstName())
                 .lastName(member.getLastName())
@@ -157,14 +166,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .phone(member.getPhone())
                 .address(member.getAddress())
                 .city(member.getCity())
-                .subscriptionPlan(membership.getSubscriptionPlan())
-                .subscriptionStatus(membership.getSubscriptionStatus())
-                .subscriptionStartDate(membership.getSubscriptionStartDate())
-                .subscriptionEndDate(membership.getSubscriptionEndDate())
-                .allowedVisits(membership.getAllowedVisits())
-                .remainingVisits(membership.getRemainingVisits())
-                .lastCheckInAt(membership.getLastCheckInAt())
-                .employment(membership.getEmployment())
+                .memberDetails(memberDetails)
                 .build();
     }
 }

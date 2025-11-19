@@ -7,11 +7,9 @@ import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
-import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
-import demos.springdata.fitmanage.domain.entity.Role;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantRegisterRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.domain.enums.Gender;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
@@ -41,7 +39,6 @@ import java.util.*;
 public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
-    private final ModelMapper modelMapper;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RoleService roleService;
     private final AuthenticationManager authenticationManager;
@@ -61,7 +58,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public AuthenticationServiceImpl
             (
             UserRepository userRepository,
-            ModelMapper modelMapper,
             BCryptPasswordEncoder passwordEncoder,
             RoleService roleService,
             AuthenticationManager authenticationManager,
@@ -72,7 +68,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             UserService userService
             ) {
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
         this.authenticationManager = authenticationManager;
@@ -85,22 +80,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Transactional
     @Override
-    public RegisterResponse registerUser(RegisterRequest request, TenantDto tenantDto) {
+    public RegisterResponse registerUser(UserRegisterRequest request, TenantRegisterRequest tenantRequest) {
         Stripe.apiKey = apiKey;
         LOGGER.info("Registration attempt for email: {}", request.getEmail());
         validateCredentials(request);
 
-        Tenant tenant = new Tenant();
-        modelMapper.map(tenantDto, tenant);
+        Tenant tenant = Tenant.builder()
+                .name(tenantRequest.getName())
+                .businessEmail(tenantRequest.getBusinessEmail())
+                .address(tenantRequest.getAddress())
+                .city(tenantRequest.getCity())
+                .build();
 
         tenantRepository.save(tenant);
 
-        User user = initializeNewUser(request);
-        user.setTenant(tenant);
+        User user = User.builder()
+                .email(request.getEmail())
+                .gender(request.getGender())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .roles(Set.of(roleService.findByName(RoleType.ADMIN)))
+                .verificationCode(SecurityCodeGenerator.generateVerificationCode())
+                .verificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15))
+                .tenant(tenant)
+                .build();
 
         createTenantStripeAccount(user, tenant);
-
         userRepository.save(user);
+
+        emailService.sendVerificationEmail(user);
         LOGGER.info("Registration successful for user: {}", user.getEmail());
 
         return new RegisterResponse(user.getEmail(), user.getVerificationCode());
@@ -242,24 +251,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private User initializeNewUser(RegisterRequest request) {
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .gender(request.getGender())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Set.of(roleService.findByName(RoleType.ADMIN)))
-                .verificationCode(SecurityCodeGenerator.generateVerificationCode())
-                .verificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15))
-                .build();
-
-        emailService.sendVerificationEmail(user);
-        return user;
-    }
-
-    private void validateCredentials(RegisterRequest request) {
+    private void validateCredentials(UserRegisterRequest request) {
         Map<String, String> errors = new HashMap<>();
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             LOGGER.warn("User with email {} already exists", request.getEmail());

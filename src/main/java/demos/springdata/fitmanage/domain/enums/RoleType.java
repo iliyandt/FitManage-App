@@ -12,6 +12,7 @@ public enum RoleType {
 
     private final String displayName;
 
+
     RoleType(String displayName) {
         this.displayName = displayName;
     }
