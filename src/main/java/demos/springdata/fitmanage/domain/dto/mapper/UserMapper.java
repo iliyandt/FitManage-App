@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.mapper;
 
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
+import demos.springdata.fitmanage.domain.dto.auth.request.UserRegisterRequest;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdate;
@@ -11,8 +10,10 @@ import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.service.RoleService;
+import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -22,6 +23,8 @@ public abstract class MemberMapper {
 
     @Autowired
     private  RoleService roleService;
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
 
     @Mappings({
@@ -33,7 +36,24 @@ public abstract class MemberMapper {
             @Mapping(target = "address", ignore = true),
             @Mapping(target = "city", ignore = true)
     })
-    public abstract User toUser(Tenant tenant, CreateUser create);
+    public abstract User toAdminUser(Tenant tenant, CreateUser create);
+
+
+    @Mappings({
+            @Mapping(target = "tenant", source = "tenant"),
+            @Mapping(target = "address", ignore = true),
+            @Mapping(target = "city", ignore = true),
+            @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())"),
+            @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())"),
+            @Mapping(target = "enabled", constant = "false"),
+            @Mapping(target = "roles", ignore = true),
+            @Mapping(target = "memberships", ignore = true),
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "password", ignore = true),
+            @Mapping(target = "verificationCode", ignore = true),
+            @Mapping(target = "verificationCodeExpiresAt", ignore = true)
+    })
+    public abstract User toAdminUser(Tenant tenant, UserRegisterRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     public abstract void updateUserFields(UserUpdate update, @MappingTarget User user);
@@ -62,6 +82,14 @@ public abstract class MemberMapper {
     @AfterMapping
     protected void setupRoles(@MappingTarget User user) {
         user.setRoles(Set.of(roleService.findByName(RoleType.MEMBER)));
+    }
+
+    @AfterMapping
+    protected void setupAdminDetails(@MappingTarget User user, UserRegisterRequest request) {
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRoles(Set.of(roleService.findByName(RoleType.ADMIN)));
+        user.setVerificationCode(SecurityCodeGenerator.generateVerificationCode());
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
     }
 
 
