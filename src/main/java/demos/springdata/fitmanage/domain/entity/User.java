@@ -56,6 +56,7 @@ public class User extends BaseEntity {
     private String address;
     private String city;
     private boolean enabled;
+    private boolean passwordChanged;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Enumerated(EnumType.STRING)
@@ -222,6 +223,15 @@ public class User extends BaseEntity {
 
     public User setEnabled(boolean enabled) {
         this.enabled = enabled;
+        return this;
+    }
+
+    public boolean isPasswordChanged() {
+        return passwordChanged;
+    }
+
+    public User setPasswordChanged(boolean passwordChanged) {
+        this.passwordChanged = passwordChanged;
         return this;
     }
 

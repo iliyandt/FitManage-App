@@ -31,6 +31,7 @@ public abstract class UserMapper {
             @Mapping(target = "roles", ignore = true),
             @Mapping(target = "memberships", ignore = true),
             @Mapping(target = "enabled", constant = "true"),
+            @Mapping(target = "passwordChanged", constant = "false"),
             @Mapping(target = "address", ignore = true),
             @Mapping(target = "city", ignore = true),
             @Mapping(target = "tenant", source = "tenant")
@@ -46,6 +47,7 @@ public abstract class UserMapper {
             @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())"),
             @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())"),
             @Mapping(target = "enabled", constant = "false"),
+            @Mapping(target = "passwordChanged", constant = "true"),
             @Mapping(target = "roles", ignore = true),
             @Mapping(target = "memberships", ignore = true),
             @Mapping(target = "password", ignore = true),
@@ -63,6 +65,7 @@ public abstract class UserMapper {
             @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())"),
             @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())"),
             @Mapping(target = "enabled", constant = "true"),
+            @Mapping(target = "passwordChanged", constant = "false"),
             @Mapping(target = "roles", ignore = true),
             @Mapping(target = "memberships", ignore = true)
     })
