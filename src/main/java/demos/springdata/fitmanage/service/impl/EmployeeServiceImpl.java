@@ -1,15 +1,16 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.employee.*;
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserLookup;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
-import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
-import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,73 +21,59 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final TenantService tenantService;
-    private final RoleService roleService;
     private final UserService userService;
     private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeServiceImpl.class);
-    private final TrainingService trainingService;
+    private final UserMapper userMapper;
 
     @Autowired
     public EmployeeServiceImpl
             (
                     EmployeeRepository employeeRepository,
                     TenantService tenantService,
-                    RoleService roleService,
                     UserService userService,
                     UserValidationService userValidationService,
                     UserPasswordService userPasswordService,
-                    TrainingService trainingService) {
+                    UserMapper userMapper) {
         this.employeeRepository = employeeRepository;
         this.tenantService = tenantService;
-        this.roleService = roleService;
         this.userService = userService;
         this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
-        this.trainingService = trainingService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
     @Override
-    public EmployeeDataResponse createEmployee(CreateEmployee requestDto) {
+    public UserResponse createEmployee(CreateUser request) {
         User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
 
-        User member = buildEmployee(tenant, requestDto);
-        userValidationService.validateTenantScopedCredentials(requestDto.getEmail(), requestDto.getPhone(), tenant.getId());
-        userPasswordService.setupMemberInitialPassword(member);
+        User employeeUser = userMapper.toEmployeeUser(tenant, request);
 
-        Employee employee = linkEmployeeToUser(tenant, member, requestDto);
+        userValidationService.validateTenantScopedCredentials(request.getEmail(), request.getPhone(), tenant.getId());
+        userPasswordService.setupMemberInitialPassword(employeeUser);
 
-        userService.save(member);
+        Employee employee = new Employee()
+                .setTenant(tenant)
+                .setUser(employeeUser)
+                .setEmployeeRole(request.getEmployeeDetails().getEmployeeRole());
+
+        user.getEmployees().add(employee);
+
+        userService.save(employeeUser);
         employeeRepository.save(employee);
 
-        LOGGER.info("Successfully added staff with ID {} to facility '{}'", member.getId(), tenant.getName());
+        LOGGER.info("Successfully added staff with ID {} to facility '{}'", employeeUser.getId(), tenant.getName());
 
-        return EmployeeDataResponse.builder()
-                .id(member.getId())
-                .firstName(member.getFirstName())
-                .lastName(member.getLastName())
-                .username(member.getUsername())
-                .email(member.getEmail())
-                .gender(member.getGender())
-                .roles(UserRoleHelper.extractRoleTypes(member))
-                .birthDate(member.getBirthDate())
-                .createdAt(member.getCreatedAt())
-                .updatedAt(member.getUpdatedAt())
-                .phone(member.getPhone())
-                .address(member.getAddress())
-                .city(member.getCity())
-                .employeeRole(employee.getEmployeeRole())
-                .build();
+        return userMapper.toResponse(employee, employeeUser);
     }
-
 
     @Transactional
     @Override
@@ -97,9 +84,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (updateDto.firstName() != null) {
             employeeUser.setFirstName(updateDto.firstName());
         }
+
         if (updateDto.lastName() != null) {
             employeeUser.setLastName(updateDto.lastName());
         }
+
         if (updateDto.email() != null || updateDto.phone() != null) {
             userValidationService.validateGlobalAndTenantScopedCredentials(updateDto.email(), updateDto.phone(), employeeUser.getTenant().getId());
             employeeUser.setEmail(updateDto.email());
@@ -109,6 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (updateDto.gender() != null) {
             employeeUser.setGender(updateDto.gender());
         }
+
         if (updateDto.birthDate() != null) {
             employeeUser.setBirthDate(updateDto.birthDate());
         }
@@ -121,26 +111,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         userService.save(employeeUser);
     }
-
-
-//    @Override
-//    @Transactional
-//    public void deleteEmployee(Long id) {
-//        User foundUser = userService.findUserById(id);
-//
-//        Set<Training> trainingsAsTrainer = trainingService.findAllByTrainer(foundUser);
-//
-//        for (Training training : trainingsAsTrainer) {
-    //TODO: trainer can not be null,
-    // if no more trainers the trainer can not be deleted! If other trainers are available user should choose first.
-//            training.setTrainer(null);
-//            trainingService.save(training);
-//        }
-//
-//
-//
-//        userService.delete(foundUser);
-//    }
 
     @Transactional
     @Override
@@ -205,34 +175,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.getId(),
                 employee.getUser().getFirstName() + " " + employee.getUser().getLastName()
         );
-    }
-
-    private Employee linkEmployeeToUser(Tenant tenant, User user, CreateEmployee requestDto) {
-        Employee employee = new Employee()
-                .setTenant(tenant)
-                .setUser(user)
-                .setEmployeeRole(requestDto.getEmployeeRole());
-
-        user.getEmployees().add(employee);
-        return employee;
-    }
-
-    private User buildEmployee(Tenant tenant, CreateEmployee request) {
-
-        return User.builder()
-                .tenant(tenant)
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .gender(request.getGender())
-                .birthDate(request.getBirthDate())
-                .phone(request.getPhone())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .roles(Set.of(roleService.findByName(RoleType.STAFF)))
-                .enabled(true)
-                .build();
     }
 
     private EmployeeTable buildTableResponse(Employee employee) {

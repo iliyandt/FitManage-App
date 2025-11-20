@@ -1,6 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.mapper.MemberMapper;
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
@@ -32,7 +32,7 @@ public class MemberServiceImpl implements MemberService {
     private final RoleService roleService;
     private final MembershipService membershipService;
     private final VisitService visitService;
-    private final MemberMapper memberMapper;
+    private final UserMapper userMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(MemberServiceImpl.class);
 
     @Autowired
@@ -44,7 +44,7 @@ public class MemberServiceImpl implements MemberService {
                     RoleService roleService,
                     MembershipService membershipService,
                     VisitService visitService,
-                    MemberMapper memberMapper
+                    UserMapper userMapper
             ) {
         this.userService = userService;
         this.userPasswordService = userPasswordService;
@@ -52,7 +52,7 @@ public class MemberServiceImpl implements MemberService {
         this.roleService = roleService;
         this.membershipService = membershipService;
         this.visitService = visitService;
-        this.memberMapper = memberMapper;
+        this.userMapper = userMapper;
     }
 
 
@@ -61,17 +61,25 @@ public class MemberServiceImpl implements MemberService {
     public UserResponse create(CreateUser request) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
-        User member = memberMapper.toUser(tenant, request);
+        User member = userMapper.toMember(tenant, request);
 
         userValidationService.validateGlobalAndTenantScopedCredentials(request.getEmail(), request.getPhone(), tenant.getId());
+
         userPasswordService.setupMemberInitialPassword(member);
-        Membership membership = createAndLinkMembershipToUser(tenant, member);
+        Membership membership = new Membership()
+                .setTenant(tenant)
+                .setUser(member)
+                .setSubscriptionStatus(SubscriptionStatus.INACTIVE)
+                .setAllowedVisits(0)
+                .setRemainingVisits(0);
+
+        member.getMemberships().add(membership);
 
         userService.save(member);
         membershipService.save(membership);
 
         LOGGER.info("Successfully added member with ID {} to facility '{}'", member.getId(), tenant.getName());
-        return  memberMapper.toResponse(membership, member);
+        return  userMapper.toResponse(membership, member);
     }
 
     @Override
@@ -95,7 +103,7 @@ public class MemberServiceImpl implements MemberService {
            visitService.checkIn(updatedMembership, memberId);
         }
 
-        return memberMapper.toResponse(updatedMembership, user);
+        return userMapper.toResponse(updatedMembership, user);
     }
 
     @Override
@@ -104,10 +112,10 @@ public class MemberServiceImpl implements MemberService {
         User member = userService.findUserById(memberId);
 
         Membership membership = member.getCurrentMembership();
-        memberMapper.updateUserFields(updateRequest, member);
-        memberMapper.updateMembershipFields(updateRequest, membership);
+        userMapper.updateUserFields(updateRequest, member);
+        userMapper.updateMembershipFields(updateRequest, membership);
 
-        return memberMapper.toResponse(membership, member);
+        return userMapper.toResponse(membership, member);
     }
 
     @Transactional
@@ -154,26 +162,13 @@ public class MemberServiceImpl implements MemberService {
     public List<UserResponse> findMember(MemberFilter filter) {
         List<User> users = findFirstMemberByFilter(filter);
 
-
         return users.stream().map(user -> {
             Membership membership = user.getMemberships().stream()
                     .max(Comparator.comparing(Membership::getCreatedAt))
                     .orElseThrow(() -> new IllegalStateException("User has no memberships"));
 
-           return memberMapper.toResponse(membership, user);
+           return userMapper.toResponse(membership, user);
         }).toList();
-    }
-
-    private Membership createAndLinkMembershipToUser(Tenant tenant, User user) {
-        Membership membership = new Membership()
-                .setTenant(tenant)
-                .setUser(user)
-                .setSubscriptionStatus(SubscriptionStatus.INACTIVE)
-                .setAllowedVisits(0)
-                .setRemainingVisits(0);
-
-        user.getMemberships().add(membership);
-        return membership;
     }
 
     private List<User> findFirstMemberByFilter(MemberFilter filter) {

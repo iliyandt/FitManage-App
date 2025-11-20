@@ -7,6 +7,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.entity.RefreshToken;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.domain.dto.auth.response.LoginResponse;
+import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.AuthenticationService;
 import demos.springdata.fitmanage.service.CustomUserDetailsService;
 import demos.springdata.fitmanage.service.JwtService;
@@ -14,6 +15,7 @@ import demos.springdata.fitmanage.service.RefreshTokenService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +42,8 @@ public class AuthController {
     }
 
     @PutMapping("/change-password")
-    public ResponseEntity<ApiResponse<String>> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(authenticationService.changePassword(request)));
+    public ResponseEntity<ApiResponse<String>> changePassword(@AuthenticationPrincipal UserData userData, @Valid @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(authenticationService.changePassword(userData, request)));
     }
 
     @PostMapping("/verify")

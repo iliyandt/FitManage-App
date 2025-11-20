@@ -25,6 +25,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
+    //TODO:
     @Override
     public void sendInitialPassword(User user, String initialPassword) {
         String subject = "Password";
@@ -52,6 +53,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
+    //TODO:
     @Override
     public void sendVerificationEmail(User user) {
         String subject = "Account Verification";

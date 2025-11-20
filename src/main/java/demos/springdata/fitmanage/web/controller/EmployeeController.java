@@ -3,7 +3,9 @@ package demos.springdata.fitmanage.web.controller;
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.employee.*;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserLookup;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.helper.TableHelper;
 import demos.springdata.fitmanage.service.EmployeeService;
 import demos.springdata.fitmanage.util.TableColumnBuilder;
@@ -31,8 +33,8 @@ public class EmployeeController { ;
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EmployeeDataResponse>> createEmployee(@Valid @RequestBody CreateEmployee requestDto) {
-        EmployeeDataResponse responseDto = employeeService.createEmployee(requestDto);
+    public ResponseEntity<ApiResponse<UserResponse>> createEmployee(@Valid @RequestBody CreateUser requestDto) {
+        UserResponse responseDto = employeeService.createEmployee(requestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(responseDto));
@@ -50,12 +52,6 @@ public class EmployeeController { ;
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Successfully updated."));
     }
-
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<ApiResponse<String>> delete(@PathVariable Long id) {
-//        employeeService.deleteEmployee(user, id);
-//        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("Successfully deleted."));
-//    }
 
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<EmployeeName>>> getEmployeesFullNames() {

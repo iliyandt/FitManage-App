@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.service.impl;
 
-
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.service.JwtService;
 import io.jsonwebtoken.Claims;

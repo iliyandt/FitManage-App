@@ -7,10 +7,10 @@ import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantRegisterRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.exception.MultipleValidationException;
 import demos.springdata.fitmanage.repository.TenantRepository;
@@ -18,7 +18,6 @@ import demos.springdata.fitmanage.repository.UserRepository;
 import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.*;
 import demos.springdata.fitmanage.util.SecurityCodeGenerator;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,16 +36,15 @@ import java.util.*;
 
 @Service
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-    private final RoleService roleService;
-    private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
     private final EmailService emailService;
     private final StripeConnectService stripeConnectService;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
-    private final UserService userService;
 
 
 
@@ -57,25 +55,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Autowired
     public AuthenticationServiceImpl
             (
-            UserRepository userRepository,
-            BCryptPasswordEncoder passwordEncoder,
-            RoleService roleService,
-            AuthenticationManager authenticationManager,
-            EmailService emailService,
-            CustomUserDetailsService customUserDetailsService,
-            TenantRepository tenantRepository,
-            StripeConnectService stripeConnectService,
-            UserService userService
-            ) {
+                    AuthenticationManager authenticationManager,
+                    UserRepository userRepository,
+                    TenantRepository tenantRepository,
+                    CustomUserDetailsService customUserDetailsService,
+                    EmailService emailService,
+                    StripeConnectService stripeConnectService,
+                    BCryptPasswordEncoder passwordEncoder,
+                    UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.roleService = roleService;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.customUserDetailsService = customUserDetailsService;
         this.tenantRepository = tenantRepository;
         this.stripeConnectService = stripeConnectService;
-        this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -94,17 +89,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         tenantRepository.save(tenant);
 
-        User user = User.builder()
-                .email(request.getEmail())
-                .gender(request.getGender())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .roles(Set.of(roleService.findByName(RoleType.ADMIN)))
-                .verificationCode(SecurityCodeGenerator.generateVerificationCode())
-                .verificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15))
-                .tenant(tenant)
-                .build();
+        User user = userMapper.toAdminUser(tenant, request);
 
         createTenantStripeAccount(user, tenant);
         userRepository.save(user);
@@ -150,7 +135,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public VerificationResponse resendUserVerificationCode(String email) {
-        User user = userService.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found!", HttpStatus.NOT_FOUND));
 
         if (user.isEnabled()) {
             throw new DamilSoftException("Account is already verified", HttpStatus.OK);
@@ -167,11 +152,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String changePassword(ChangePasswordRequest request) {
-       User user = userService.getCurrentUser();
+    public String changePassword(UserData userData, ChangePasswordRequest request) {
+        User user = userRepository.findById(userData.getId()).orElseThrow(() -> new DamilSoftException("User not found!", HttpStatus.NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            throw  new DamilSoftException("Old password is incorrect", HttpStatus.UNAUTHORIZED);
+            throw new DamilSoftException("Old password is incorrect", HttpStatus.UNAUTHORIZED);
         }
 
         if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
@@ -191,9 +176,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private void enableUserAccount(User user) {
         LOGGER.info("Enabling account for user: {}", user.getEmail());
-        user.setEnabled(true);
-        user.setVerificationCode(null);
-        user.setVerificationCodeExpiresAt(null);
+        user.setEnabled(true)
+                .setVerificationCode(null)
+                .setVerificationCodeExpiresAt(null);
         userRepository.save(user);
     }
 

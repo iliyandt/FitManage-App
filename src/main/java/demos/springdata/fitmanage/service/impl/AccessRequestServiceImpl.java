@@ -1,11 +1,10 @@
 package demos.springdata.fitmanage.service.impl;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 import org.springframework.http.HttpStatus;
 import demos.springdata.fitmanage.exception.DamilSoftException;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Set;
 
 @Service
 public class AccessRequestServiceImpl implements AccessRequestService {
@@ -26,6 +24,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
+    private final UserMapper userMapper;
 
     @Autowired
     public AccessRequestServiceImpl
@@ -35,8 +34,8 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                     RoleService roleService,
                     UserService userService,
                     UserValidationService userValidationService,
-                    UserPasswordService userPasswordService
-            )
+                    UserPasswordService userPasswordService,
+                    UserMapper userMapper)
     {
         this.tenantService = tenantService;
         this.membershipService = membershipService;
@@ -44,6 +43,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
         this.userService = userService;
         this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -51,17 +51,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     public UserResponse requestAccess(Long tenantId, CreateUser request) {
         Tenant tenant = tenantService.getTenantById(tenantId);
 
-        User member = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .gender(request.getGender())
-                .birthDate(request.getBirthDate())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .tenant(tenant)
-                .enabled(false)
-                .roles(Set.of(roleService.findByName(RoleType.MEMBER)))
-                .build();
+        User member = userMapper.toMember(tenant, request);
 
         Membership membership = new Membership()
                 .setTenant(tenant)
@@ -69,6 +59,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
                 .setSubscriptionStatus(SubscriptionStatus.PENDING)
                 .setAllowedVisits(0)
                 .setRemainingVisits(0);
+
         member.getMemberships().add(membership);
 
         userValidationService.validateTenantScopedCredentials(request.getEmail(), request.getPhone(), tenantId);
@@ -78,33 +69,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
         LOGGER.info("Access request created for user {} in facility {}", member.getEmail(), tenant.getName());
 
-        MemberDetails memberDetails = MemberDetails.builder()
-                .subscriptionPlan(membership.getSubscriptionPlan())
-                .subscriptionStatus(membership.getSubscriptionStatus())
-                .subscriptionStartDate(membership.getSubscriptionStartDate())
-                .subscriptionEndDate(membership.getSubscriptionEndDate())
-                .allowedVisits(membership.getAllowedVisits())
-                .remainingVisits(membership.getRemainingVisits())
-                .lastCheckInAt(membership.getLastCheckInAt())
-                .employment(membership.getEmployment())
-                .build();
-
-        return UserResponse.builder()
-                .id(member.getId())
-                .firstName(member.getFirstName())
-                .lastName(member.getLastName())
-                .username(member.getUsername())
-                .email(member.getEmail())
-                .gender(member.getGender())
-                .roles(Set.of(RoleType.MEMBER))
-                .birthDate(member.getBirthDate())
-                .createdAt(member.getCreatedAt())
-                .updatedAt(member.getUpdatedAt())
-                .phone(member.getPhone())
-                .address(member.getAddress())
-                .city(member.getCity())
-                .memberDetails(memberDetails)
-                .build();
+        return userMapper.toResponse(membership, member);
     }
 
     @Transactional
@@ -141,32 +106,6 @@ public class AccessRequestServiceImpl implements AccessRequestService {
             LOGGER.warn("Access request rejected for user {}", member.getEmail());
         }
 
-        MemberDetails memberDetails = MemberDetails.builder()
-                .subscriptionPlan(membership.getSubscriptionPlan())
-                .subscriptionStatus(membership.getSubscriptionStatus())
-                .subscriptionStartDate(membership.getSubscriptionStartDate())
-                .subscriptionEndDate(membership.getSubscriptionEndDate())
-                .allowedVisits(membership.getAllowedVisits())
-                .remainingVisits(membership.getRemainingVisits())
-                .lastCheckInAt(membership.getLastCheckInAt())
-                .employment(membership.getEmployment())
-                .build();
-
-        return UserResponse.builder()
-                .id(member.getId())
-                .firstName(member.getFirstName())
-                .lastName(member.getLastName())
-                .username(member.getUsername())
-                .email(member.getEmail())
-                .gender(member.getGender())
-                .roles(Set.of(RoleType.MEMBER))
-                .birthDate(member.getBirthDate())
-                .createdAt(member.getCreatedAt())
-                .updatedAt(member.getUpdatedAt())
-                .phone(member.getPhone())
-                .address(member.getAddress())
-                .city(member.getCity())
-                .memberDetails(memberDetails)
-                .build();
+        return userMapper.toResponse(membership, member);
     }
 }

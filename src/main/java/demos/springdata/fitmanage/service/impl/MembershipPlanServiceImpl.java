@@ -27,8 +27,8 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     private final MembershipPlanRepository membershipPlanRepository;
     private final ModelMapper modelMapper;
-    private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
     private final UserService userService;
+    private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
 
 
     @Autowired
@@ -36,8 +36,8 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
             (
                     MembershipPlanRepository membershipPlanRepository,
                     ModelMapper modelMapper,
-
-                    UserService userService) {
+                    UserService userService
+            ) {
         this.membershipPlanRepository = membershipPlanRepository;
         this.modelMapper = modelMapper;
         this.userService = userService;
@@ -47,16 +47,21 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     public List<PlanRequest> createPlans(List<PlanRequest> requests) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
-        List<PlanRequest> savedPlans = new ArrayList<>();
-
         for (PlanRequest request : requests) {
-            MembershipPlan plan = modelMapper.map(request, MembershipPlan.class);
-            plan.setTenant(tenant);
-            MembershipPlan saved = membershipPlanRepository.save(plan);
-            savedPlans.add(modelMapper.map(saved, PlanRequest.class));
+
+            MembershipPlan plan = new MembershipPlan()
+                    .setSubscriptionPlan(request.getSubscriptionPlan())
+                    .setPrice(request.getPrice())
+                    .setStudentPrice(request.getStudentPrice())
+                    .setSeniorPrice(request.getSeniorPrice())
+                    .setHandicapPrice(request.getHandicapPrice())
+                    .setTenant(tenant);
+
+            membershipPlanRepository.save(plan);
+
         }
 
-        return savedPlans;
+        return requests;
     }
 
 

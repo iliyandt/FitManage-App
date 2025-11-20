@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
-import demos.springdata.fitmanage.domain.dto.mapper.MemberMapper;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
@@ -14,15 +13,12 @@ import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.MembershipRepository;
 import demos.springdata.fitmanage.service.MembershipService;
 import demos.springdata.fitmanage.service.UserService;
-import demos.springdata.fitmanage.util.UserRoleHelper;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -32,15 +28,15 @@ import java.util.Set;
 @Service
 public class MembershipServiceImpl implements MembershipService {
     private final MembershipRepository membershipRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(MembershipServiceImpl.class);
     private final UserService userService;
-    private final MemberMapper memberMapper;
+    private final UserMapper userMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MembershipServiceImpl.class);
 
     @Autowired
-    public MembershipServiceImpl(MembershipRepository membershipRepository, UserService userService, MemberMapper memberMapper) {
+    public MembershipServiceImpl(MembershipRepository membershipRepository, UserService userService, UserMapper userMapper) {
         this.membershipRepository = membershipRepository;
         this.userService = userService;
-        this.memberMapper = memberMapper;
+        this.userMapper = userMapper;
     }
 
 
@@ -59,7 +55,7 @@ public class MembershipServiceImpl implements MembershipService {
         Membership savedMembership = membershipRepository.save(membership);
         user.getMemberships().add(savedMembership);
 
-        return memberMapper.toResponse(savedMembership, user);
+        return userMapper.toResponse(savedMembership, user);
     }
 
     @Override

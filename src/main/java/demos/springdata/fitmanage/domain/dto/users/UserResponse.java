@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeDetails;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.enums.*;
 import lombok.AllArgsConstructor;
@@ -30,4 +31,5 @@ public class UserResponse {
     private String address;
     private String city;
     private MemberDetails memberDetails;
+    private EmployeeDetails employeeDetails;
 }

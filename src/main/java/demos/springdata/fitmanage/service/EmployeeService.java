@@ -1,16 +1,16 @@
 package demos.springdata.fitmanage.service;
 
 import demos.springdata.fitmanage.domain.dto.employee.*;
+import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserLookup;
+import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Employee;
 import demos.springdata.fitmanage.domain.entity.Tenant;
-import demos.springdata.fitmanage.security.UserData;
 
 import java.util.List;
 
 public interface EmployeeService {
-    EmployeeDataResponse createEmployee(CreateEmployee requestDto);
-//    void deleteEmployee(Long id);
+    UserResponse createEmployee(CreateUser requestDto);
     void updateEmployee(Long id, UpdateEmployee update);
     List<EmployeeTable> getAllEmployees();
     List<EmployeeName> getEmployeesFullNames();

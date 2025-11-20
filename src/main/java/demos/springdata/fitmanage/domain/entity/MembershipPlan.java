@@ -2,6 +2,7 @@ package demos.springdata.fitmanage.domain.entity;
 
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
@@ -10,10 +11,8 @@ import java.math.BigDecimal;
 public class MembershipPlan extends BaseEntity{
     @ManyToOne(optional = false)
     private Tenant tenant;
-
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan subscriptionPlan;
-
     private BigDecimal price;
     private BigDecimal studentPrice;
     private BigDecimal seniorPrice;
