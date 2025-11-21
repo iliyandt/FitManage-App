@@ -16,20 +16,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberUpdate {
-//    @Size(min = 2, max = 15)
-//    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "First name must start with a capital letter and contain only letters")
-//    private String firstName;
-//    @Size(min = 2, max = 30)
-//    @Pattern(regexp = "^[A-Z][a-zA-Z]*$", message = "Last name must start with a capital letter and contain only letters")
-//    private String lastName;
-//    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX")
-//    private OffsetDateTime birthDate;
-//    private String username;
-//    private String phone;
-//    private String address;
-//    private String city;
-//    private Gender gender;
-//    private String email;
     private Employment employment;
     private SubscriptionPlan subscriptionPlan;
 }
