@@ -1,15 +1,14 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.mapper.TenantMapper;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantLookUp;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 import demos.springdata.fitmanage.domain.enums.AbonnementDuration;
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
-import demos.springdata.fitmanage.util.UserRoleHelper;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +24,12 @@ public class TenantServiceImpl implements TenantService {
 
     private final TenantRepository tenantRepository;
     private final static Logger LOGGER = LoggerFactory.getLogger(TenantServiceImpl.class);
+    private final TenantMapper tenantMapper;
 
     @Autowired
-    public TenantServiceImpl(TenantRepository tenantRepository) {
+    public TenantServiceImpl(TenantRepository tenantRepository, TenantMapper tenantMapper) {
         this.tenantRepository = tenantRepository;
+        this.tenantMapper = tenantMapper;
     }
 
     @Override
@@ -47,58 +48,25 @@ public class TenantServiceImpl implements TenantService {
         LOGGER.info("Retrieving all tenants..");
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> TenantDto.builder()
-                        .id(tenant.getId())
-                        .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
-                        .name(tenant.getName())
-                        .businessEmail(tenant.getBusinessEmail())
-                        .address(tenant.getAddress())
-                        .city(tenant.getCity())
-                        .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
-                        .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
-                        .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
-                        .build()).toList();
-
+                .map(tenantMapper::toResponse)
+                .toList();
     }
 
     @Override
     public List<TenantLookUp> getShortInfoForAllTenants() {
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> TenantLookUp.builder()
-                        .tenantId(tenant.getId())
-                        .name(tenant.getName())
-                        .city(tenant.getCity())
-                        .address(tenant.getAddress())
-                        .build())
+                .map(tenantMapper::lookUp)
                 .toList();
     }
 
     @Override
     public TenantDto getTenantDtoByEmail() {
-
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         Tenant tenant = getTenantByEmail(email);
 
-        return TenantDto.builder()
-                .id(tenant.getId())
-                .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
-                .name(tenant.getName())
-                .businessEmail(tenant.getBusinessEmail())
-                .address(tenant.getAddress())
-                .city(tenant.getCity())
-                .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
-                .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
-                .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
-                .build();
+        return tenantMapper.toResponse(tenant);
     }
-
-    private Long getCountOfUsersWithRoleMemberWithinATenant(Tenant tenant) {
-        return tenant.getUsers().stream()
-                .filter(user -> UserRoleHelper.hasRole(user, RoleType.MEMBER))
-                .count();
-    }
-
 
     @Override
     public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
