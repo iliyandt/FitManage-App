@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeDetails;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponse;
+import demos.springdata.fitmanage.domain.dto.member.response.MemberResponse;
 import demos.springdata.fitmanage.domain.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +30,8 @@ public class UserResponse {
     private String phone;
     private String address;
     private String city;
-    private MemberDetails memberDetails;
-    private EmployeeDetails employeeDetails;
+    private boolean enabled;
+    private boolean passwordChanged;
+    private MemberResponse memberResponse;
+    private EmployeeResponse employeeResponse;
 }

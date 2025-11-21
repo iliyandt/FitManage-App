@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.domain.dto.users;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
+import demos.springdata.fitmanage.domain.dto.member.request.MemberDetails;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -32,5 +32,5 @@ public class UserUpdate {
     private String city;
     private Gender gender;
     private String email;
-    private MemberUpdate memberUpdate;
+    private MemberDetails memberDetails;
 }

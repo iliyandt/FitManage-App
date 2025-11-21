@@ -39,11 +39,7 @@ public class User extends BaseEntity {
     @Column(name = "verification_expiration")
     private LocalDateTime verificationCodeExpiresAt;
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tenant_id")
@@ -81,6 +77,7 @@ public class User extends BaseEntity {
 
     public User() {
     }
+
 
     public String getQrToken() {
         return qrToken;

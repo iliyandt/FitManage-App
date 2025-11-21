@@ -7,7 +7,6 @@ import demos.springdata.fitmanage.domain.dto.users.UserLookup;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.EmployeeRole;
-import demos.springdata.fitmanage.domain.enums.RoleType;
 import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.EmployeeRepository;
 import demos.springdata.fitmanage.service.*;
@@ -19,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -63,7 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee()
                 .setTenant(tenant)
                 .setUser(employeeUser)
-                .setEmployeeRole(request.getEmployeeDetails().getEmployeeRole());
+                .setEmployeeRole(request.getEmployeeResponse().getEmployeeRole());
 
         user.getEmployees().add(employee);
 

@@ -7,15 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDetails {
+public class MemberResponse {
     private SubscriptionPlan subscriptionPlan;
     private SubscriptionStatus subscriptionStatus;
     private LocalDateTime subscriptionStartDate;

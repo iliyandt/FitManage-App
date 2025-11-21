@@ -25,6 +25,7 @@ public abstract class UserMapper {
 
 
     @Named("toMember")
+    @BeanMapping(qualifiedByName = "toMember")
     @Mappings({
             @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())"),
             @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())"),
@@ -40,6 +41,7 @@ public abstract class UserMapper {
 
 
     @Named("toAdmin")
+    @BeanMapping(qualifiedByName = "toMember")
     @Mappings({
             @Mapping(target = "tenant", source = "tenant"),
             @Mapping(target = "address", ignore = true),
@@ -58,6 +60,7 @@ public abstract class UserMapper {
 
 
     @Named("toEmployee")
+    @BeanMapping(qualifiedByName = "toMember")
     @Mappings({
             @Mapping(target = "tenant", source = "tenant"),
             @Mapping(target = "address", ignore = true),
@@ -89,8 +92,9 @@ public abstract class UserMapper {
 
     @AfterMapping
     @Named("toEmployee")
-    protected void setupEmployeeDetails(@MappingTarget User user, CreateUser request) {
-        user.setRoles(Set.of(roleService.findByName(RoleType.STAFF)));
+    protected void setupEmployeeDetails(@MappingTarget User user) {
+        Role role = roleService.findByName(RoleType.STAFF);
+        user.setRoles(Set.of(role));
     }
 
     protected RoleType mapRole(Role role) {
@@ -108,14 +112,14 @@ public abstract class UserMapper {
             @Mapping(source = "user.id", target = "id"),
             @Mapping(source = "user.roles", target = "roles"),
             @Mapping(source = "user.createdAt", target = "createdAt"),
-            @Mapping(source = "membership.subscriptionPlan", target = "memberDetails.subscriptionPlan"),
-            @Mapping(source = "membership.subscriptionStatus", target = "memberDetails.subscriptionStatus"),
-            @Mapping(source = "membership.allowedVisits", target = "memberDetails.allowedVisits"),
-            @Mapping(source = "membership.remainingVisits", target = "memberDetails.remainingVisits"),
-            @Mapping(source = "membership.subscriptionStartDate", target = "memberDetails.subscriptionStartDate"),
-            @Mapping(source = "membership.subscriptionEndDate", target = "memberDetails.subscriptionEndDate"),
-            @Mapping(source = "membership.employment", target = "memberDetails.employment"),
-            @Mapping(source = "membership.lastCheckInAt", target = "memberDetails.lastCheckInAt")
+            @Mapping(source = "membership.subscriptionPlan", target = "memberResponse.subscriptionPlan"),
+            @Mapping(source = "membership.subscriptionStatus", target = "memberResponse.subscriptionStatus"),
+            @Mapping(source = "membership.allowedVisits", target = "memberResponse.allowedVisits"),
+            @Mapping(source = "membership.remainingVisits", target = "memberResponse.remainingVisits"),
+            @Mapping(source = "membership.subscriptionStartDate", target = "memberResponse.subscriptionStartDate"),
+            @Mapping(source = "membership.subscriptionEndDate", target = "memberResponse.subscriptionEndDate"),
+            @Mapping(source = "membership.employment", target = "memberResponse.employment"),
+            @Mapping(source = "membership.lastCheckInAt", target = "memberResponse.lastCheckInAt")
     })
     public abstract UserResponse toResponse(Membership membership, User user);
 
@@ -123,7 +127,7 @@ public abstract class UserMapper {
             @Mapping(source = "user.id", target = "id"),
             @Mapping(source = "user.roles", target = "roles"),
             @Mapping(source = "user.createdAt", target = "createdAt"),
-            @Mapping(source = "employee.employeeRole", target = "employeeDetails.employeeRole")
+            @Mapping(source = "employee.employeeRole", target = "employeeResponse.employeeRole")
     })
     public abstract UserResponse toResponse(Employee employee, User user);
 

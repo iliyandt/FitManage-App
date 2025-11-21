@@ -2,7 +2,6 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;

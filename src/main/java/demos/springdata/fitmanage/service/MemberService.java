@@ -1,7 +1,5 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;

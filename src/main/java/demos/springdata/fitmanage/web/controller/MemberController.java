@@ -1,11 +1,9 @@
 package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberFilter;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
-import demos.springdata.fitmanage.domain.dto.member.request.MemberUpdate;
 import demos.springdata.fitmanage.domain.dto.users.CreateUser;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdate;

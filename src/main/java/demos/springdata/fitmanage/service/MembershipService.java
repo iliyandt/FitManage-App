@@ -1,6 +1,5 @@
 package demos.springdata.fitmanage.service;
 
-import demos.springdata.fitmanage.domain.dto.member.response.MemberDetails;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;

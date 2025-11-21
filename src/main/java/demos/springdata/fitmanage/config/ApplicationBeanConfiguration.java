@@ -1,7 +1,6 @@
 package demos.springdata.fitmanage.config;
 
 import com.google.gson.Gson;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeDetails;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.entity.Membership;
