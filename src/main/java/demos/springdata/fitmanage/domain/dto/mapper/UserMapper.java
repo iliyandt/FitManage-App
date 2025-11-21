@@ -41,7 +41,7 @@ public abstract class UserMapper {
 
 
     @Named("toAdmin")
-    @BeanMapping(qualifiedByName = "toMember")
+    @BeanMapping(qualifiedByName = "toAdmin")
     @Mappings({
             @Mapping(target = "tenant", source = "tenant"),
             @Mapping(target = "address", ignore = true),
@@ -102,7 +102,7 @@ public abstract class UserMapper {
     }
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract void updateUserFields(UserUpdate update, @MappingTarget User user);
+    public abstract User updateUserFields(UserUpdate update, @MappingTarget User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "user", ignore = true)
@@ -131,6 +131,12 @@ public abstract class UserMapper {
     })
     public abstract UserResponse toResponse(Employee employee, User user);
 
+    @Mappings({
+            @Mapping(source = "user.id", target = "id"),
+            @Mapping(source = "user.roles", target = "roles"),
+            @Mapping(source = "user.createdAt", target = "createdAt")
+    })
+    public abstract UserResponse toResponse(User user);
 
 
 }

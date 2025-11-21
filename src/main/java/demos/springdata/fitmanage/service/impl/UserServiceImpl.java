@@ -1,5 +1,6 @@
 package demos.springdata.fitmanage.service.impl;
 
+import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
 import demos.springdata.fitmanage.domain.dto.users.*;
 import demos.springdata.fitmanage.domain.entity.*;
 import demos.springdata.fitmanage.domain.enums.Gender;
@@ -10,7 +11,6 @@ import demos.springdata.fitmanage.security.UserData;
 import demos.springdata.fitmanage.service.RoleService;
 import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.util.UserRoleHelper;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,22 +28,17 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final RoleService roleService;
+    private final UserMapper userMapper;
 
 
     @Autowired
-    public UserServiceImpl
-            (
-                    UserRepository userRepository,
-                    ModelMapper modelMapper,
-                    RoleService roleService) {
+    public UserServiceImpl(UserRepository userRepository, RoleService roleService, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
         this.roleService = roleService;
+        this.userMapper = userMapper;
     }
-
 
     @Override
     public User getCurrentUser() {
@@ -51,37 +46,22 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(user.getId()).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
+    //TODO: passwordChanged should be true if user is admin
     @Transactional
     @Override
     public UserResponse getUserProfileByEmail(String email) {
         LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
-
-        Set<RoleType> roles = UserRoleHelper.extractRoleTypes(user);
-
-        return mapBaseProfile(user, roles);
+        return userMapper.toResponse(user);
     }
 
     @Override
-    public UserResponse updateProfile(UserUpdate dto) {
-
-        User currentlyLoggedUser = this.getCurrentUser();
-
-        LOGGER.info("Updating basic info for user with id: {}", currentlyLoggedUser.getId());
-
-        //TODO: refactor
-        modelMapper.getConfiguration().setSkipNullEnabled(true);
-        modelMapper.map(dto, currentlyLoggedUser);
-        currentlyLoggedUser.setUpdatedAt(LocalDateTime.now());
-
-        User savedUser = userRepository.save(currentlyLoggedUser);
-
-        UserResponse response = modelMapper.map(savedUser, UserResponse.class);
-
-        response.setRoles(UserRoleHelper.extractRoleTypes(currentlyLoggedUser));
-
-        return response;
+    public UserResponse updateProfile(UserUpdate update) {
+        User user = this.getCurrentUser();
+        LOGGER.info("Updating basic info for user with id: {}", user.getId());
+        User savedUser = userRepository.save(userMapper.updateUserFields(update, user));
+        return userMapper.toResponse(savedUser);
     }
 
     @Override
@@ -148,8 +128,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getByIdAndTenantId(Long memberId, Long tenantId) {
-        return userRepository.findByIdAndTenantId(memberId, tenantId)
-                .orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
+        return userRepository.findByIdAndTenantId(memberId, tenantId).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
     @Override
@@ -164,15 +143,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserById(Long memberId) {
-        return userRepository.findById(memberId)
-                .orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
-    }
-
-    private UserResponse mapBaseProfile(User user, Set<RoleType> roles) {
-        UserResponse dto = modelMapper.map(user, UserResponse.class);
-        dto.setBirthDate(user.getBirthDate());
-        dto.setUsername(user.getUsername());
-        dto.setRoles(roles);
-        return dto;
+        return userRepository.findById(memberId).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 }

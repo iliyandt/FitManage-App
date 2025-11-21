@@ -14,8 +14,9 @@ import java.util.Map;
 @Service
 public class UserValidationServiceImpl implements UserValidationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserValidationServiceImpl.class);
+
     private final UserService userService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserValidationServiceImpl.class);
 
     @Autowired
     public UserValidationServiceImpl(UserService userService) {

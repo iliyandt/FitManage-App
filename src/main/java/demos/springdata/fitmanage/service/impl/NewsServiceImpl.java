@@ -59,9 +59,6 @@ public class NewsServiceImpl implements NewsService {
         return mapToDto(targetedNews);
     }
 
-
-
-
     @Override
     @Transactional
     public List<NewsResponse> getNewsForUser() {
@@ -91,17 +88,15 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional
     public NewsResponse update(Long newsId, NewsRequest request) {
-        News newsToUpdate = newsRepository.getNewsById(newsId);
-        newsToUpdate
-                .setTitle(request.getTitle())
+        News news = newsRepository.getNewsById(newsId);
+        news.setTitle(request.getTitle())
                 .setContent(request.getContent())
                 .setPublicationType(request.getPublicationType())
                 .setImportance(request.getImportance())
                 .setTargetSpecific(request.isTargetSpecific())
                 .setExpiresOn(request.getExpiresOn());
 
-
-        News updated = getTargetedUsers(request, newsToUpdate);
+        News updated = getTargetedUsers(request, news);
         return mapToDto(updated);
     }
 
@@ -124,13 +119,12 @@ public class NewsServiceImpl implements NewsService {
             news.setRecipientIds(recipientsIds);
         }
 
-        if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null && recipientsIds == null)){
+        if (request.getPublicationType() == PublicationType.TARGETED && (targetRoles == null || recipientsIds == null)){
             throw new DamilSoftException("Targeted news must specify at least one role or recipient ID.", HttpStatus.CONFLICT);
         }
 
         return news;
     }
-
 
     private boolean isNewsRelevantForUser(News news, Long userId, Set<RoleType> userRoles) {
         if (userRoles.contains(RoleType.ADMIN)) {

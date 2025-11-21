@@ -12,25 +12,23 @@ import demos.springdata.fitmanage.repository.VisitRepository;
 import demos.springdata.fitmanage.service.UserService;
 import demos.springdata.fitmanage.service.VisitService;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(VisitServiceImpl.class);
-    private final ModelMapper modelMapper;
     private final UserService userService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(VisitServiceImpl.class);
 
     @Autowired
-    public VisitServiceImpl(VisitRepository visitRepository, ModelMapper modelMapper, UserService userService) {
+    public VisitServiceImpl(VisitRepository visitRepository, UserService userService) {
         this.visitRepository = visitRepository;
-        this.modelMapper = modelMapper;
         this.userService = userService;
     }
 
@@ -39,7 +37,13 @@ public class VisitServiceImpl implements VisitService {
         List<Visit> visitList = visitRepository.findByUser_Id(memberId)
                 .orElseThrow(() -> new DamilSoftException("No visits for this member", HttpStatus.NOT_FOUND));
 
-        return visitList.stream().map(v -> modelMapper.map(v, VisitDto.class)).toList();
+        return visitList.stream()
+                .map(visit -> VisitDto.builder()
+                        .userId(visit.getUser().getId())
+                        .membershipId(visit.getMembership().getId())
+                        .checkInAt(visit.getCheckInAt())
+                        .build())
+                .toList();
     }
 
     @Override
@@ -70,7 +74,7 @@ public class VisitServiceImpl implements VisitService {
         User user = userService.findUserById(facilityAdminId);
         Tenant tenant = user.getTenant();
 
-        List<Visit> visits = visitRepository.findByUserTenantAndCheckInAtBetween(tenant ,start, end);
+        List<Visit> visits = visitRepository.findByUserTenantAndCheckInAtBetween(tenant, start, end);
 
         return visits.stream().map(this::manualMapDto).toList();
     }

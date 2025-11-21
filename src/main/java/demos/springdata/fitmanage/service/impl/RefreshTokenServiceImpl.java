@@ -7,14 +7,12 @@ import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.RefreshTokenRepository;
 import demos.springdata.fitmanage.service.RefreshTokenService;
 import demos.springdata.fitmanage.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,17 +22,15 @@ import java.util.UUID;
 public class RefreshTokenServiceImpl implements RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserService userService;
-    private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(RefreshTokenServiceImpl.class);
 
     @Value("${security.jwt.refresh-token-expiration}")
     private Long refreshTokenExpiration;
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UserService userService, ModelMapper modelMapper) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, UserService userService) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.userService = userService;
-        this.modelMapper = modelMapper;
     }
 
     @Override

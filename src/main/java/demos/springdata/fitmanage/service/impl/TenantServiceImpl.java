@@ -11,7 +11,6 @@ import demos.springdata.fitmanage.repository.TenantRepository;
 import demos.springdata.fitmanage.service.TenantService;
 import demos.springdata.fitmanage.util.UserRoleHelper;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +24,11 @@ import java.util.List;
 public class TenantServiceImpl implements TenantService {
 
     private final TenantRepository tenantRepository;
-    private final ModelMapper modelMapper;
     private final static Logger LOGGER = LoggerFactory.getLogger(TenantServiceImpl.class);
 
     @Autowired
-    public TenantServiceImpl(TenantRepository tenantRepository, ModelMapper modelMapper) {
+    public TenantServiceImpl(TenantRepository tenantRepository) {
         this.tenantRepository = tenantRepository;
-        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -50,19 +47,17 @@ public class TenantServiceImpl implements TenantService {
         LOGGER.info("Retrieving all tenants..");
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> {
-                    return TenantDto.builder()
-                            .id(tenant.getId())
-                            .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
-                            .name(tenant.getName())
-                            .businessEmail(tenant.getBusinessEmail())
-                            .address(tenant.getAddress())
-                            .city(tenant.getCity())
-                            .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
-                            .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
-                            .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
-                            .build();
-                }).toList();
+                .map(tenant -> TenantDto.builder()
+                        .id(tenant.getId())
+                        .stripeAccountId(tenant.getStripeAccountId() == null ? null : tenant.getStripeAccountId())
+                        .name(tenant.getName())
+                        .businessEmail(tenant.getBusinessEmail())
+                        .address(tenant.getAddress())
+                        .city(tenant.getCity())
+                        .membersCount(getCountOfUsersWithRoleMemberWithinATenant(tenant))
+                        .abonnement(tenant.getAbonnement() == null ? null : tenant.getAbonnement().name())
+                        .abonnementDuration(tenant.getAbonnementDuration() == null ? null : tenant.getAbonnementDuration().name())
+                        .build()).toList();
 
     }
 
@@ -70,7 +65,12 @@ public class TenantServiceImpl implements TenantService {
     public List<TenantLookUp> getShortInfoForAllTenants() {
         return this.tenantRepository.findAll()
                 .stream()
-                .map(tenant -> this.modelMapper.map(tenant, TenantLookUp.class))
+                .map(tenant -> TenantLookUp.builder()
+                        .tenantId(tenant.getId())
+                        .name(tenant.getName())
+                        .city(tenant.getCity())
+                        .address(tenant.getAddress())
+                        .build())
                 .toList();
     }
 
