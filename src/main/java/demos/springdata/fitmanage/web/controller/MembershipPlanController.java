@@ -4,7 +4,7 @@ import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.TableResponseDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PlanTable;
 import demos.springdata.fitmanage.domain.dto.membershipplan.UpdateRequest;
-import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PriceResponse;
 import demos.springdata.fitmanage.domain.enums.Employment;
 import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
@@ -33,8 +33,8 @@ public class MembershipPlanController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<List<PlanRequest>>> create(@RequestBody List<PlanRequest> plansDto) {
-        List<PlanRequest> savedPlans = pricingService.createPlans(plansDto);
+    public ResponseEntity<ApiResponse<List<PlanDto>>> create(@RequestBody List<PlanDto> plansDto) {
+        List<PlanDto> savedPlans = pricingService.createPlans(plansDto);
         return ResponseEntity.ok(ApiResponse.success(savedPlans));
     }
 
@@ -54,7 +54,7 @@ public class MembershipPlanController {
 
     @GetMapping("table")
     public ResponseEntity<ApiResponse<TableResponseDto>> getPlansDataAsTable() {
-        List<PlanRequest> planPriceDtoList = membershipPlanService.getPlansData();
+        List<PlanDto> planPriceDtoList = membershipPlanService.getPlansData();
         TableResponseDto response = new TableResponseDto();
         response.setConfig(tableHelper.buildTableConfig("/membership-plans", PlanTable.class));
         response.setColumns(TableColumnBuilder.buildColumns(PlanTable.class));

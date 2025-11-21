@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.service.impl;
 
 import demos.springdata.fitmanage.domain.dto.membershipplan.UpdateRequest;
-import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PriceResponse;
 import demos.springdata.fitmanage.domain.entity.MembershipPlan;
 import demos.springdata.fitmanage.domain.entity.Tenant;
@@ -12,7 +12,6 @@ import demos.springdata.fitmanage.exception.DamilSoftException;
 import demos.springdata.fitmanage.repository.MembershipPlanRepository;
 import demos.springdata.fitmanage.service.MembershipPlanService;
 import demos.springdata.fitmanage.service.UserService;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,60 +25,74 @@ import java.util.List;
 public class MembershipPlanServiceImpl implements MembershipPlanService {
 
     private final MembershipPlanRepository membershipPlanRepository;
-    private final ModelMapper modelMapper;
     private final UserService userService;
     private final static Logger LOGGER = LoggerFactory.getLogger(MembershipPlanServiceImpl.class);
-
 
     @Autowired
     public MembershipPlanServiceImpl
             (
                     MembershipPlanRepository membershipPlanRepository,
-                    ModelMapper modelMapper,
                     UserService userService
             ) {
         this.membershipPlanRepository = membershipPlanRepository;
-        this.modelMapper = modelMapper;
         this.userService = userService;
     }
 
     @Override
-    public List<PlanRequest> createPlans(List<PlanRequest> requests) {
+    public List<PlanDto> createPlans(List<PlanDto> planDtoList) {
         Tenant tenant = userService.getCurrentUser().getTenant();
 
-        for (PlanRequest request : requests) {
+        List<MembershipPlan> createdPlans = new ArrayList<>();
 
-            MembershipPlan plan = new MembershipPlan()
-                    .setSubscriptionPlan(request.getSubscriptionPlan())
-                    .setPrice(request.getPrice())
-                    .setStudentPrice(request.getStudentPrice())
-                    .setSeniorPrice(request.getSeniorPrice())
-                    .setHandicapPrice(request.getHandicapPrice())
-                    .setTenant(tenant);
-
+        planDtoList.stream().map(request -> new MembershipPlan()
+                .setSubscriptionPlan(request.getSubscriptionPlan())
+                .setPrice(request.getPrice())
+                .setStudentPrice(request.getStudentPrice())
+                .setSeniorPrice(request.getSeniorPrice())
+                .setHandicapPrice(request.getHandicapPrice())
+                .setTenant(tenant)).forEach(plan -> {
+            createdPlans.add(plan);
             membershipPlanRepository.save(plan);
+        });
 
-        }
-
-        return requests;
+        return createdPlans.stream().map(plan -> PlanDto.builder()
+                .id(plan.getId())
+                .subscriptionPlan(plan.getSubscriptionPlan())
+                .price(plan.getPrice())
+                .studentPrice(plan.getStudentPrice())
+                .seniorPrice(plan.getSeniorPrice())
+                .handicapPrice(plan.getHandicapPrice())
+                .build()).toList();
     }
 
-
     @Override
-    public List<PlanRequest> getPlansData() {
+    public List<PlanDto> getPlansData() {
         Tenant tenant = userService.getCurrentUser().getTenant();
         List<MembershipPlan> plans = membershipPlanRepository.getMembershipPlansByTenant(tenant);
 
         return plans.stream()
-                .map(p -> modelMapper.map(p, PlanRequest.class)).toList();
+                .map(plan -> {
+                    return PlanDto.builder()
+                            .id(plan.getId())
+                            .subscriptionPlan(plan.getSubscriptionPlan())
+                            .price(plan.getPrice())
+                            .studentPrice(plan.getStudentPrice())
+                            .seniorPrice(plan.getSeniorPrice())
+                            .handicapPrice(plan.getHandicapPrice())
+                            .build();
+                }).toList();
     }
-
 
     @Override
     public UpdateRequest updatePlanPrices(Long planId, UpdateRequest request) {
-        MembershipPlan membershipPlan = membershipPlanRepository.getMembershipPlanById(planId);
-        modelMapper.map(request, membershipPlan);
-        membershipPlanRepository.save(membershipPlan);
+        MembershipPlan plan = membershipPlanRepository.getMembershipPlanById(planId);
+
+        plan.setPrice(request.getPrice())
+                .setStudentPrice(request.getStudentPrice())
+                .setSeniorPrice(request.getSeniorPrice())
+                .setHandicapPrice(request.getHandicapPrice());
+
+        membershipPlanRepository.save(plan);
         return request;
     }
 
@@ -87,12 +100,8 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     public void deletePlan(Long planId) {
         MembershipPlan currentPlan = membershipPlanRepository.findById(planId)
                 .orElseThrow(() -> new DamilSoftException(String.format("No plan with ID: %d", planId), HttpStatus.NOT_FOUND));
-
         LOGGER.info("Deleting plan with ID {}", planId);
-
         membershipPlanRepository.delete(currentPlan);
-
-        LOGGER.info("Plan with ID {} deleted successfully", planId);
     }
 
     @Override

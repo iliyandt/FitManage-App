@@ -2,7 +2,7 @@ package demos.springdata.fitmanage.web.controller;
 
 import demos.springdata.fitmanage.domain.dto.auth.response.ApiResponse;
 import demos.springdata.fitmanage.domain.dto.common.response.EnumOption;
-import demos.springdata.fitmanage.domain.dto.membershipplan.PlanRequest;
+import demos.springdata.fitmanage.domain.dto.membershipplan.PlanDto;
 import demos.springdata.fitmanage.domain.dto.member.request.SubscriptionRequest;
 import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.service.MembershipPlanService;
@@ -36,7 +36,7 @@ public class MembershipController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<EnumOption>>> getPlansForTenant() {
-        List<PlanRequest> planPriceDtoList = membershipPlanService.getPlansData();
+        List<PlanDto> planPriceDtoList = membershipPlanService.getPlansData();
         List<EnumOption> enumOptions = planPriceDtoList.stream()
                 .map(plan -> new EnumOption(plan.getSubscriptionPlan().getDisplayName(), plan.getSubscriptionPlan().toString()))
                 .toList();
