@@ -1,13 +1,12 @@
 package demos.springdata.fitmanage.service.impl;
 
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.Account;
+import demos.springdata.fitmanage.client.PaymentFeignClient;
 import demos.springdata.fitmanage.domain.dto.auth.request.*;
 import demos.springdata.fitmanage.domain.dto.auth.response.EmailResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.RegisterResponse;
 import demos.springdata.fitmanage.domain.dto.auth.response.VerificationResponse;
 import demos.springdata.fitmanage.domain.dto.mapper.UserMapper;
+import demos.springdata.fitmanage.domain.dto.tenant.TenantDto;
 import demos.springdata.fitmanage.domain.dto.tenant.TenantRegisterRequest;
 import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.entity.User;
@@ -21,7 +20,6 @@ import demos.springdata.fitmanage.util.SecurityCodeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,16 +38,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final TenantRepository tenantRepository;
     private final CustomUserDetailsService customUserDetailsService;
     private final EmailService emailService;
-    private final StripeConnectService stripeConnectService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
-
-
-
-    @Value("${stripe.api.key}")
-    private String apiKey;
-
+    private final PaymentFeignClient paymentFeignClient;
 
     @Autowired
     public AuthenticationServiceImpl
@@ -60,23 +51,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     TenantRepository tenantRepository,
                     CustomUserDetailsService customUserDetailsService,
                     EmailService emailService,
-                    StripeConnectService stripeConnectService,
                     BCryptPasswordEncoder passwordEncoder,
-                    UserMapper userMapper) {
+                    UserMapper userMapper, PaymentFeignClient paymentFeignClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.emailService = emailService;
         this.customUserDetailsService = customUserDetailsService;
         this.tenantRepository = tenantRepository;
-        this.stripeConnectService = stripeConnectService;
         this.userMapper = userMapper;
+        this.paymentFeignClient = paymentFeignClient;
     }
 
     @Transactional
     @Override
     public RegisterResponse registerUser(UserRegisterRequest request, TenantRegisterRequest tenantRequest) {
-        Stripe.apiKey = apiKey;
         LOGGER.info("Registration attempt for email: {}", request.getEmail());
         validateCredentials(request);
 
@@ -91,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userMapper.toAdminUser(tenant, request);
 
-        createTenantStripeAccount(user, tenant);
+        createTenantStripeAccount(tenant);
         userRepository.save(user);
 
         emailService.sendVerificationEmail(user);
@@ -257,12 +246,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(rawPassword));
     }
 
-    private void createTenantStripeAccount(User user, Tenant tenant) {
+    private void createTenantStripeAccount(Tenant tenant) {
+
+        TenantDto tenantDto = TenantDto.builder()
+                .id(tenant.getId())
+                .name(tenant.getName())
+                .businessEmail(tenant.getBusinessEmail())
+                .address(tenant.getAddress())
+                .city(tenant.getCity())
+                .build();
+
+
         try {
-            Account stripeAccount = stripeConnectService.createConnectedAccount(user.getTenant());
-            tenant.setStripeAccountId(stripeAccount.getId());
-        } catch (StripeException e) {
-            throw new DamilSoftException("Unsuccessful creation of stripe account: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+            paymentFeignClient.createConnectedAccount(tenantDto);
+            tenant.setStripeAccountId(tenant.getStripeAccountId());
+        } catch (Exception e) {
+            throw new DamilSoftException("Unsuccessful creation of stripe account via Microservice: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 }
