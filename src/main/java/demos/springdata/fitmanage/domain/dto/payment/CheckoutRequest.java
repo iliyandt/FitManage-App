@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CheckoutRequest {
     private String tenantId;
+    private String tenantName;
     private String businessEmail;
     private String plan;
     private Long amount;

@@ -27,24 +27,12 @@ public class FeignClientInterceptor implements RequestInterceptor {
         if (requestAttributes != null) {
             HttpServletRequest request = requestAttributes.getRequest();
 
-            // 1. ИЗПОЛЗВАЙ СТАНДАРТНА КОНСТАНТА ИЛИ "Authorization"
-            // HttpHeaders.AUTHORIZATION е равно на стринга "Authorization"
             String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-            // ДЕБЪГ ЛОГ: Виж какво реално има в заявката
             if (authorizationHeader == null) {
                 LOGGER.warn("Authorization header is NULL in Interceptor!");
-
-                // Опционално: Принтирай всички хедъри, за да видиш какво идва
-                Enumeration<String> headerNames = request.getHeaderNames();
-                while (headerNames.hasMoreElements()) {
-                    String key = headerNames.nextElement();
-                    LOGGER.info("Header found: {} = {}", key, request.getHeader(key));
-                }
             } else {
-                LOGGER.info("✅ Forwarding Authorization token: {}", authorizationHeader.substring(0, 15) + "...");
-
-                // 2. ЗАКАЧИ ГО КЪМ FEIGN ЗАЯВКАТА
+                LOGGER.info("Forwarding Authorization token: {}", authorizationHeader.substring(0, 15) + "...");
                 template.header(HttpHeaders.AUTHORIZATION, authorizationHeader);
             }
         }
