@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -54,7 +55,16 @@ public class UserServiceImpl implements UserService {
         LOGGER.info("Searching user with email: {}", email);
         User user = userRepository
                 .findByEmail(email).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
-        return userMapper.toResponse(user);
+
+        if (UserRoleHelper.extractRoleTypes(user).contains(RoleType.MEMBER)) {
+            Membership membership = user.getMemberships().stream().findFirst().orElseThrow(() -> new DamilSoftException("User has no membership", HttpStatus.INTERNAL_SERVER_ERROR));
+            return userMapper.toResponse(membership, user);
+        } else if (UserRoleHelper.extractRoleTypes(user).contains(RoleType.STAFF)) {
+            Employee employee = user.getEmployees().stream().findFirst().orElseThrow(() -> new DamilSoftException("Employee not found.", HttpStatus.INTERNAL_SERVER_ERROR));
+            return userMapper.toResponse(employee, user);
+        } else {
+            return userMapper.toResponse(user);
+        }
     }
 
     @Override

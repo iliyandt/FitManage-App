@@ -14,9 +14,11 @@ import java.util.UUID;
 @Builder
 public class ConnectedCheckoutRequest {
     private UUID userId;
+    private String email;
+    private String name;
     private String subscriptionPlan;
     private Long amount;
     private Integer allowedVisits;
     private String currency;
-    private Employment employment;
+    private String employment;
 }
