@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 
 @RestController
 @RequestMapping("/api/v1/access-requests")
@@ -22,7 +24,7 @@ public class AccessRequestController {
 
     @PostMapping("/{tenantId}")
     public ResponseEntity<ApiResponse<UserResponse>> requestAccess(
-            @PathVariable Long tenantId,
+            @PathVariable UUID tenantId,
             @Valid @RequestBody CreateUser requestDto) {
         UserResponse response = accessRequestService.requestAccess(tenantId, requestDto);
         return ResponseEntity.ok(ApiResponse.success(response));
@@ -31,7 +33,7 @@ public class AccessRequestController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/approve")
     public ResponseEntity<ApiResponse<UserResponse>> approveAccess(
-            @PathVariable Long userId) {
+            @PathVariable UUID userId) {
         UserResponse response = accessRequestService.processAccessRequest(userId, true);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -39,7 +41,7 @@ public class AccessRequestController {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PatchMapping("/{userId}/reject")
     public ResponseEntity<ApiResponse<UserResponse>> rejectAccess(
-            @PathVariable Long userId) {
+            @PathVariable UUID userId) {
         UserResponse response = accessRequestService.processAccessRequest(userId, false);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

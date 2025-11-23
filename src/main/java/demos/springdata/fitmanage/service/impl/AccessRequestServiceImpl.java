@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class AccessRequestServiceImpl implements AccessRequestService {
     private final TenantService tenantService;
@@ -48,7 +50,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public UserResponse requestAccess(Long tenantId, CreateUser request) {
+    public UserResponse requestAccess(UUID tenantId, CreateUser request) {
         Tenant tenant = tenantService.getTenantById(tenantId);
 
         User member = userMapper.toMember(tenant, request);
@@ -74,7 +76,7 @@ public class AccessRequestServiceImpl implements AccessRequestService {
 
     @Transactional
     @Override
-    public UserResponse processAccessRequest(Long userId, boolean approve) {
+    public UserResponse processAccessRequest(UUID userId, boolean approve) {
         User member = userService.findUserById(userId);
 
         Membership membership = member.getMemberships().stream().findFirst().get();

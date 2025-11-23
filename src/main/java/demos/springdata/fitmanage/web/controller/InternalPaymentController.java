@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/internal/payments")
 // Този контролер трябва да е защитен. Не трябва да е достъпен от външния свят.
@@ -23,13 +25,13 @@ public class InternalPaymentController {
 
     @PostMapping("/tenants/{tenantId}/activate")
     public ResponseEntity<Void> activateTenantSubscription(@PathVariable String tenantId, @RequestParam("plan") String planName, @RequestParam("duration") String duration) {
-        tenantService.createAbonnement(Long.valueOf(tenantId), Abonnement.valueOf(planName), duration);
+        tenantService.createAbonnement(UUID.fromString(tenantId), Abonnement.valueOf(planName), duration);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/users/{userId}/memberships/activate")
     public ResponseEntity<Void> activateUserMembership(@PathVariable String userId, @RequestBody SubscriptionRequest request) {
-        membershipService.setupMembershipPlan(Long.valueOf(userId), request);
+        membershipService.setupMembershipPlan(UUID.fromString(userId), request);
         return ResponseEntity.ok().build();
     }
 }

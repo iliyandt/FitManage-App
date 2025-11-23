@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class TrainingServiceImpl implements TrainingService {
@@ -54,7 +55,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @Transactional
-    public TrainingResponse update(Long id, TrainingRequest update) {
+    public TrainingResponse update(UUID id, TrainingRequest update) {
         Training training = trainingRepository.findById(id).orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
 
         updateTrainingEntity(update, training);
@@ -67,7 +68,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(UUID id) {
         Training training = trainingRepository.findById(id)
                 .orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));
         trainingRepository.delete(training);
@@ -75,7 +76,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @Transactional
-    public void joinTraining(UserData user, Long trainingId) {
+    public void joinTraining(UserData user, UUID trainingId) {
 
         User currentUser = userService.findUserById(user.getId());
         Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
@@ -86,7 +87,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @Transactional
-    public void cancelTraining(UserData user, Long trainingId) {
+    public void cancelTraining(UserData user, UUID trainingId) {
         User currentUser = userService.findUserById(user.getId());
         Training training = trainingRepository.findByIdAndTenant(trainingId, currentUser.getTenant())
                 .orElseThrow(() -> new DamilSoftException("Training not found.", HttpStatus.NOT_FOUND));

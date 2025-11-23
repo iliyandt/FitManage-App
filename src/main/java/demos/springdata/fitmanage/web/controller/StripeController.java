@@ -28,9 +28,9 @@ public class StripeController {
     }
 
     @PostMapping("/create-checkout-session/connectedAccounts")
-    public CheckoutSessionResponse createMemberCheckoutSession(@RequestParam String connectedAccountId, @RequestBody ConnectedCheckoutRequest request) {
+    public ResponseEntity<ApiResponse<String>> createMemberCheckoutSession(@RequestParam String connectedAccountId, @RequestBody ConnectedCheckoutRequest request) {
         String session = stripeService.createMemberCheckoutSession(connectedAccountId, request);
-        return new CheckoutSessionResponse(session, session, session);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(session));
     }
 
     @PostMapping("/account_link")

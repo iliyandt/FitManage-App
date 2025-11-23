@@ -13,13 +13,14 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
-    Optional<User> findByIdAndTenantId(Long id, Long tenantId);
-    boolean existsByPhoneAndTenant_Id(String phone, Long tenantId);
-    boolean existsByEmailAndTenant_Id(String email, Long id);
+    Optional<User> findByIdAndTenantId(UUID id, UUID tenantId);
+    boolean existsByPhoneAndTenant_Id(String phone, UUID tenantId);
+    boolean existsByEmailAndTenant_Id(String email, UUID id);
     boolean existsByEmail(String email);
     boolean existsByRoles_Name(RoleType roleType);
     List<User> findAll(Specification<User> spec);
@@ -36,12 +37,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "    u.id IN :ids OR r.name IN :roleTypes" +
             ")")
     Set<User> findAllByIdsOrRoleTypesAndTenant
-            (@Param("ids") Set<Long> ids,
+            (@Param("ids") Set<UUID> ids,
              @Param("roleTypes") Set<RoleType> roles,
-             @Param("tenantId") Long tenantId);
+             @Param("tenantId") UUID tenantId);
 
     @Query("SELECT u FROM User u JOIN u.roles r WHERE r IN :roles AND u.tenant.id = :tenantId")
-    List<User> findUsersByRolesAndTenant(@Param("roles") Set<Role> roles, @Param("tenantId") Long tenantId);
+    List<User> findUsersByRolesAndTenant(@Param("roles") Set<Role> roles, @Param("tenantId") UUID tenantId);
 
 
 

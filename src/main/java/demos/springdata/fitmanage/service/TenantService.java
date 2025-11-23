@@ -6,12 +6,13 @@ import demos.springdata.fitmanage.domain.entity.Tenant;
 import demos.springdata.fitmanage.domain.enums.Abonnement;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TenantService {
-    Tenant getTenantById(Long tenantId);
+    Tenant getTenantById(UUID tenantId);
     Tenant getTenantByEmail(String email);
     TenantDto getTenantDtoByEmail();
     List<TenantDto> getAllTenants();
     List<TenantLookUp> getShortInfoForAllTenants();
-    void createAbonnement(Long tenantId, Abonnement planName, String duration);
+    void createAbonnement(UUID tenantId, Abonnement planName, String duration);
 }

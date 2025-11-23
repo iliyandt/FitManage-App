@@ -8,9 +8,10 @@ import demos.springdata.fitmanage.domain.entity.Visit;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface VisitService {
-    List<VisitDto> findVisitsForMember(Long memberId);
-    Visit checkIn(Membership membership, Long memberId);
-    List<VisitTableResponse> getVisitsInPeriod(Long gymId, LocalDateTime start, LocalDateTime end);
+    List<VisitDto> findVisitsForMember(UUID memberId);
+    Visit checkIn(Membership membership, UUID memberId);
+    List<VisitTableResponse> getVisitsInPeriod(UUID clubId, LocalDateTime start, LocalDateTime end);
 }

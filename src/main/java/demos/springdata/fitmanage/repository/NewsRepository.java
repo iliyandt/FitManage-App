@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Repository
-public interface NewsRepository extends JpaRepository<News, Long> {
-    News getNewsById(Long id);
-    List<News> findAllByTenantId(Long tenantId);
+public interface NewsRepository extends JpaRepository<News, UUID> {
+    News getNewsById(UUID id);
+    List<News> findAllByTenantId(UUID tenantId);
 
 }

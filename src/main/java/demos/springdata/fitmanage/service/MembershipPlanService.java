@@ -8,11 +8,12 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MembershipPlanService {
     List<PlanDto> createPlans(List<PlanDto> plansDto);
     List<PlanDto> getPlansData();
-    UpdateRequest updatePlanPrices(Long planId, UpdateRequest dto);
-    void deletePlan(Long planId);
+    UpdateRequest updatePlanPrices(UUID planId, UpdateRequest dto);
+    void deletePlan(UUID planId);
     PriceResponse getPlanPrice(SubscriptionPlan subscriptionPlan, Employment employment);
 }

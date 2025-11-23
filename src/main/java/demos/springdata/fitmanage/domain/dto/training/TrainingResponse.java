@@ -2,9 +2,10 @@ package demos.springdata.fitmanage.domain.dto.training;
 
 import demos.springdata.fitmanage.annotation.DropDown;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record TrainingResponse(
-        Long id,
+        UUID id,
         String title,
         String category,
         String location,

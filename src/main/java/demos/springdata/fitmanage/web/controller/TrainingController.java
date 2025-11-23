@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/trainings")
@@ -42,28 +43,28 @@ public class TrainingController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @PutMapping
-    public ResponseEntity<ApiResponse<TrainingResponse>> update(Long id, @RequestBody TrainingRequest update) {
+    public ResponseEntity<ApiResponse<TrainingResponse>> update(UUID id, @RequestBody TrainingRequest update) {
         TrainingResponse response = trainingService.update(id, update);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF')")
     @DeleteMapping
-    public ResponseEntity<ApiResponse<String>> update(Long id) {
+    public ResponseEntity<ApiResponse<String>> update(UUID id) {
         trainingService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Training successfully deleted!"));
     }
 
     @PreAuthorize("hasAuthority('MEMBER')")
     @PostMapping("/join/{trainingId}")
-    public ResponseEntity<ApiResponse<String>> join(@AuthenticationPrincipal UserData user, @PathVariable Long trainingId) {
+    public ResponseEntity<ApiResponse<String>> join(@AuthenticationPrincipal UserData user, @PathVariable UUID trainingId) {
         trainingService.joinTraining(user, trainingId);
         return ResponseEntity.ok(ApiResponse.success("Joined"));
     }
 
     @PreAuthorize("hasAuthority('MEMBER')")
     @PostMapping("/cancel/{trainingId}")
-    public ResponseEntity<ApiResponse<String>> cancel(@AuthenticationPrincipal UserData user, @PathVariable Long trainingId) {
+    public ResponseEntity<ApiResponse<String>> cancel(@AuthenticationPrincipal UserData user, @PathVariable UUID trainingId) {
         trainingService.cancelTraining(user, trainingId);
 
         return ResponseEntity.ok(ApiResponse.success("Canceled"));

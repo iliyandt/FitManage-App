@@ -6,12 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class ConnectedCheckoutRequest {
-    private Long userId;
+    private UUID userId;
     private String subscriptionPlan;
     private Long amount;
     private Integer allowedVisits;

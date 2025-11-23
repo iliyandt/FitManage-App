@@ -9,12 +9,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
     Optional<RefreshToken> findByToken(String token);
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM refresh_token WHERE user_id = :userId", nativeQuery = true)
-    int nativeDeleteByUserId(@Param("userId") Long userId);
+    int nativeDeleteByUserId(@Param("userId") UUID userId);
+
 }

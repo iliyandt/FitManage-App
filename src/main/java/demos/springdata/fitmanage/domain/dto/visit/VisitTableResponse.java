@@ -4,10 +4,12 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionPlan;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 @Builder
 public class VisitTableResponse {
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private SubscriptionPlan subscriptionPlan;

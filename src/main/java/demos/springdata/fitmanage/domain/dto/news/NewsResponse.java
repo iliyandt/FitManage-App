@@ -11,20 +11,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class NewsResponse {
-    private Long newsId;
+    private UUID newsId;
     private String title;
     private String content;
-    private Long authorId;
+    private UUID authorId;
     private Instant publishedAt;
     private NewsStatus status;
     private PublicationType publicationType;
-    private Set<Long> recipientsIds;
+    private Set<UUID> recipientsIds;
     private Set<RoleType> targetRoles;
     private NewsImportance importance;
     private boolean targetSpecific;

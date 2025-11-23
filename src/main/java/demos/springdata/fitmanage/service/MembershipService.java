@@ -9,9 +9,10 @@ import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 public interface MembershipService {
-    UserResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto);
+    UserResponse setupMembershipPlan(UUID memberId, SubscriptionRequest requestDto);
 
     Membership checkIn(Membership membership);
 
@@ -23,5 +24,6 @@ public interface MembershipService {
     Double countBySubscriptionStatusForTenant(SubscriptionStatus status);
     Double countBySubscriptionPlanForTenant(SubscriptionPlan plan);
 
-    Optional<Membership> getMembershipById(Long membershipId);
+    Optional<Membership> getMembershipById(UUID membershipId);
+
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/visits")
@@ -29,13 +30,13 @@ public class VisitController {
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable Long memberId) {
+    public ResponseEntity<ApiResponse<List<VisitDto>>> getVisitsByMember(@PathVariable UUID memberId) {
         List<VisitDto> visitsForMember = visitService.findVisitsForMember(memberId);
         return ResponseEntity.ok(ApiResponse.success(visitsForMember));
     }
 
     @GetMapping("/period/{id}/{start}/{end}")
-    public ResponseEntity<ApiResponse<TableResponseDto>> getVisitsInPeriod(@PathVariable Long id, @PathVariable String start, @PathVariable String end) {
+    public ResponseEntity<ApiResponse<TableResponseDto>> getVisitsInPeriod(@PathVariable UUID id, @PathVariable String start, @PathVariable String end) {
         LocalDateTime startDateTime = LocalDate.parse(start).atStartOfDay();
         LocalDateTime endDateTime = LocalDate.parse(end).plusDays(1).atStartOfDay();
         List<VisitTableResponse> visitsInPeriod = visitService.getVisitsInPeriod(id, startDateTime, endDateTime);

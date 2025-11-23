@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/memberships")
@@ -28,7 +29,7 @@ public class MembershipController {
 
     @PutMapping("/{memberId}")
     public ResponseEntity<ApiResponse<UserResponse>> update(
-            @PathVariable Long memberId,
+            @PathVariable UUID memberId,
             @RequestBody @Valid SubscriptionRequest dto) {
         UserResponse response = membershipService.setupMembershipPlan(memberId, dto);
         return ResponseEntity.ok(ApiResponse.success(response));

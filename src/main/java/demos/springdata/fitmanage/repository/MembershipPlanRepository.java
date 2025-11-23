@@ -11,11 +11,12 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface MembershipPlanRepository extends JpaRepository<MembershipPlan, Long> {
+public interface MembershipPlanRepository extends JpaRepository<MembershipPlan, UUID> {
     List<MembershipPlan> getMembershipPlansByTenant(Tenant tenant);
-    MembershipPlan getMembershipPlanById(Long id);
+    MembershipPlan getMembershipPlanById(UUID id);
 
     @Query("""
         SELECT CASE :employment

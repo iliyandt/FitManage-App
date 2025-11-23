@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,12 +66,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsByEmailAndTenant(String email, Long tenantId) {
+    public boolean existsByEmailAndTenant(String email, UUID tenantId) {
         return userRepository.existsByEmailAndTenant_Id(email, tenantId);
     }
 
     @Override
-    public boolean existsByPhoneAndTenant(String phone, Long tenantId) {
+    public boolean existsByPhoneAndTenant(String phone, UUID tenantId) {
         return userRepository.existsByPhoneAndTenant_Id(phone, tenantId);
     }
 
@@ -116,7 +117,7 @@ public class UserServiceImpl implements UserService {
 
         Set<Role> roles = roleService.findByNameIn(roleTypes);
 
-        Long tenantId = this.getCurrentUser().getTenant().getId();
+        UUID tenantId = this.getCurrentUser().getTenant().getId();
 
         return userRepository.findUsersByRolesAndTenant(roles, tenantId);
     }
@@ -127,7 +128,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getByIdAndTenantId(Long memberId, Long tenantId) {
+    public User getByIdAndTenantId(UUID memberId, UUID tenantId) {
         return userRepository.findByIdAndTenantId(memberId, tenantId).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 
@@ -142,7 +143,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(Long memberId) {
+    public User findUserById(UUID memberId) {
         return userRepository.findById(memberId).orElseThrow(() -> new DamilSoftException("User not found", HttpStatus.NOT_FOUND));
     }
 }

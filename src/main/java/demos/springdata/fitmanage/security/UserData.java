@@ -6,16 +6,17 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserData implements UserDetails {
-    private Long id;
+    private UUID id;
     private String email;
     private String password;
     private Set<Role> roles;
     private boolean enabled;
 
-    public UserData(Long id, String email, String password, Set<Role> roles, boolean enabled) {
+    public UserData(UUID id, String email, String password, Set<Role> roles, boolean enabled) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -23,11 +24,11 @@ public class UserData implements UserDetails {
         this.enabled = enabled;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public UserData setId(Long id) {
+    public UserData setId(UUID id) {
         this.id = id;
         return this;
     }

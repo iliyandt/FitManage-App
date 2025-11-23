@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/news")
@@ -38,13 +39,13 @@ public class NewsController {
 
 
     @PutMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsResponse>> editNews(@PathVariable Long newsId, @RequestBody NewsRequest request) {
+    public ResponseEntity<ApiResponse<NewsResponse>> editNews(@PathVariable UUID newsId, @RequestBody NewsRequest request) {
         return ResponseEntity.ok(ApiResponse.success(newsService.update(newsId, request)));
     }
 
 
     @DeleteMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsResponse>> deleteNews(@PathVariable Long newsId) {
+    public ResponseEntity<ApiResponse<NewsResponse>> deleteNews(@PathVariable UUID newsId) {
         return ResponseEntity.ok(ApiResponse.success(newsService.delete(newsId)));
     }
 }

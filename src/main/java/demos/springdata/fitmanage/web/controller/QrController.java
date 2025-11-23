@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/qr")
@@ -26,7 +27,7 @@ public class QrController {
 
     @GetMapping(value = "/{userId}", produces = MediaType.IMAGE_PNG_VALUE)
     @PreAuthorize("hasAuthority('MEMBER')")
-    public ResponseEntity<byte[]> getQr(@PathVariable Long userId) throws Exception {
+    public ResponseEntity<byte[]> getQr(@PathVariable UUID userId) throws Exception {
         User user = userService.findUserById(userId);
         String qrToken = qrService.generateQrToken(user);
 

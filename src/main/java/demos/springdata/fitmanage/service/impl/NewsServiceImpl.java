@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,7 +80,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public NewsResponse delete(Long newsId) {
+    public NewsResponse delete(UUID newsId) {
         News newsToDelete = newsRepository.getNewsById(newsId);
         newsRepository.delete(newsToDelete);
         return mapToDto(newsToDelete);
@@ -87,7 +88,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public NewsResponse update(Long newsId, NewsRequest request) {
+    public NewsResponse update(UUID newsId, NewsRequest request) {
         News news = newsRepository.getNewsById(newsId);
         news.setTitle(request.getTitle())
                 .setContent(request.getContent())
@@ -102,7 +103,7 @@ public class NewsServiceImpl implements NewsService {
 
     private News getTargetedUsers(NewsRequest request, News news) {
 
-        Set<Long> recipientsIds = request.getRecipientsIds();
+        Set<UUID> recipientsIds = request.getRecipientsIds();
         Set<String> targetRoles = request.getTargetRoles();
 
         if (request.getPublicationType() == PublicationType.TARGETED) {
@@ -126,7 +127,7 @@ public class NewsServiceImpl implements NewsService {
         return news;
     }
 
-    private boolean isNewsRelevantForUser(News news, Long userId, Set<RoleType> userRoles) {
+    private boolean isNewsRelevantForUser(News news, UUID userId, Set<RoleType> userRoles) {
         if (userRoles.contains(RoleType.ADMIN)) {
             return true;
         }
@@ -147,7 +148,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     private NewsResponse mapToDto(News news) {
-        Set<Long> recipientIds = news.getRecipientIds();
+        Set<UUID> recipientIds = news.getRecipientIds();
 
         Set<RoleType> targetedRoles = news.getTargetRoles()
                 .stream().map(Role::getName)

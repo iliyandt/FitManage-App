@@ -75,7 +75,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public void updateEmployee(Long id, UpdateEmployee updateDto) {
+    public void updateEmployee(UUID id, UpdateEmployee updateDto) {
 
         User employeeUser = userService.findUserById(id);
 
@@ -137,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee getEmployeeById(Long id, Tenant tenant) {
+    public Employee getEmployeeById(UUID id, Tenant tenant) {
         return employeeRepository.findByIdAndTenant(id, tenant).orElseThrow(() -> new DamilSoftException("Employee not found", HttpStatus.NOT_FOUND));
     }
 
@@ -156,14 +156,14 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .toList();
     }
 
-    private List<EmployeeName> getAllEmployeesForTenant(Long tenantId) {
+    private List<EmployeeName> getAllEmployeesForTenant(UUID tenantId) {
         return employeeRepository.findAllByTenant_Id(tenantId)
                 .stream()
                 .map(this::buildResponse)
                 .toList();
     }
 
-    private List<EmployeeName> getSingleEmployeeForUser(Long tenantId, Long userId) {
+    private List<EmployeeName> getSingleEmployeeForUser(UUID tenantId, UUID userId) {
         Employee employee = employeeRepository.findByTenant_IdAndUser_Id(tenantId, userId);
         return List.of(buildResponse(employee));
     }

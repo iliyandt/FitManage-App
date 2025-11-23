@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserValidationServiceImpl implements UserValidationService {
@@ -24,7 +25,7 @@ public class UserValidationServiceImpl implements UserValidationService {
     }
 
     @Override
-    public void validateTenantScopedCredentials(String email, String phone, Long tenantId) {
+    public void validateTenantScopedCredentials(String email, String phone, UUID tenantId) {
         Map<String, String> errors = new HashMap<>();
 
         checkEmailInTenant(email, tenantId, errors);
@@ -36,7 +37,7 @@ public class UserValidationServiceImpl implements UserValidationService {
     }
 
     @Override
-    public void validateGlobalAndTenantScopedCredentials(String email, String phone, Long tenantId) {
+    public void validateGlobalAndTenantScopedCredentials(String email, String phone, UUID tenantId) {
         Map<String, String> errors = new HashMap<>();
 
         if (userService.existsByEmail(email)) {
@@ -53,14 +54,14 @@ public class UserValidationServiceImpl implements UserValidationService {
     }
 
 
-    private void checkEmailInTenant(String email, Long tenantId, Map<String, String> errors) {
+    private void checkEmailInTenant(String email, UUID tenantId, Map<String, String> errors) {
         if (!errors.containsKey("email") && userService.existsByEmailAndTenant(email, tenantId)) {
             LOGGER.warn("User with email {} already exists in tenant {}", email, tenantId);
             errors.put("email", "Email is already registered in this tenant");
         }
     }
 
-    private void checkPhoneInTenant(String phone, Long tenantId, Map<String, String> errors) {
+    private void checkPhoneInTenant(String phone, UUID tenantId, Map<String, String> errors) {
         if (userService.existsByPhoneAndTenant(phone, tenantId)) {
             LOGGER.warn("User with phone {} already exists in tenant {}", phone, tenantId);
             errors.put("phone", "Phone used from another user");

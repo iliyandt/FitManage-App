@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class VisitServiceImpl implements VisitService {
@@ -33,7 +34,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<VisitDto> findVisitsForMember(Long memberId) {
+    public List<VisitDto> findVisitsForMember(UUID memberId) {
         List<Visit> visitList = visitRepository.findByUser_Id(memberId)
                 .orElseThrow(() -> new DamilSoftException("No visits for this member", HttpStatus.NOT_FOUND));
 
@@ -48,7 +49,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public Visit checkIn(Membership membership, Long memberId) {
+    public Visit checkIn(Membership membership, UUID memberId) {
 
         LOGGER.info("Check-in at tenantId={} for memberId={} ({} {})",
                 membership.getTenant().getId(),
@@ -70,7 +71,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public List<VisitTableResponse> getVisitsInPeriod(Long facilityAdminId, LocalDateTime start, LocalDateTime end) {
+    public List<VisitTableResponse> getVisitsInPeriod(UUID facilityAdminId, LocalDateTime start, LocalDateTime end) {
         User user = userService.findUserById(facilityAdminId);
         Tenant tenant = user.getTenant();
 

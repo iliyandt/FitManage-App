@@ -84,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public void deleteMember(Long memberId) {
+    public void deleteMember(UUID memberId) {
         Tenant tenant = userService.getCurrentUser().getTenant();
         User user = userService.getByIdAndTenantId(memberId, tenant.getId());
         userService.delete(user);
@@ -93,7 +93,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public UserResponse checkInMember(Long memberId) {
+    public UserResponse checkInMember(UUID memberId) {
         User user = userService.findUserById(memberId);
         Membership activeMembership = membershipService.getRequiredActiveMembership(user.getMemberships());
 
@@ -108,7 +108,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     @Transactional
-    public UserResponse updateMember(Long memberId, UserUpdate updateRequest) {
+    public UserResponse updateMember(UUID memberId, UserUpdate updateRequest) {
+
         User member = userService.findUserById(memberId);
 
         Membership membership = member.getCurrentMembership();

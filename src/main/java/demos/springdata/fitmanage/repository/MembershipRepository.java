@@ -10,13 +10,15 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface MembershipRepository extends JpaRepository<Membership, Long> {
+public interface MembershipRepository extends JpaRepository<Membership, UUID> {
+
     Optional<Membership> findByUserAndTenant(User user, Tenant tenant);
     List<Membership> findAllBySubscriptionStatus(SubscriptionStatus status);
     Double countByEmployment_AndTenant(Employment employment, Tenant tenant);
     Double countBySubscriptionStatus_AndTenant(SubscriptionStatus status, Tenant tenant);
     Double countBySubscriptionPlan_AndTenant(SubscriptionPlan subscriptionPlan, Tenant tenant);
-    Optional<Membership> getMembershipById(Long membershipId);
+    Optional<Membership> getMembershipById(UUID membershipId);
 }

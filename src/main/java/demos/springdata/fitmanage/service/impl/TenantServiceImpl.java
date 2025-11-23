@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TenantServiceImpl implements TenantService {
@@ -33,7 +34,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public Tenant getTenantById(Long tenantId) {
+    public Tenant getTenantById(UUID tenantId) {
         return this.tenantRepository.findById(tenantId).orElseThrow(()-> new DamilSoftException("Tenant not found", HttpStatus.NOT_FOUND));
     }
 
@@ -69,7 +70,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public void createAbonnement(Long tenantId, Abonnement planName, String duration) {
+    public void createAbonnement(UUID tenantId, Abonnement planName, String duration) {
 
         Tenant tenant = tenantRepository.findById(tenantId).orElseThrow(() -> new DamilSoftException("Not found", HttpStatus.NOT_FOUND));
         LOGGER.info("Tenant found");

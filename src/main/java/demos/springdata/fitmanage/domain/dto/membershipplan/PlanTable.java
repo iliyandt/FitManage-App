@@ -6,12 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PlanTable {
-    private Long id;
+    private UUID id;
     private SubscriptionPlan subscriptionPlan;
     private BigDecimal price;
     private BigDecimal studentPrice;

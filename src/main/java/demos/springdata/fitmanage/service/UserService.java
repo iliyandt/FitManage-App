@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public interface UserService {
     User getCurrentUser();
@@ -15,11 +16,11 @@ public interface UserService {
     UserResponse updateProfile(UserUpdate dto);
     List<User> findMembersByFilter(Specification<User> spec);
     List<User> findFirstMemberByFilter(Specification<User> spec);
-    User getByIdAndTenantId(Long memberId, Long tenantId);
+    User getByIdAndTenantId(UUID memberId, UUID tenantId);
     User save(User user);
-    User findUserById(Long memberId);
-    boolean existsByEmailAndTenant(String email, Long tenantId);
-    boolean existsByPhoneAndTenant(String phone, Long tenantId);
+    User findUserById(UUID memberId);
+    boolean existsByEmailAndTenant(String email, UUID tenantId);
+    boolean existsByPhoneAndTenant(String phone, UUID tenantId);
     void delete(User user);
     Long countByGenderForTenant(Gender gender);
     Long countAllUsersByTenant();

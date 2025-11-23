@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Service
@@ -42,7 +43,7 @@ public class MembershipServiceImpl implements MembershipService {
 
     @Transactional
     @Override
-    public UserResponse setupMembershipPlan(Long memberId, SubscriptionRequest requestDto) {
+    public UserResponse setupMembershipPlan(UUID memberId, SubscriptionRequest requestDto) {
         User user = userService.findUserById(memberId);
         Tenant tenant = user.getTenant();
 
@@ -120,7 +121,7 @@ public class MembershipServiceImpl implements MembershipService {
     }
 
     @Override
-    public Optional<Membership> getMembershipById(Long membershipId) {
+    public Optional<Membership> getMembershipById(UUID membershipId) {
         return membershipRepository.getMembershipById(membershipId);
     }
 

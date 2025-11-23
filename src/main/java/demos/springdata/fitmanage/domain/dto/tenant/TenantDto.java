@@ -8,13 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class TenantDto {
-    private Long id;
+    private UUID id;
     private String stripeAccountId;
     @NotNull
     private String name;

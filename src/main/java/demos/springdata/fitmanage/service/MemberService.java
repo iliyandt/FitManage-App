@@ -7,12 +7,13 @@ import demos.springdata.fitmanage.domain.dto.users.UserResponse;
 import demos.springdata.fitmanage.domain.dto.users.UserUpdate;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface MemberService {
     UserResponse create(CreateUser requestDto);
-    void deleteMember(Long memberId);
-    UserResponse updateMember(Long memberId, UserUpdate update);
-    UserResponse checkInMember(Long memberId);
+    void deleteMember(UUID memberId);
+    UserResponse updateMember(UUID memberId, UserUpdate update);
+    UserResponse checkInMember(UUID memberId);
     List<MemberTableDto> findMembersTableView();
     List<MemberTableDto> getMembersByFilter(MemberFilter memberFilter);
     List<UserResponse> findMember(MemberFilter filter);

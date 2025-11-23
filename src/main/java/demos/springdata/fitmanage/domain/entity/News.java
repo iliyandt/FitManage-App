@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 
 @Table(name = "news")
@@ -14,7 +15,7 @@ import java.util.Set;
 public class News extends BaseEntity {
 
     @Column(name = "tenant_id")
-    private Long tenantId;
+    private UUID tenantId;
 
     @Column(nullable = false, length = 255)
     private String title;
@@ -46,7 +47,7 @@ public class News extends BaseEntity {
     private NewsImportance importance;
 
     @Column(name = "targeted_recipient_ids")
-    private Set<Long> recipientIds = new HashSet<>();
+    private Set<UUID> recipientIds = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -60,11 +61,11 @@ public class News extends BaseEntity {
     public News() {
     }
 
-    public Long getTenantId() {
+    public UUID getTenantId() {
         return tenantId;
     }
 
-    public News setTenantId(Long tenantId) {
+    public News setTenantId(UUID tenantId) {
         this.tenantId = tenantId;
         return this;
     }
@@ -150,11 +151,11 @@ public class News extends BaseEntity {
         return this;
     }
 
-    public Set<Long> getRecipientIds() {
+    public Set<UUID> getRecipientIds() {
         return recipientIds;
     }
 
-    public News setRecipientIds(Set<Long> recipientIds) {
+    public News setRecipientIds(Set<UUID> recipientIds) {
         this.recipientIds = recipientIds;
         return this;
     }

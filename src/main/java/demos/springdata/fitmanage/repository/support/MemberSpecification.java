@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MemberSpecification {
     public static Specification<User> build(MemberFilter filter) {
@@ -55,7 +56,7 @@ public class MemberSpecification {
                 .orElse((root, query, cb) -> cb.conjunction());
     }
 
-    private static Specification<User> id(Long id) {
+    private static Specification<User> id(UUID id) {
         return (root, query, cb) ->
                 cb.equal(root.get("id"), id);
     }

@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/membership-plans")
@@ -39,14 +40,14 @@ public class MembershipPlanController {
     }
 
     @PatchMapping("/{planId}")
-    public ResponseEntity<ApiResponse<UpdateRequest>> update(@PathVariable Long planId,
+    public ResponseEntity<ApiResponse<UpdateRequest>> update(@PathVariable UUID planId,
                                                              @RequestBody @Valid UpdateRequest request) {
         UpdateRequest updatedDto = membershipPlanService.updatePlanPrices(planId, request);
         return ResponseEntity.ok(ApiResponse.success(updatedDto));
     }
 
     @DeleteMapping("/{planId}")
-    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long planId) {
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID planId) {
         membershipPlanService.deletePlan(planId);
         return ResponseEntity.ok(ApiResponse.success(null));
     }

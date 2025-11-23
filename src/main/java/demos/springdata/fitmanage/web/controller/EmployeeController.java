@@ -16,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("api/v1/employees")
@@ -47,7 +48,7 @@ public class EmployeeController { ;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> update(@PathVariable Long id, UpdateEmployee update) {
+    public ResponseEntity<ApiResponse<String>> update(@PathVariable UUID id, UpdateEmployee update) {
         employeeService.updateEmployee(id, update);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Successfully updated."));

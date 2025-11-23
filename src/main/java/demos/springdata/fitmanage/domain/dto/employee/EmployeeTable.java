@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 
 @Data
@@ -15,7 +16,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Builder
 public class EmployeeTable {
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;

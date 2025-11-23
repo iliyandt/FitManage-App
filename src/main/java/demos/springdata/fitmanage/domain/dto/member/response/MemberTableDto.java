@@ -11,13 +11,14 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberTableDto {
-    private Long id;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;

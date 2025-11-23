@@ -59,19 +59,19 @@ public class MemberController {
 
     @PostMapping("/{memberId}/check-in")
     public ResponseEntity<ApiResponse<UserResponse>> checkInMember(
-            @PathVariable Long memberId) {
+            @PathVariable UUID memberId) {
         UserResponse response = memberService.checkInMember(memberId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PatchMapping("/{memberId}")
-    public ResponseEntity<ApiResponse<UserResponse>> updateMember(@PathVariable Long memberId, @Valid @RequestBody UserUpdate update) {
+    public ResponseEntity<ApiResponse<UserResponse>> updateMember(@PathVariable UUID memberId, @Valid @RequestBody UserUpdate update) {
         UserResponse response = memberService.updateMember(memberId, update);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> deleteMember(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteMember(@PathVariable UUID id) {
         memberService.deleteMember(id);
         return ResponseEntity.ok(ApiResponse.success("Member successfully deleted."));
     }

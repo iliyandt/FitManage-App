@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MembershipPlanServiceImpl implements MembershipPlanService {
@@ -84,7 +85,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     }
 
     @Override
-    public UpdateRequest updatePlanPrices(Long planId, UpdateRequest request) {
+    public UpdateRequest updatePlanPrices(UUID planId, UpdateRequest request) {
         MembershipPlan plan = membershipPlanRepository.getMembershipPlanById(planId);
 
         plan.setPrice(request.getPrice())
@@ -97,7 +98,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     }
 
     @Override
-    public void deletePlan(Long planId) {
+    public void deletePlan(UUID planId) {
         MembershipPlan currentPlan = membershipPlanRepository.findById(planId)
                 .orElseThrow(() -> new DamilSoftException(String.format("No plan with ID: %d", planId), HttpStatus.NOT_FOUND));
         LOGGER.info("Deleting plan with ID {}", planId);
