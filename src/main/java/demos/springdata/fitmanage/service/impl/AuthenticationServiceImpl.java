@@ -80,7 +80,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         User user = userMapper.toAdminUser(tenant, request);
 
-        createTenantStripeAccount(tenant);
+        //createTenantStripeAccount(tenant);
         userRepository.save(user);
 
         emailService.sendVerificationEmail(user);
