@@ -33,8 +33,8 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public AccountLinkResponse createAccountLink(String tenantId, String returnUrl, String refreshUrl) {
-        return paymentClient.createAccountLink(tenantId, returnUrl, refreshUrl);
+    public AccountLinkResponse createAccountLink(String connectedAccountId, String returnUrl, String refreshUrl) {
+        return paymentClient.createAccountLink(connectedAccountId, returnUrl, refreshUrl);
     }
 
     @Override

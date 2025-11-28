@@ -100,7 +100,7 @@ public class MembershipPlanServiceImpl implements MembershipPlanService {
     @Override
     public void deletePlan(UUID planId) {
         MembershipPlan currentPlan = membershipPlanRepository.findById(planId)
-                .orElseThrow(() -> new DamilSoftException(String.format("No plan with ID: %d", planId), HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new DamilSoftException(String.format("No plan with ID: %s", planId), HttpStatus.NOT_FOUND));
         LOGGER.info("Deleting plan with ID {}", planId);
         membershipPlanRepository.delete(currentPlan);
     }

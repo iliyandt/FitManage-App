@@ -40,8 +40,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     private final PaymentFeignClient paymentFeignClient;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
+
 
     @Autowired
     public AuthenticationServiceImpl
@@ -152,7 +153,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new DamilSoftException("New password cannot be the same as old password", HttpStatus.CONFLICT);
         }
 
-        if (!passwordEncoder.matches(request.getNewPassword(), request.getConfirmPassword())) {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new DamilSoftException("New password and confirm password do not match!", HttpStatus.CONFLICT);
         }
 

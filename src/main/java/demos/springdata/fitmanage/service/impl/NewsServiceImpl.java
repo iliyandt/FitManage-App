@@ -57,7 +57,7 @@ public class NewsServiceImpl implements NewsService {
         News targetedNews = getTargetedUsers(request, news);
 
         newsRepository.save(targetedNews);
-        return mapToDto(targetedNews);
+        return toResponse(targetedNews);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class NewsServiceImpl implements NewsService {
                 .toList();
 
         return relevantNews.stream()
-                .map(this::mapToDto)
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -83,7 +83,7 @@ public class NewsServiceImpl implements NewsService {
     public NewsResponse delete(UUID newsId) {
         News newsToDelete = newsRepository.getNewsById(newsId);
         newsRepository.delete(newsToDelete);
-        return mapToDto(newsToDelete);
+        return toResponse(newsToDelete);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class NewsServiceImpl implements NewsService {
                 .setExpiresOn(request.getExpiresOn());
 
         News updated = getTargetedUsers(request, news);
-        return mapToDto(updated);
+        return toResponse(updated);
     }
 
     private News getTargetedUsers(NewsRequest request, News news) {
@@ -147,7 +147,7 @@ public class NewsServiceImpl implements NewsService {
         return userRoles.stream().anyMatch(newsTargetRoles::contains);
     }
 
-    private NewsResponse mapToDto(News news) {
+    private NewsResponse toResponse(News news) {
         Set<UUID> recipientIds = news.getRecipientIds();
 
         Set<RoleType> targetedRoles = news.getTargetRoles()

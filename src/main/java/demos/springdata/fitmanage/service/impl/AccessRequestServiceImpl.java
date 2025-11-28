@@ -21,19 +21,17 @@ import java.util.UUID;
 public class AccessRequestServiceImpl implements AccessRequestService {
     private final TenantService tenantService;
     private final MembershipService membershipService;
-    private final RoleService roleService;
     private final UserService userService;
     private final UserValidationService userValidationService;
     private final UserPasswordService userPasswordService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
     private final UserMapper userMapper;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccessRequestServiceImpl.class);
 
     @Autowired
     public AccessRequestServiceImpl
             (
                     TenantService tenantService,
                     MembershipService membershipService,
-                    RoleService roleService,
                     UserService userService,
                     UserValidationService userValidationService,
                     UserPasswordService userPasswordService,
@@ -41,7 +39,6 @@ public class AccessRequestServiceImpl implements AccessRequestService {
     {
         this.tenantService = tenantService;
         this.membershipService = membershipService;
-        this.roleService = roleService;
         this.userService = userService;
         this.userValidationService = userValidationService;
         this.userPasswordService = userPasswordService;

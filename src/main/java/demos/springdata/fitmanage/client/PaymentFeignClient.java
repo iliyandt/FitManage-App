@@ -19,7 +19,7 @@ public interface PaymentFeignClient {
 
     @PostMapping("/api/v1/payments/connect/onboard")
     AccountLinkResponse createAccountLink(
-            @RequestParam("tenantId") String tenantId,
+            @RequestParam("connectedAccountId") String connectedAccountId,
             @RequestParam("returnUrl") String returnUrl,
             @RequestParam("refreshUrl") String refreshUrl
     );
