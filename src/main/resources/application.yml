@@ -1,47 +1,9 @@
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      show-details: always
-
 spring:
-  security:
-    user:
-      name: admin
-      password: admin
-      roles: ADMIN
-
-  profiles:
-    include: secrets
-    group:
-      railway: railway,secrets
-
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: ${JDBC_DATABASE_URL:}
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD:}
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 5
-
-  jpa:
-    database-platform: ${SPRING_JPA_DATABASE-PLATFORM:}
-    hibernate:
-      ddl-auto: update
-    open-in-view: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        jdbc.lob.non_contextual_creation: true
-        default_schema: public
-
   application:
     name: FitManage
+
+  profiles:
+    active: dev
 
   mail:
     host: smtp.gmail.com
@@ -55,17 +17,19 @@ spring:
           starttls:
             enable: true
 
-  config:
-    import: optional:file:.env[.properties]
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 5
 
-payment-service:
-  url: http://localhost:8081
-
-server:
-  port: ${PORT:8080}
-  error:
-    include-binding-errors: always
-    include-message: always
+    jpa:
+      open-in-view: false
+      properties:
+        hibernate:
+          dialect: org.hibernate.dialect.PostgreSQLDialect
+          jdbc.lob.non_contextual_creation: true
+          default_schema: public
 
 security:
   jwt:
@@ -73,9 +37,17 @@ security:
     expiration-time: 3600000
     refresh-token-expiration: 800600000
 
-logging:
-  level:
-    demos.springdata.fitmanage: DEBUG
-    org.hibernate: ERROR
-    org.springframework.web: INFO
-    root: INFO
+server:
+  error:
+    include-binding-errors: always
+    include-message: always
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always

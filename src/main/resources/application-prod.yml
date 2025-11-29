@@ -1,0 +1,25 @@
+server:
+  port: ${PORT:8080}
+
+spring:
+
+  datasource:
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
+
+payment-service:
+  url: ${PAYMENT_SERVICE_URL}
+
+logging:
+  level:
+    root: INFO
+    demos.springdata.fitmanage: INFO
+    org.hibernate: ERROR
