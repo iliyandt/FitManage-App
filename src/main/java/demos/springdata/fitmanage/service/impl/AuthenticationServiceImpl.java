@@ -259,8 +259,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
         try {
-            paymentFeignClient.createConnectedAccount(tenantDto);
-            tenant.setStripeAccountId(tenant.getStripeAccountId());
+            String connectedAccountId = paymentFeignClient.createConnectedAccount(tenantDto);
+            tenant.setStripeAccountId(connectedAccountId);
         } catch (Exception e) {
             throw new DamilSoftException("Unsuccessful creation of stripe account via Microservice: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
