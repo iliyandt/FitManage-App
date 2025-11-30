@@ -64,6 +64,7 @@ public class MembershipPlanController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MEMBER')")
     @GetMapping("/{subscriptionPlan}/{employment}")
     public ResponseEntity<ApiResponse<PriceResponse>> getPlanPrice(@PathVariable SubscriptionPlan subscriptionPlan, @PathVariable Employment employment) {
         PriceResponse response = membershipPlanService.getPlanPrice(subscriptionPlan, employment);

@@ -35,6 +35,7 @@ public class MembershipController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'STAFF', 'MEMBER')")
     @GetMapping
     public ResponseEntity<ApiResponse<List<EnumOption>>> getPlansForTenant() {
         List<PlanDto> planPriceDtoList = membershipPlanService.getPlansData();
