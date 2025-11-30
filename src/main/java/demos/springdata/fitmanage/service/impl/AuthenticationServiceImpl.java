@@ -158,6 +158,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         encryptUserPassword(user, request.getNewPassword());
+        user.setPasswordChanged(true);
         userRepository.save(user);
 
         LOGGER.debug("New Password {}", request.getNewPassword());
