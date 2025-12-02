@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/internal/payments")
-// Този контролер трябва да е защитен. Не трябва да е достъпен от външния свят.
+
 public class InternalPaymentController {
 
     private final TenantService tenantService;

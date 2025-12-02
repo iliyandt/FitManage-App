@@ -29,6 +29,7 @@ public class StripeServiceImpl implements StripeService {
 
     @Override
     public String createMemberCheckoutSession(String connectedAccountId, ConnectedCheckoutRequest request){
+        LOGGER.debug("Creating member checkout session in monolith");
         return paymentClient.createMemberCheckoutSession(connectedAccountId, request);
     }
 

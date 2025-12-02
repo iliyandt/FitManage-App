@@ -1,4 +1,4 @@
-package demos.springdata.fitmanage.schedular;
+package demos.springdata.fitmanage.scheduler;
 
 import demos.springdata.fitmanage.domain.entity.Membership;
 import demos.springdata.fitmanage.domain.enums.SubscriptionStatus;

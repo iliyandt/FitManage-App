@@ -38,7 +38,6 @@ public class StripeController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    //TODO: do i need this endpoint??
     @PostMapping("/connected-account")
     public ResponseEntity<ApiResponse<String>> createConnectedAccount(@RequestBody TenantDto tenant) {
         stripeService.createConnectedAccount(tenant);
