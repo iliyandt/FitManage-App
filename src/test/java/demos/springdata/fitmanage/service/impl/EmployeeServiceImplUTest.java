@@ -47,9 +47,7 @@ class EmployeeServiceImplUTest {
         CreateUser request = new CreateUser();
         request.setEmail("staff@gym.bg");
         request.setPhone("0888123123");
-        EmployeeResponse empResp = new EmployeeResponse();
-        empResp.setEmployeeRole(EmployeeRole.TRAINER);
-        request.setEmployeeResponse(empResp);
+        request.setEmployeeRole(EmployeeRole.TRAINER);
 
         UUID tenantId = UUID.randomUUID();
         Tenant mockTenant = new Tenant();

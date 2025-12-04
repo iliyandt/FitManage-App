@@ -61,7 +61,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = new Employee()
                 .setTenant(tenant)
                 .setUser(employeeUser)
-                .setEmployeeRole(request.getEmployeeResponse().getEmployeeRole());
+                .setEmployeeRole(request.getEmployeeRole());
 
         user.getEmployees().add(employee);
 
