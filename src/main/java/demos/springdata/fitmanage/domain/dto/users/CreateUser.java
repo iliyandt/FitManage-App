@@ -3,6 +3,7 @@ package demos.springdata.fitmanage.domain.dto.users;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeResponse;
 import demos.springdata.fitmanage.domain.dto.member.request.MemberDetails;
+import demos.springdata.fitmanage.domain.enums.EmployeeRole;
 import demos.springdata.fitmanage.domain.enums.Gender;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -35,6 +36,6 @@ public class CreateUser {
     @NotBlank(message = "Phone must not be blank")
     @Pattern(regexp = "^\\+?[0-9]{7,15}$", message = "Phone number must be 7 to 15 digits and may start with '+'")
     private String phone;
-    private EmployeeResponse employeeResponse;
+    private EmployeeRole employeeRole;
 
 }
