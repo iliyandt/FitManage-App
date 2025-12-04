@@ -153,7 +153,7 @@ public class TableHelper {
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
             MemberTableDto.class, Set.of("id", "firstName", "lastName", "phone", "subscriptionStatus"),
-            EmployeeTable.class, Set.of("id", "firstName", "lastName", "gender", "employeeRole"),
+            EmployeeTable.class, Set.of("id", "firstName", "lastName", "username", "gender", "employeeRole"),
             PlanTable.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
             VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone"),
             TrainingResponse.class, Set.of("name", "category", "date", "duration", "capacity", "spots", "trainer", "joined", "location")

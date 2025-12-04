@@ -60,7 +60,7 @@ public abstract class UserMapper {
 
 
     @Named("toEmployee")
-    @BeanMapping(qualifiedByName = "toMember")
+    @BeanMapping(qualifiedByName = "toEmployee")
     @Mappings({
             @Mapping(target = "tenant", source = "tenant"),
             @Mapping(target = "address", ignore = true),
