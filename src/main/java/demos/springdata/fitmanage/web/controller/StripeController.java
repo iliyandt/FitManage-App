@@ -21,9 +21,9 @@ public class StripeController {
 
 
     @PostMapping("/create-checkout-session")
-    public ResponseEntity<String> createSaasCheckoutSession(@RequestBody CheckoutRequest request) {
+    public ResponseEntity<ApiResponse<String>> createSaasCheckoutSession(@RequestBody CheckoutRequest request) {
         String session = stripeService.createSaasCheckoutSession(request);
-        return ResponseEntity.ok(session);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(session));
     }
 
     @PostMapping("/create-checkout-session/connectedAccounts")
