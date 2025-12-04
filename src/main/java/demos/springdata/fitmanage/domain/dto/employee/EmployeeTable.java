@@ -19,6 +19,7 @@ public class EmployeeTable {
     private UUID id;
     private String firstName;
     private String lastName;
+    private String username;
     private String email;
     private Gender gender;
     private OffsetDateTime birthDate;
