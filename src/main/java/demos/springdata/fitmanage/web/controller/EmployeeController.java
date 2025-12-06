@@ -48,7 +48,7 @@ public class EmployeeController { ;
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> update(@PathVariable UUID id, UpdateEmployee update) {
+    public ResponseEntity<ApiResponse<UserResponse>> update(@PathVariable UUID id, @RequestBody UpdateEmployee update) {
         UserResponse userResponse = employeeService.updateEmployee(id, update);
         return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(userResponse));
     }
