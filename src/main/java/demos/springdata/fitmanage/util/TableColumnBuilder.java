@@ -7,27 +7,11 @@ import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @UtilityClass
 public class TableColumnBuilder {
-
-//    public static <T> List<ColumnConfig> buildColumns(Class<T> clazz) {
-//        return Arrays.stream(clazz.getDeclaredFields())
-//                .map(field -> {
-//                    String fieldName = field.getName();
-//                    String header = beautifyColumnName(fieldName);
-//                    DropDownConfig dropDownConfig = resolveDropDownConfig(field);;
-//                    String type = resolveDropDownType(field, dropDownConfig);
-//
-//                    return new ColumnConfig(fieldName, header, type, dropDownConfig);
-//                })
-//                .toList();
-//    }
 
     public static <T> List<ColumnConfig> buildColumns(Class<T> clazz) {
         List<Field> allFields = new ArrayList<>();
@@ -83,7 +67,7 @@ public class TableColumnBuilder {
     }
 
     private static String mapJavaTypeToFrontendType(Class<?> type) {
-        if (type == String.class) {
+        if (type == String.class || type == UUID.class) {
             return "string";
         } else if (type == Integer.class || type == int.class ||
                 type == Long.class || type == long.class ||
