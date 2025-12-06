@@ -111,7 +111,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeUser.setUpdatedAt(LocalDateTime.now());
         userService.save(employeeUser);
 
-        return userMapper.toResponse(employee, employeeUser)
+        return userMapper.toResponse(employee, employeeUser);
     }
 
     @Transactional
