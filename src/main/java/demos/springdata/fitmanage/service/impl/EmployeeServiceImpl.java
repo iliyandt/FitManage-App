@@ -102,14 +102,16 @@ public class EmployeeServiceImpl implements EmployeeService {
             employeeUser.setBirthDate(updateDto.birthDate());
         }
 
+        Employee employee = employeeRepository.findByUser(employeeUser);
         if (updateDto.employeeRole() != null) {
-            Employee employee = employeeRepository.findByUser(employeeUser);
             employee.setEmployeeRole(updateDto.employeeRole());
             employeeRepository.save(employee);
         }
 
         employeeUser.setUpdatedAt(LocalDateTime.now());
         userService.save(employeeUser);
+
+        return userMapper.toResponse(employee, employeeUser)
     }
 
     @Transactional
