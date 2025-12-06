@@ -7,6 +7,10 @@ import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -77,9 +81,9 @@ public class TableColumnBuilder {
             return "number";
         } else if (type == Boolean.class || type == boolean.class) {
             return "boolean";
-        } else if (type.getName().equals("LocalDate") || type.getName().equals("Date") || type.getName().equals("Instant") || type.getName().equals("OffsetDateTime")) {
+        } else if (type == LocalTime.class || type == Date.class || type == Instant.class|| type == OffsetDateTime.class) {
             return "date";
-        } else if (type.getName().equals("LocalDateTime")) {
+        } else if (type == LocalDateTime.class) {
             return "datetime";
         } else if (type.isEnum()) {
             return "enum";
