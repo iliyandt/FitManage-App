@@ -7,6 +7,7 @@ import lombok.experimental.UtilityClass;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -15,14 +16,33 @@ import java.util.regex.Pattern;
 @UtilityClass
 public class TableColumnBuilder {
 
+//    public static <T> List<ColumnConfig> buildColumns(Class<T> clazz) {
+//        return Arrays.stream(clazz.getDeclaredFields())
+//                .map(field -> {
+//                    String fieldName = field.getName();
+//                    String header = beautifyColumnName(fieldName);
+//                    DropDownConfig dropDownConfig = resolveDropDownConfig(field);;
+//                    String type = resolveDropDownType(field, dropDownConfig);
+//
+//                    return new ColumnConfig(fieldName, header, type, dropDownConfig);
+//                })
+//                .toList();
+//    }
+
     public static <T> List<ColumnConfig> buildColumns(Class<T> clazz) {
-        return Arrays.stream(clazz.getDeclaredFields())
+        List<Field> allFields = new ArrayList<>();
+        Class<?> current = clazz;
+        while(current != null && current != Object.class) {
+            allFields.addAll(Arrays.asList(current.getDeclaredFields()));
+            current = current.getSuperclass();
+        }
+
+        return allFields.stream()
                 .map(field -> {
                     String fieldName = field.getName();
                     String header = beautifyColumnName(fieldName);
-                    DropDownConfig dropDownConfig = resolveDropDownConfig(field);;
+                    DropDownConfig dropDownConfig = resolveDropDownConfig(field);
                     String type = resolveDropDownType(field, dropDownConfig);
-
                     return new ColumnConfig(fieldName, header, type, dropDownConfig);
                 })
                 .toList();
@@ -61,7 +81,6 @@ public class TableColumnBuilder {
         if (input == null || input.isEmpty()) return input;
         return Character.toUpperCase(input.charAt(0)) + input.substring(1);
     }
-
 
     private static String mapJavaTypeToFrontendType(Class<?> type) {
         if (type == String.class) {

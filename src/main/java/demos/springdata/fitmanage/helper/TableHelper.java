@@ -11,15 +11,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class TableHelper {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TableHelper.class);
+
+
+
+
 
     public <T> List<Map<String, Object>> buildRows(List<T> data, RowMapper<T> rowMapper) {
         return data.stream()
@@ -55,7 +56,8 @@ public class TableHelper {
 
     public <T> Map<String, Object> buildRowMap(T dto) {
         Map<String, Object> row = new LinkedHashMap<>();
-        Field[] fields = dto.getClass().getDeclaredFields();
+
+        List<Field> fields = getAllFields(dto.getClass());
 
         for (Field field : fields) {
             field.setAccessible(true);
@@ -78,7 +80,7 @@ public class TableHelper {
             return columnVisibility;
         }
 
-        Field[] fields = dtoClass.getDeclaredFields();
+        List<Field> fields = getAllFields(dtoClass);
 
         for (Field field : fields) {
             String name = field.getName();
@@ -100,7 +102,8 @@ public class TableHelper {
             return createFields;
         }
 
-        Field[] fields = dtoClass.getDeclaredFields();
+        List<Field> fields = getAllFields(dtoClass);
+
         for (Field field : fields) {
             String fieldName = field.getName();
             boolean isAllowed = allowedFields.contains(fieldName);
@@ -108,6 +111,17 @@ public class TableHelper {
         }
 
         return createFields;
+    }
+
+    private List<Field> getAllFields(Class<?> clazz) {
+        List<Field> fields = new ArrayList<>();
+        Class<?> currentClass = clazz;
+
+        while (currentClass != null && currentClass != Object.class) {
+            fields.addAll(Arrays.asList(currentClass.getDeclaredFields()));
+            currentClass = currentClass.getSuperclass(); // Качваме се нагоре
+        }
+        return fields;
     }
 
 
@@ -121,14 +135,6 @@ public class TableHelper {
                     "birthDate"
             ),
 
-
-            PlanTable.class, Set.of(
-                    "price",
-                    "studentPrice",
-                    "seniorPrice",
-                    "handicapPrice"
-            ),
-
             EmployeeTableDto.class, Set.of(
                     "firstName",
                     "lastName",
@@ -138,6 +144,13 @@ public class TableHelper {
                     "birthDate",
                     "phone",
                     "employeeRole"
+            ),
+
+            PlanTable.class, Set.of(
+                    "price",
+                    "studentPrice",
+                    "seniorPrice",
+                    "handicapPrice"
             ),
 
             TrainingResponse.class, Set.of(
@@ -163,4 +176,6 @@ public class TableHelper {
     private static final Map<Class<?>, SortingConfigDto> sortingConfigMap = Map.of(
             MemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
     );
+
+
 }
