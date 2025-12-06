@@ -48,10 +48,9 @@ public class EmployeeController { ;
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<String>> update(@PathVariable UUID id, UpdateEmployee update) {
-        employeeService.updateEmployee(id, update);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("Successfully updated."));
+    public ResponseEntity<ApiResponse<UserResponse>> update(@PathVariable UUID id, UpdateEmployee update) {
+        UserResponse userResponse = employeeService.updateEmployee(id, update);
+        return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(userResponse));
     }
 
     @GetMapping("/names")

@@ -76,7 +76,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public void updateEmployee(UUID id, UpdateEmployee updateDto) {
+    public UserResponse updateEmployee(UUID id, UpdateEmployee updateDto) {
 
         User employeeUser = userService.findUserById(id);
 
@@ -190,6 +190,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .phone(user.getPhone())
                 .birthDate(user.getBirthDate())
                 .employeeRole(employee.getEmployeeRole())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }
