@@ -47,7 +47,7 @@ public class EmployeeController { ;
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> update(@PathVariable UUID id, UpdateEmployee update) {
         employeeService.updateEmployee(id, update);
 
@@ -66,10 +66,10 @@ public class EmployeeController { ;
         return ResponseEntity.ok(ApiResponse.success(employeesByEmployeeRole));
     }
 
-    private TableResponseDto buildTableResponse(List<EmployeeTable> members) {
+    private TableResponseDto buildTableResponse(List<EmployeeTableDto> members) {
         TableResponseDto response = new TableResponseDto();
-        response.setConfig(tableHelper.buildTableConfig("/employees", EmployeeTable.class));
-        response.setColumns(TableColumnBuilder.buildColumns(EmployeeTable.class));
+        response.setConfig(tableHelper.buildTableConfig("/employees", EmployeeTableDto.class));
+        response.setColumns(TableColumnBuilder.buildColumns(EmployeeTableDto.class));
         response.setRows(tableHelper.buildRows(members, tableHelper::buildRowMap));
         return response;
     }

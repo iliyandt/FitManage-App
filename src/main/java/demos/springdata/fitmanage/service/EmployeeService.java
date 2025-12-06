@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface EmployeeService {
     UserResponse createEmployee(CreateUser requestDto);
     void updateEmployee(UUID id, UpdateEmployee update);
-    List<EmployeeTable> getAllEmployees();
+    List<EmployeeTableDto> getAllEmployees();
     List<EmployeeName> getEmployeesFullNames();
     Employee getEmployeeById(UUID id, Tenant tenant);
     List<UserLookup> findEmployeesByEmployeeRole(String employeeRole);

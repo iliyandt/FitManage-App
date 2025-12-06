@@ -1,7 +1,7 @@
 package demos.springdata.fitmanage.helper;
 
 import demos.springdata.fitmanage.domain.dto.common.config.*;
-import demos.springdata.fitmanage.domain.dto.employee.EmployeeTable;
+import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.dto.membershipplan.PlanTable;
 import demos.springdata.fitmanage.domain.dto.training.TrainingResponse;
@@ -129,7 +129,7 @@ public class TableHelper {
                     "handicapPrice"
             ),
 
-            EmployeeTable.class, Set.of(
+            EmployeeTableDto.class, Set.of(
                     "firstName",
                     "lastName",
                     "email",
@@ -152,10 +152,10 @@ public class TableHelper {
     );
 
     private static final Map<Class<?>, Set<String>> customColumnVisibilityMap = Map.of(
-            MemberTableDto.class, Set.of("id", "firstName", "lastName", "phone", "subscriptionStatus"),
-            EmployeeTable.class, Set.of("id", "firstName", "lastName", "username", "gender", "employeeRole"),
-            PlanTable.class, Set.of("id", "subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
-            VisitTableResponse.class, Set.of("id", "firstName", "lastName", "phone"),
+            MemberTableDto.class, Set.of("firstName", "lastName", "phone", "subscriptionStatus"),
+            EmployeeTableDto.class, Set.of("firstName", "lastName", "username", "gender", "employeeRole"),
+            PlanTable.class, Set.of("subscriptionPlan", "price", "studentPrice", "seniorPrice", "handicapPrice"),
+            VisitTableResponse.class, Set.of("firstName", "lastName", "phone"),
             TrainingResponse.class, Set.of("name", "category", "date", "duration", "capacity", "spots", "trainer", "joined", "location")
     );
 

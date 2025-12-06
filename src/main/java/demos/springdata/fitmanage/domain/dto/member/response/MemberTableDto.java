@@ -23,11 +23,14 @@ public class MemberTableDto {
     private String lastName;
     private String email;
     private Gender gender;
+    private String username;
     private Set<RoleType> roles = new HashSet<>();
     private OffsetDateTime birthDate;
     private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+
     private Employment employment;
     private SubscriptionStatus subscriptionStatus;
     @DropDown(url = "/memberships")

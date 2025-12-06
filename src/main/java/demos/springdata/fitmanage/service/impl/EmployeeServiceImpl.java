@@ -112,7 +112,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Transactional
     @Override
-    public List<EmployeeTable> getAllEmployees() {
+    public List<EmployeeTableDto> getAllEmployees() {
         LOGGER.info("Fetching all members..");
         User user = userService.getCurrentUser();
         Tenant tenant = tenantService.getTenantByEmail(user.getEmail());
@@ -175,10 +175,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         );
     }
 
-    private EmployeeTable buildTableResponse(Employee employee) {
+    private EmployeeTableDto buildTableResponse(Employee employee) {
         User user = employee.getUser();
 
-        return EmployeeTable.builder()
+        return EmployeeTableDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EmployeeTable {
+public class EmployeeTableDto {
     private UUID id;
     private String firstName;
     private String lastName;
@@ -24,5 +25,9 @@ public class EmployeeTable {
     private Gender gender;
     private OffsetDateTime birthDate;
     private String phone;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    
+
     private EmployeeRole employeeRole;
 }

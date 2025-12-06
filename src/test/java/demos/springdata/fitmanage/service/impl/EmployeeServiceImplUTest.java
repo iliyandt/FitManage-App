@@ -180,7 +180,7 @@ class EmployeeServiceImplUTest {
         when(employeeRepository.findAllByTenant_Id(tenant.getId())).thenReturn(List.of(employee));
 
 
-        List<EmployeeTable> result = employeeService.getAllEmployees();
+        List<EmployeeTableDto> result = employeeService.getAllEmployees();
 
 
         assertEquals(1, result.size());
