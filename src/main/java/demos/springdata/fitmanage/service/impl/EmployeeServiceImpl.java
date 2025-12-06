@@ -182,6 +182,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .username(user.getUsername())
                 .email(user.getEmail())
                 .gender(user.getGender())
                 .phone(user.getPhone())
