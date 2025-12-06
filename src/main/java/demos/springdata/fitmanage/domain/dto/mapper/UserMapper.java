@@ -77,7 +77,6 @@ public abstract class UserMapper {
 
     @AfterMapping
     @Named("toMember")
-    @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
     protected void setupMemberRoles(@MappingTarget User user) {
         user.setRoles(Set.of(roleService.findByName(RoleType.MEMBER)));
     }
@@ -103,6 +102,7 @@ public abstract class UserMapper {
     }
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
     public abstract User updateUserFields(UserUpdate update, @MappingTarget User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

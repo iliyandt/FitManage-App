@@ -77,8 +77,10 @@ public class TableColumnBuilder {
             return "number";
         } else if (type == Boolean.class || type == boolean.class) {
             return "boolean";
-        } else if (type.getName().contains("LocalDate") || type.getName().contains("Date") || type.getName().contains("Instant")) {
+        } else if (type.getName().equals("LocalDate") || type.getName().equals("Date") || type.getName().equals("Instant") || type.getName().equals("OffsetDateTime")) {
             return "date";
+        } else if (type.getName().equals("LocalDateTime")) {
+            return "datetime";
         } else if (type.isEnum()) {
             return "enum";
         } else if (type == Set.class){
