@@ -43,7 +43,7 @@ public class TableHelper {
 
         SortingConfigDto sortingConfig = sortingConfigMap.getOrDefault(
                 dtoClass,
-                new SortingConfigDto().setField("id").setDesc(true)
+                new SortingConfigDto().setField("updatedAt").setDesc(true)
         );
 
         return new ConfigDto()
@@ -174,7 +174,8 @@ public class TableHelper {
 
 
     private static final Map<Class<?>, SortingConfigDto> sortingConfigMap = Map.of(
-            MemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
+            MemberTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true),
+            EmployeeTableDto.class, new SortingConfigDto().setField("updatedAt").setDesc(true)
     );
 
 
