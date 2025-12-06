@@ -77,6 +77,7 @@ public abstract class UserMapper {
 
     @AfterMapping
     @Named("toMember")
+    @Mapping(target = "updatedAt", expression = "java(LocalDateTime.now())")
     protected void setupMemberRoles(@MappingTarget User user) {
         user.setRoles(Set.of(roleService.findByName(RoleType.MEMBER)));
     }

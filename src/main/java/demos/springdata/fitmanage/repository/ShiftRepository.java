@@ -11,5 +11,5 @@ import java.util.UUID;
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift, UUID> {
 
-    List<Shift> findByEmployee_User(User user);
+    List<Shift> findByUser(User user);
 }

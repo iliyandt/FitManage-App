@@ -1,6 +1,7 @@
 package demos.springdata.fitmanage.domain.dto.users;
 
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import demos.springdata.fitmanage.domain.dto.employee.EmployeeTableDto;
 import demos.springdata.fitmanage.domain.dto.member.response.MemberTableDto;
 import demos.springdata.fitmanage.domain.enums.Gender;
@@ -33,6 +34,4 @@ public abstract class UserTableDto {
     private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private MemberTableDto memberTableDto;
-    private EmployeeTableDto employeeTableDto;
 }

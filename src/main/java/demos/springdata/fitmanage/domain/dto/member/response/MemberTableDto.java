@@ -6,12 +6,6 @@ import demos.springdata.fitmanage.domain.enums.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

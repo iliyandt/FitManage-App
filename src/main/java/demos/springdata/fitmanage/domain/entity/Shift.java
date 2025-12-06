@@ -8,8 +8,8 @@ import java.time.OffsetDateTime;
 @Table(name = "shifts")
 public class Shift extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     private OffsetDateTime startTime;
     private OffsetDateTime endTime;
     private boolean approved;
@@ -18,12 +18,12 @@ public class Shift extends BaseEntity{
     public Shift() {
     }
 
-    public Employee getEmployee() {
-        return employee;
+    public User getUser() {
+        return user;
     }
 
-    public Shift setEmployee(Employee employee) {
-        this.employee = employee;
+    public Shift setUser(User user) {
+        this.user = user;
         return this;
     }
 

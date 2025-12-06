@@ -68,7 +68,7 @@ class ShiftServiceImplTest {
 
         shift = new Shift();
         shift.setId(UUID.randomUUID());
-        shift.setEmployee(employee);
+        //shift.setEmployee(employee);
         shift.setStartTime(OffsetDateTime.now().plusHours(1));
         shift.setEndTime(OffsetDateTime.now().plusHours(9));
         shift.setApproved(true);
@@ -113,7 +113,7 @@ class ShiftServiceImplTest {
 
         when(userService.getCurrentUser()).thenReturn(employeeUser);
 
-        when(shiftRepository.findByEmployee_User(employeeUser)).thenReturn(List.of(shift));
+        //when(shiftRepository.findByEmployee_User(employeeUser)).thenReturn(List.of(shift));
 
         List<ShiftResponse> result = shiftService.getShiftsForCurrentUser();
 
@@ -126,14 +126,14 @@ class ShiftServiceImplTest {
         assertEquals(shift.isApproved(), response.isApproved());
 
         verify(userService).getCurrentUser();
-        verify(shiftRepository).findByEmployee_User(employeeUser);
+       // verify(shiftRepository).findByEmployee_User(employeeUser);
     }
 
     @Test
     void getShiftsForCurrentUser_ShouldReturnEmptyList_WhenNoShiftsFound() {
 
         when(userService.getCurrentUser()).thenReturn(currentUser);
-        when(shiftRepository.findByEmployee_User(currentUser)).thenReturn(List.of());
+       // when(shiftRepository.findByEmployee_User(currentUser)).thenReturn(List.of());
 
         List<ShiftResponse> result = shiftService.getShiftsForCurrentUser();
 

@@ -22,27 +22,26 @@ import java.util.List;
 public class ShiftServiceImpl implements ShiftService {
 
     private final ShiftRepository shiftRepository;
-    private final EmployeeService employeeService;
     private final UserService userService;
     private static final Logger LOGGER = LoggerFactory.getLogger(ShiftServiceImpl.class);
 
     @Autowired
-    public ShiftServiceImpl(ShiftRepository shiftRepository, EmployeeService employeeService, UserService userService) {
+    public ShiftServiceImpl(ShiftRepository shiftRepository, UserService userService) {
         this.shiftRepository = shiftRepository;
-        this.employeeService = employeeService;
         this.userService = userService;
     }
 
 
     @Override
     public ShiftResponse createShift(CreateShift createRequest) {
-        User user = userService.getCurrentUser();
-        Tenant tenant = user.getTenant();
+        User currentUser = userService.getCurrentUser();
+        Tenant tenant = currentUser.getTenant();
 
-        Employee employee = employeeService.getEmployeeById(createRequest.getId(), tenant);
+        User user = userService.getByIdAndTenantId(createRequest.getId(), tenant.getId());
+//        Employee emp = user.getEmployees().getFirst();
 
         Shift shift = new Shift()
-                .setEmployee(employee)
+                .setUser(user)
                 .setStartTime(createRequest.getStartTime())
                 .setEndTime(createRequest.getEndTime())
                 .setNotes(createRequest.getNotes())
@@ -52,11 +51,11 @@ public class ShiftServiceImpl implements ShiftService {
 
         return ShiftResponse.builder()
                 .id(savedShift.getId())
-                .firstName(savedShift.getEmployee().getUser().getFirstName())
-                .lastName(savedShift.getEmployee().getUser().getLastName())
+                .firstName(savedShift.getUser().getFirstName())
+                .lastName(savedShift.getUser().getLastName())
                 .startTime(savedShift.getStartTime())
                 .endTime(savedShift.getEndTime())
-                .role(savedShift.getEmployee().getEmployeeRole().name())
+//                .role(emp.getEmployeeRole().name())
                 .approved(savedShift.isApproved())
                 .notes(savedShift.getNotes())
                 .build();
@@ -67,16 +66,16 @@ public class ShiftServiceImpl implements ShiftService {
     public List<ShiftResponse> getShiftsForCurrentUser() {
         LOGGER.info("Get shifts information for current user");
         User user = userService.getCurrentUser();
-
-        List<Shift> employeeShifts = shiftRepository.findByEmployee_User(user);
+//        Employee emp = user.getEmployees().getFirst();
+        List<Shift> employeeShifts = shiftRepository.findByUser(user);
 
         return employeeShifts.stream().map(shift -> ShiftResponse.builder()
                 .id(shift.getId())
-                .firstName(shift.getEmployee().getUser().getFirstName())
-                .lastName(shift.getEmployee().getUser().getLastName())
+                .firstName(shift.getUser().getFirstName())
+                .lastName(shift.getUser().getLastName())
                 .startTime(shift.getStartTime())
                 .endTime(shift.getEndTime())
-                .role(shift.getEmployee().getEmployeeRole().name())
+//                .role(emp.getEmployeeRole().name())
                 .approved(shift.isApproved())
                 .notes(shift.getNotes())
                 .build()).toList();
